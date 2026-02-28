@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+skutto.db
+credentials.json
+bot token.txt
+*.ico
