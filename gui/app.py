@@ -108,6 +108,10 @@ class MainApplication:
         # Create main UI
         self._create_ui()
 
+        # Auto-start bot if enabled
+        if self.auto_start:
+            self.root.after(500, self.start_bot)
+
     def _configure_styles(self):
         """Configure custom styles."""
         style = ttk.Style()
