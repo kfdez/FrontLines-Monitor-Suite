@@ -74,13 +74,13 @@ The app uses a sidebar with collapsible navigation:
 
 ## Bot Commands (SKUtto)
 
-Discord slash commands (not message commands). Works in DMs only:
+Discord commands with `!` prefix. Works in DMs only:
 
-- `/help` - Show available commands
-- `/addsku <sku> <name> [url]` - Submit new SKU for approval
-- `/addemail <email>` - Link email to your account
-- `/removeemail <email]` - Remove email from your account
-- `/lemails` - List your linked emails
+- `!help` - Show available commands
+- `!addsku <sku> <name> [url]` - Submit new SKU for approval
+- `!addemail <email>` - Link email to your account
+- `!removeemail <email>` - Remove email from your account
+- `!lemails` - List your linked emails
 
 ## HV Monitor (Hobbiesville)
 

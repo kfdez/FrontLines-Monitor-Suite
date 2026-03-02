@@ -71,12 +71,12 @@ Products should be stored with these columns (in order):
 
 ## Bot Commands
 
-Users can interact via slash commands in DMs:
-- `/help` - Show available commands
-- `/addsku <sku> <name> [url]` - Submit a new SKU
-- `/addemail <email>` - Link an email to your account
-- `/removeemail <email>` - Remove an email
-- `/lemails` - List your linked emails
+Users can interact via commands in DMs (prefix with `!`):
+- `!help` - Show available commands
+- `!addsku <sku> <name> [url]` - Submit a new SKU
+- `!addemail <email>` - Link an email to your account
+- `!removeemail <email>` - Remove an email
+- `!lemails` - List your linked emails
 
 ## Project Structure
 
