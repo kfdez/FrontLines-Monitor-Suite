@@ -144,34 +144,58 @@ class SheetsManager:
     def append_product(
         self,
         spreadsheet_id: str,
-        sheet_range: str,
         sku: str,
-        name: str,
+        sku2: str = "",
+        name: str = "",
         url: str = "",
+        platform: str = "",
         role_id: str = "",
-        platform: str = ""
+        role: str = ""
     ) -> bool:
         """Append a single product to the sheet."""
         if not spreadsheet_id:
             return False
 
         try:
-            # First get the next empty row
+            # First get the current data range
             result = self.service.spreadsheets().values().get(
                 spreadsheetId=spreadsheet_id,
-                range=sheet_range
+                range="A1:Z"
             ).execute()
 
             values = result.get('values', [])
             next_row = len(values) + 1
+            if next_row == 1:  # Sheet is empty, start at row 2 for headers
+                next_row = 2
 
+            # If we're exceeding sheet limits, resize the sheet first
+            if next_row > 1000:
+                # Try to resize to accommodate more rows
+                self.service.spreadsheets().batchUpdate(
+                    spreadsheetId=spreadsheet_id,
+                    body={
+                        'requests': [{
+                            'updateSheetProperties': {
+                                'properties': {
+                                    'gridProperties': {
+                                        'rowCount': next_row + 100
+                                    }
+                                },
+                                'fields': 'gridProperties.rowCount'
+                            }
+                        }]
+                    }
+                ).execute()
+
+            # Columns: SKU, SKU2, Name, URL, Platform, LastChecked(empty), RoleID, Role
             body = {
-                'values': [[sku, name, url, role_id, platform]]
+                'values': [[sku, sku2, name, url, platform, "", role_id, role]]
             }
 
+            # Use a simple range that will auto-expand
             self.service.spreadsheets().values().update(
                 spreadsheetId=spreadsheet_id,
-                range=f"A{next_row}:E{next_row}",
+                range=f"A{next_row}",
                 valueInputOption='USER_ENTERED',
                 body=body
             ).execute()

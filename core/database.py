@@ -47,43 +47,52 @@ class Database:
                 )
             """)
 
-            # App config table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS config (
-                    key TEXT PRIMARY KEY,
-                    value TEXT
-                )
-            """)
+        # Add sku2 column if it doesn't exist (for existing databases)
+        cursor.execute("PRAGMA table_info(pending_skus)")
+        columns = [row[1] for row in cursor.fetchall()]
+        if 'sku2' not in columns:
+            cursor.execute("ALTER TABLE pending_skus ADD COLUMN sku2 TEXT DEFAULT ''")
+        # Add role column if it doesn't exist
+        if 'role' not in columns:
+            cursor.execute("ALTER TABLE pending_skus ADD COLUMN role TEXT DEFAULT ''")
 
-            # Platform to Site mapping table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS platform_sites (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    platform TEXT UNIQUE NOT NULL,
-                    site_url TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
+        # App config table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS config (
+                key TEXT PRIMARY KEY,
+                value TEXT
+            )
+        """)
 
-            # Insert default platform mappings if empty
-            cursor.execute("SELECT COUNT(*) FROM platform_sites")
-            if cursor.fetchone()[0] == 0:
-                defaults = [
-                    ("walmart", "https://www.walmart.com"),
-                    ("gamestop", "https://www.gamestop.com"),
-                    ("amazon", "https://www.amazon.com"),
-                    ("costco", "https://www.costco.com"),
-                    ("bestbuy", "https://www.bestbuy.com"),
-                    ("popmart", "https://www.popmart.com"),
-                    ("queueit", "https://queue-it.net"),
-                    ("indigo", "https://www.indigo.ca"),
-                ]
-                cursor.executemany(
-                    "INSERT INTO platform_sites (platform, site_url) VALUES (?, ?)",
-                    defaults
-                )
+        # Platform to Site mapping table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS platform_sites (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                platform TEXT UNIQUE NOT NULL,
+                site_url TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
 
-            conn.commit()
+        # Insert default platform mappings if empty
+        cursor.execute("SELECT COUNT(*) FROM platform_sites")
+        if cursor.fetchone()[0] == 0:
+            defaults = [
+                ("walmart", "https://www.walmart.com"),
+                ("gamestop", "https://www.gamestop.com"),
+                ("amazon", "https://www.amazon.com"),
+                ("costco", "https://www.costco.com"),
+                ("bestbuy", "https://www.bestbuy.com"),
+                ("popmart", "https://www.popmart.com"),
+                ("queueit", "https://queue-it.net"),
+                ("indigo", "https://www.indigo.ca"),
+            ]
+            cursor.executemany(
+                "INSERT INTO platform_sites (platform, site_url) VALUES (?, ?)",
+                defaults
+            )
+
+        conn.commit()
 
     # ============ EMAIL OPERATIONS ============
 
@@ -156,16 +165,17 @@ class Database:
         url: str,
         platform: str,
         submitted_by: int,
-        role_id: str = None
+        role_id: str = None,
+        sku2: str = None
     ) -> int:
         """Add a pending SKU for admin approval. Returns the ID."""
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
                 """INSERT INTO pending_skus
-                   (sku, name, url, role_id, platform, submitted_by)
-                   VALUES (?, ?, ?, ?, ?, ?)""",
-                (sku.upper(), name, url, role_id, platform, submitted_by)
+                   (sku, sku2, name, url, role_id, platform, submitted_by)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (sku.upper(), sku2 or '', name, url, role_id or '', platform, submitted_by)
             )
             conn.commit()
             return cursor.lastrowid
@@ -175,7 +185,7 @@ class Database:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                """SELECT id, sku, name, url, role_id, platform,
+                """SELECT id, sku, sku2, name, url, role_id, role, platform,
                    submitted_by, status, created_at
                    FROM pending_skus WHERE status = 'pending'
                    ORDER BY created_at DESC"""
@@ -187,7 +197,7 @@ class Database:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                """SELECT id, sku, name, url, role_id, platform,
+                """SELECT id, sku, sku2, name, url, role_id, role, platform,
                    submitted_by, status, reviewed_by, created_at, reviewed_at
                    FROM pending_skus ORDER BY created_at DESC"""
             )
@@ -202,6 +212,36 @@ class Database:
                    SET status = 'approved', reviewed_by = ?, reviewed_at = ?
                    WHERE id = ?""",
                 (reviewed_by, datetime.now().isoformat(), sku_id)
+            )
+            conn.commit()
+            return cursor.rowcount > 0
+
+    def update_pending_sku(self, sku_id: int, platform: str = None, role_id: str = None, sku2: str = None, role: str = None) -> bool:
+        """Update a pending SKU's fields."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            updates = []
+            params = []
+            if platform is not None:
+                updates.append("platform = ?")
+                params.append(platform)
+            if role_id is not None:
+                updates.append("role_id = ?")
+                params.append(role_id)
+            if sku2 is not None:
+                updates.append("sku2 = ?")
+                params.append(sku2)
+            if role is not None:
+                updates.append("role = ?")
+                params.append(role)
+
+            if not updates:
+                return False
+
+            params.append(sku_id)
+            cursor.execute(
+                f"""UPDATE pending_skus SET {', '.join(updates)} WHERE id = ?""",
+                params
             )
             conn.commit()
             return cursor.rowcount > 0

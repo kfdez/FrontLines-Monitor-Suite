@@ -403,8 +403,12 @@ class MainApplication:
 
         self.log_message(f"🔍 Found emails in checkout: {emails_found}")
 
-        # Look up each email and send DM
-        for email in emails_found:
+        # Look up each email and send DM with rate limiting
+        for i, email in enumerate(emails_found):
+            # Rate limit: 1 DM per second to avoid Discord rate limits
+            if i > 0:
+                import asyncio
+                await asyncio.sleep(1)
             discord_id = self.bot.email_lookup.get(email.lower())
             if discord_id:
                 try:

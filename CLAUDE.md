@@ -12,9 +12,14 @@ SKUtto 3.0 is a Discord bot monitoring application with a Tkinter GUI. It monito
 python main.py
 ```
 
-Or run directly:
+## Git Commands
+
 ```bash
-python skutto3.0.pyw
+git add .                    # Stage all changes
+git commit -m "message"     # Commit changes
+git push                    # Push to remote
+git pull                    # Pull from remote
+git status                  # Show working tree status
 ```
 
 ## Architecture
