@@ -4,18 +4,42 @@ A Discord bot monitoring application with a Tkinter GUI. Monitors source Discord
 
 ## Features
 
-- **Tkinter GUI** - Easy configuration with Products, Emails, and Settings tabs
+- **Tkinter GUI** - Easy configuration with sidebar navigation and multiple monitoring modules
+- **SKUtto** - Discord embed monitoring for product restocks with SKU matching
+- **Hobbiesville (HV Monitor)** - Shopify product monitoring via GraphQL API with stock alerts
+- **Proxies** - Proxy management for HTTP requests
 - **Discord Slash Commands** - `/help`, `/addsku`, `/addemail`, `/removeemail`, `/lemails`
-- **SKU Monitoring** - Monitors Discord channels for restock embeds and forwards matching products
 - **Role Pings** - Automatically pings Discord roles for matched products
 - **Email Management** - Link emails to Discord users for checkout notifications
 - **Google Sheets Integration** - Product database stored in Google Sheets
+
+## Modules
+
+### SKUtto
+Monitors Discord channels for restock embeds and forwards matching products based on SKU/SKU2/Name matching.
+
+### Hobbiesville (HV Monitor)
+Monitors Shopify products via GraphQL API and sends Discord webhooks when items come back in stock.
+
+**Configuration:**
+- Store GraphQL URL (e.g., `https://yourstore.myshopify.com/api/2024-07/graphql.json`)
+- Storefront Access Token
+- Discord Webhook URL
+- Role ID for pings
+- Check interval (10-300 seconds)
+- Auto-start option
+
+**Products:**
+Add product IDs in the format `gid://shopify/Product/123456789` (one per line). Add `|ping` suffix for per-product ping override.
+
+### Proxies
+Manage HTTP proxies for monitoring modules. Format: `host:port:username:password` (one per line).
 
 ## Setup
 
 1. Install dependencies:
 ```bash
-pip install discord google-api-python-client google-auth-oauthlib
+pip install discord google-api-python-client google-auth-oauthlib requests
 ```
 
 2. Configure the bot:
@@ -32,11 +56,6 @@ pip install discord google-api-python-client google-auth-oauthlib
 
 ```bash
 python main.py
-```
-
-Or run directly:
-```bash
-python skutto3.0.pyw
 ```
 
 ## Google Sheets Format
@@ -62,5 +81,12 @@ Users can interact via slash commands in DMs:
 ## Project Structure
 
 - `gui/` - Tkinter GUI application
-- `core/` - Bot, database, and sheets integration
+  - `gui/app.py` - Main application with sidebar navigation
+  - `gui/tabs/` - Tab components (Products, Emails, Settings, HV Monitor, Proxies)
+- `core/` - Core functionality
+  - `core/bot.py` - Discord bot
+  - `core/database.py` - SQLite database
+  - `core/sheets.py` - Google Sheets integration
+  - `core/hv_monitor.py` - HV Monitor backend
+- `hv_monitor_data/` - HV Monitor data storage
 - `modules/skutto/` - Skutto-specific event handlers
