@@ -823,15 +823,21 @@ class MainApplication:
                             self.log_message(f"🔍 Processed embed: '{title}' with {fields_count} fields")
                             new_embed = discord.Embed.from_dict(processed)
 
-                            # Send role ping if enabled and role_id exists in product
-                            role_id = processed.get("role_id", "")
-                            if self.bot.enable_ping and role_id:
-                                ping_msg = f"<@&{role_id}>"
-                                await target_channel.send(ping_msg, embed=new_embed)
-                            else:
-                                await target_channel.send(embed=new_embed)
+                            # Send role ping if enabled and role_id exists in product (separate message first)
+                            role_id = processed.get("role_id", "").strip()
+                            if self.bot.enable_ping and role_id and role_id.isdigit():
+                                mention = f"<@&{role_id}> - {title}"
+                                self.log_message(f"📣 Pinging role: {role_id}")
+                                await target_channel.send(content=mention)
+                            await target_channel.send(embed=new_embed)
                         self.log_message(f"📤 Forwarded {len(message.embeds)} embed(s) to target channel")
                     elif message.content:
+                        # Send role ping if enabled
+                        role_id = processed.get("role_id", "").strip()
+                        if self.bot.enable_ping and role_id and role_id.isdigit():
+                            mention = f"<@&{role_id}>"
+                            self.log_message(f"📣 Pinging role: {role_id}")
+                            await target_channel.send(content=mention)
                         await target_channel.send(message.content)
                         self.log_message(f"📤 Forwarded message to target channel")
                 except Exception as e:
