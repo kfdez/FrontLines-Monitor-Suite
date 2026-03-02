@@ -101,7 +101,7 @@ class EmailsTab(ttk.Frame):
         """Load emails from database."""
         emails = self.app.db.get_all_emails()
         self._populate_tree(emails)
-        print(f"✅ Loaded {len(emails)} emails")
+        print(f"[OK] Loaded {len(emails)} emails")
 
     def _populate_tree(self, emails, filter_text=""):
         """Populate treeview with emails."""

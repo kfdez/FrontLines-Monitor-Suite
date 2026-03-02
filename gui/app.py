@@ -1,6 +1,6 @@
 """Main GUI application - FrontLines Monitor Suite."""
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import os
 import sys
 from datetime import datetime
@@ -14,9 +14,12 @@ if BASE_DIR not in sys.path:
 from core.database import Database
 from core.sheets import SheetsManager
 from core.bot import DiscordBot
+from core.hv_monitor import HVMonitor
 from gui.tabs.products_tab import ProductsTab
 from gui.tabs.emails_tab import EmailsTab
 from gui.tabs.settings_tab import SettingsTab
+from gui.tabs.hv_monitor_tab import HVMonitorTab
+from gui.tabs.proxies_tab import ProxiesTab
 
 
 class ColoredButton(ttk.Button):
@@ -98,6 +101,7 @@ class MainApplication:
         self.db = Database()
         self.sheets = SheetsManager()
         self.bot = DiscordBot("", self.db)
+        self.hv_monitor = HVMonitor(self.db, log_callback=None, app=self)
 
         # Bot state
         self.bot_thread = None
@@ -111,6 +115,10 @@ class MainApplication:
         # Auto-start bot if enabled
         if self.auto_start:
             self.root.after(500, self.start_bot)
+
+        # Auto-start HV monitor if enabled
+        if self.hv_monitor.auto_start:
+            self.root.after(600, self.start_hv_monitor)
 
     def _configure_styles(self):
         """Configure custom styles."""
@@ -185,53 +193,172 @@ class MainApplication:
 
     def _create_ui(self):
         """Create the main UI."""
-        # Main container
+        # Main container - horizontal layout
         main_container = ttk.Frame(self.root)
         main_container.pack(fill=tk.BOTH, expand=True)
 
-        # Top header bar
-        header_frame = tk.Frame(main_container, bg="#1e1e1e", height=60)
-        header_frame.pack(fill=tk.X)
+        # === SIDEBAR NAVIGATION ===
+        self.sidebar_frame = tk.Frame(main_container, bg="#252526")
+        self.sidebar_frame.pack(side=tk.LEFT, fill=tk.Y)
+        self.sidebar_frame.config(width=200)
+        self.sidebar_expanded = True
+        self.sidebar_width = 200
+
+        # App title in sidebar
+        self.sidebar_title = tk.Label(
+            self.sidebar_frame,
+            text="FrontLines\nMonitor Suite",
+            font=("Segoe UI", 12, "bold"),
+            bg="#252526",
+            fg="white",
+            pady=15,
+            justify=tk.CENTER
+        )
+        self.sidebar_title.pack()
+
+        # Collapse/expand button
+        self.collapse_btn = tk.Button(
+            self.sidebar_frame,
+            text="◀",
+            font=("Segoe UI", 10),
+            bg="#252526",
+            fg="white",
+            relief=tk.FLAT,
+            padx=5,
+            pady=5,
+            cursor="hand2",
+            command=self._toggle_sidebar
+        )
+        self.collapse_btn.pack(side=tk.BOTTOM, pady=10)
+
+        # Navigation buttons
+        self.nav_buttons = {}
+        # Format: (view_id, view_name, expanded_text, collapsed_text)
+        views = [
+            ("skutto", "SKUtto", "  🔐 SKUtto", "  [S]"),
+            ("shopify", "Shopify Monitor", "  🛒 Shopify Monitor", "  [$]"),
+            ("hobbiesville", "Hobbiesville", "  🎮 Hobbiesville", "  [H]"),
+            ("proxies", "Proxies", "  🌐 Proxies", "  [P]"),
+        ]
+
+        for view_id, view_name, expanded_text, collapsed_text in views:
+            btn = tk.Button(
+                self.sidebar_frame,
+                text=expanded_text,
+                font=("Segoe UI", 11),
+                bg="#2d2d30" if view_id != "skutto" else "#0e639c",
+                fg="white",
+                relief=tk.FLAT,
+                anchor="w",
+                padx=15,
+                pady=12,
+                cursor="hand2",
+                command=lambda v=view_id: self._switch_view(v)
+            )
+            btn.pack(fill=tk.X, padx=5, pady=2)
+            self.nav_buttons[view_id] = {
+                'btn': btn,
+                'expanded': expanded_text,
+                'collapsed': collapsed_text
+            }
+
+        # === CONTENT AREA ===
+        # Container for the right side
+        content_container = ttk.Frame(main_container)
+        content_container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # === VIEW CONTAINER ===
+        self.views_container = ttk.Frame(content_container)
+        self.views_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        # Create views dictionary
+        self.views = {}
+        self.view_log_panels = {}
+
+        # Create SKUtto view (current implementation)
+        self._create_skutto_view(content_container)
+
+        # Create Hobbiesville (HV Monitor) view
+        self._create_hv_monitor_view(content_container)
+
+        # Create Proxies view
+        self._create_proxies_view(content_container)
+
+        # Create placeholder views with logs
+        self._create_placeholder_view("shopify", "🛒 Shopify Monitor", "Coming Soon - Shopify monitoring functionality will be added here.", has_log=True)
+
+        # Set initial view (show SKUtto by default)
+        self._switch_view("skutto")
+        self.current_view = "skutto"
+
+    def _toggle_sidebar(self):
+        """Toggle the sidebar collapsed/expanded."""
+        if self.sidebar_expanded:
+            # Collapse
+            self.sidebar_frame.config(width=40)
+            self.sidebar_title.pack_forget()
+            for btn_data in self.nav_buttons.values():
+                btn_data['btn'].config(text=btn_data['collapsed'])
+                btn_data['btn'].pack_forget()
+            self.collapse_btn.config(text="▶")
+            self.sidebar_expanded = False
+        else:
+            # Expand
+            self.sidebar_frame.config(width=200)
+            self.sidebar_title.pack()
+            for btn_data in self.nav_buttons.values():
+                btn_data['btn'].config(text=btn_data['expanded'])
+                btn_data['btn'].pack(fill=tk.X, padx=5, pady=2)
+            self.collapse_btn.config(text="◀")
+            self.sidebar_expanded = True
+
+    def _create_skutto_view(self, parent):
+        """Create the SKUtto view with tabs, header controls, and log."""
+        skutto_frame = ttk.Frame(self.views_container)
+        self.views["skutto"] = skutto_frame
+
+        # Header for SKUtto (with bot controls)
+        header_frame = tk.Frame(skutto_frame, bg="#2d2d30", height=50)
+        header_frame.pack(fill=tk.X, pady=(0, 10))
         header_frame.pack_propagate(False)
 
-        # Logo/Title
-        title_label = tk.Label(
+        # Title
+        tk.Label(
             header_frame,
-            text="FrontLines Monitor Suite",
-            font=("Segoe UI", 18, "bold"),
-            bg="#1e1e1e",
+            text="SKUtto",
+            font=("Segoe UI", 14, "bold"),
+            bg="#2d2d30",
             fg="white"
-        )
-        title_label.pack(side=tk.LEFT, padx=20)
+        ).pack(side=tk.LEFT, padx=10)
 
         # Bot status indicator
-        self.status_indicator = tk.Canvas(header_frame, width=20, height=20, bg="#1e1e1e", highlightthickness=0)
-        self.status_indicator.pack(side=tk.RIGHT, padx=20)
+        self.status_indicator = tk.Canvas(header_frame, width=20, height=20, bg="#2d2d30", highlightthickness=0)
+        self.status_indicator.pack(side=tk.RIGHT, padx=10)
 
         # Status circle
         self.status_circle = self.status_indicator.create_oval(2, 2, 18, 18, fill="#dc3545", outline="")
 
         # Status area frame (contains status + loading bar)
-        status_area = tk.Frame(header_frame, bg="#1e1e1e")
+        status_area = tk.Frame(header_frame, bg="#2d2d30")
         status_area.pack(side=tk.RIGHT, padx=5)
 
         # Status label
         self.status_label = tk.Label(
             status_area,
             text="Offline",
-            font=("Segoe UI", 12),
-            bg="#1e1e1e",
+            font=("Segoe UI", 10),
+            bg="#2d2d30",
             fg="#dc3545"
         )
         self.status_label.pack()
 
         # Loading indicator (progress bar) - initially hidden
-        self.loading_frame = tk.Frame(status_area, bg="#1e1e1e")
+        self.loading_frame = tk.Frame(status_area, bg="#2d2d30")
 
         self.loading_bar = ttk.Progressbar(
             self.loading_frame,
             mode='indeterminate',
-            length=80,
+            length=60,
             takefocus=False
         )
         self.loading_bar.pack(pady=2)
@@ -239,13 +366,13 @@ class MainApplication:
         # Control buttons in header
         self.start_btn = tk.Button(
             header_frame,
-            text="▶ Start Bot",
+            text="▶ Start",
             command=self.start_bot,
             bg="#28a745",
             fg="white",
-            font=("Segoe UI", 10, "bold"),
+            font=("Segoe UI", 9, "bold"),
             relief=tk.FLAT,
-            padx=15,
+            padx=12,
             pady=5,
             cursor="hand2"
         )
@@ -253,13 +380,13 @@ class MainApplication:
 
         self.stop_btn = tk.Button(
             header_frame,
-            text="⏹ Stop Bot",
+            text="⏹ Stop",
             command=self.stop_bot,
             bg="#dc3545",
             fg="white",
-            font=("Segoe UI", 10, "bold"),
+            font=("Segoe UI", 9, "bold"),
             relief=tk.FLAT,
-            padx=15,
+            padx=12,
             pady=5,
             cursor="hand2",
             state=tk.DISABLED
@@ -269,12 +396,8 @@ class MainApplication:
         # Initially hide the loading frame
         self.loading_frame.pack_forget()
 
-        # Content area with tabs
-        content_frame = ttk.Frame(main_container)
-        content_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
         # Create notebook for tabs
-        self.notebook = ttk.Notebook(content_frame)
+        self.notebook = ttk.Notebook(skutto_frame)
         self.notebook.pack(fill=tk.BOTH, expand=True)
 
         # Create tabs
@@ -287,9 +410,9 @@ class MainApplication:
         self.notebook.add(self.emails_tab, text="📧 Emails")
         self.notebook.add(self.settings_tab, text="⚙️ Settings")
 
-        # Log panel at bottom
-        self.log_panel = LogPanel(main_container)
-        self.log_panel.pack(fill=tk.X, padx=10, pady=(0, 10))
+        # Log panel for SKUtto
+        self.log_panel = LogPanel(skutto_frame)
+        self.log_panel.pack(fill=tk.X, pady=(10, 0))
 
         # Add welcome message
         self.log_panel.add_log("FrontLines Monitor Suite started")
@@ -300,6 +423,224 @@ class MainApplication:
         self.products_tab.load_pending()
         self.products_tab.load_platforms()
         self.emails_tab.load_emails()
+
+    def _create_hv_monitor_view(self, parent):
+        """Create the Hobbiesville (HV Monitor) view with controls and tabs."""
+        hv_frame = ttk.Frame(self.views_container)
+        self.views["hobbiesville"] = hv_frame
+
+        # Header for HV Monitor (with controls)
+        header_frame = tk.Frame(hv_frame, bg="#2d2d30", height=50)
+        header_frame.pack(fill=tk.X, pady=(0, 10))
+        header_frame.pack_propagate(False)
+
+        # Title
+        tk.Label(
+            header_frame,
+            text="Hobbiesville Monitor",
+            font=("Segoe UI", 14, "bold"),
+            bg="#2d2d30",
+            fg="white"
+        ).pack(side=tk.LEFT, padx=10)
+
+        # HV Monitor status indicator
+        self.hv_status_indicator = tk.Canvas(header_frame, width=20, height=20, bg="#2d2d30", highlightthickness=0)
+        self.hv_status_indicator.pack(side=tk.RIGHT, padx=10)
+
+        # Status circle
+        self.hv_status_circle = self.hv_status_indicator.create_oval(2, 2, 18, 18, fill="#dc3545", outline="")
+
+        # Status area frame
+        hv_status_area = tk.Frame(header_frame, bg="#2d2d30")
+        hv_status_area.pack(side=tk.RIGHT, padx=5)
+
+        # Status label
+        self.hv_status_label = tk.Label(
+            hv_status_area,
+            text="Offline",
+            font=("Segoe UI", 10),
+            bg="#2d2d30",
+            fg="#dc3545"
+        )
+        self.hv_status_label.pack()
+
+        # Control buttons in header
+        self.hv_start_btn = tk.Button(
+            header_frame,
+            text="▶ Start",
+            command=self.start_hv_monitor,
+            bg="#28a745",
+            fg="white",
+            font=("Segoe UI", 9, "bold"),
+            relief=tk.FLAT,
+            padx=12,
+            pady=5,
+            cursor="hand2"
+        )
+        self.hv_start_btn.pack(side=tk.RIGHT, padx=5, pady=10)
+
+        self.hv_stop_btn = tk.Button(
+            header_frame,
+            text="⏹ Stop",
+            command=self.stop_hv_monitor,
+            bg="#dc3545",
+            fg="white",
+            font=("Segoe UI", 9, "bold"),
+            relief=tk.FLAT,
+            padx=12,
+            pady=5,
+            cursor="hand2",
+            state=tk.DISABLED
+        )
+        self.hv_stop_btn.pack(side=tk.RIGHT, padx=5, pady=10)
+
+        # Create HV Monitor tab
+        self.hv_monitor_tab = HVMonitorTab(hv_frame, self)
+        self.hv_monitor_tab.pack(fill=tk.BOTH, expand=True)
+
+        # Log panel for HV Monitor
+        self.hv_log_panel = LogPanel(hv_frame)
+        self.hv_log_panel.pack(fill=tk.X, pady=(10, 0))
+        self.hv_log_panel.add_log("HV Monitor loaded")
+        self.hv_log_panel.add_log("Configure settings in the Configuration tab")
+
+        # Set UI refresh callback for hv_monitor
+        self.hv_monitor.ui_refresh_callback = self.hv_monitor_tab.refresh_products
+
+        # Set hv_monitor's own log callback to use hv_log_panel
+        self.hv_monitor.hv_log_callback = self.hv_log_panel.add_log
+
+    def start_hv_monitor(self):
+        """Start the HV Monitor."""
+        if not self.hv_monitor.store_url or not self.hv_monitor.token:
+            self.hv_log_panel.add_log("Error: Store URL and Token not configured")
+            messagebox.showerror("Error", "Please configure Store URL and Token in Configuration tab first.")
+            return
+
+        self.hv_monitor.start()
+        self.hv_status_label.config(text="Running", fg="#28a745")
+        self.hv_status_indicator.itemconfig(self.hv_status_circle, fill="#28a745")
+        self.hv_start_btn.config(state=tk.DISABLED, bg="#6c757d")
+        self.hv_stop_btn.config(state=tk.NORMAL, bg="#dc3545")
+        self.hv_log_panel.add_log("Monitor started")
+
+    def stop_hv_monitor(self):
+        """Stop the HV Monitor."""
+        self.hv_monitor.stop()
+        self.hv_status_label.config(text="Offline", fg="#dc3545")
+        self.hv_status_indicator.itemconfig(self.hv_status_circle, fill="#dc3545")
+        self.hv_start_btn.config(state=tk.NORMAL, bg="#28a745")
+        self.hv_stop_btn.config(state=tk.DISABLED, bg="#6c757d")
+        self.hv_log_panel.add_log("Monitor stopped")
+
+    def _create_proxies_view(self, parent):
+        """Create the Proxies view."""
+        proxies_frame = ttk.Frame(self.views_container)
+        self.views["proxies"] = proxies_frame
+
+        # Header
+        header_frame = tk.Frame(proxies_frame, bg="#2d2d30", height=40)
+        header_frame.pack(fill=tk.X, pady=(0, 10))
+        header_frame.pack_propagate(False)
+
+        # Title
+        tk.Label(
+            header_frame,
+            text="Proxies",
+            font=("Segoe UI", 14, "bold"),
+            bg="#2d2d30",
+            fg="white"
+        ).pack(side=tk.LEFT, padx=10)
+
+        # Create Proxies tab
+        self.proxies_tab = ProxiesTab(proxies_frame, self)
+        self.proxies_tab.pack(fill=tk.BOTH, expand=True)
+
+    def _create_placeholder_view(self, view_id: str, title: str, message: str, has_log: bool = True):
+        """Create a placeholder view."""
+        placeholder_frame = ttk.Frame(self.views_container)
+        self.views[view_id] = placeholder_frame
+
+        # Mini header (no controls, just title)
+        header_frame = tk.Frame(placeholder_frame, bg="#2d2d30", height=40)
+        header_frame.pack(fill=tk.X, pady=(0, 10))
+        header_frame.pack_propagate(False)
+
+        view_title = tk.Label(
+            header_frame,
+            text=title,
+            font=("Segoe UI", 14, "bold"),
+            bg="#2d2d30",
+            fg="white"
+        )
+        view_title.pack(side=tk.LEFT, padx=10)
+
+        # Center the content
+        center_frame = ttk.Frame(placeholder_frame)
+        center_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Title
+        main_title = tk.Label(
+            center_frame,
+            text="Coming Soon",
+            font=("Segoe UI", 24, "bold"),
+            fg="#888888"
+        )
+        main_title.pack(pady=(80, 20))
+
+        # Message
+        message_label = tk.Label(
+            center_frame,
+            text=message,
+            font=("Segoe UI", 14),
+            fg="#666666"
+        )
+        message_label.pack()
+
+        # Log panel (only if has_log is True)
+        if has_log:
+            log_panel = LogPanel(placeholder_frame)
+            log_panel.pack(fill=tk.X, pady=(10, 0))
+            log_panel.add_log(f"{title} loaded")
+            self.view_log_panels[view_id] = log_panel
+        center_frame = ttk.Frame(placeholder_frame)
+        center_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Title
+        title_label = tk.Label(
+            center_frame,
+            text=title,
+            font=("Segoe UI", 24, "bold"),
+            fg="#888888"
+        )
+        title_label.pack(pady=(100, 20))
+
+        # Message
+        message_label = tk.Label(
+            center_frame,
+            text=message,
+            font=("Segoe UI", 14),
+            fg="#666666"
+        )
+        message_label.pack()
+
+    def _switch_view(self, view_id: str):
+        """Switch to the selected view."""
+        # Hide all views
+        for view in self.views.values():
+            view.pack_forget()
+
+        # Show the selected view
+        self.views[view_id].pack(fill=tk.BOTH, expand=True)
+
+        # Update nav button styles
+        for btn_id, btn_data in self.nav_buttons.items():
+            if btn_id == view_id:
+                btn_data['btn'].config(bg="#0e639c")
+            else:
+                btn_data['btn'].config(bg="#2d2d30")
+
+        self.current_view = view_id
 
     def _process_embed(self, embed):
         """Process embed to match against products and transform."""
