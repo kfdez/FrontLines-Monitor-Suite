@@ -15,6 +15,7 @@ from core.database import Database
 from core.sheets import SheetsManager
 from core.bot import DiscordBot
 from core.hv_monitor import HVMonitor
+from core.tasks import TasksManager
 from gui.tabs.products_tab import ProductsTab
 from gui.tabs.emails_tab import EmailsTab
 from gui.tabs.settings_tab import SettingsTab
@@ -83,6 +84,17 @@ class MainApplication:
         self.root = root
         self.root.title("FrontLines Monitor Suite")
         self.root.geometry("1200x900")
+
+        # Center window on screen manually
+        self.root.update_idletasks()
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        window_width = 1200
+        window_height = 900
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
         self.root.minsize(1000, 700)
 
         # Handle window close
@@ -102,6 +114,7 @@ class MainApplication:
         self.sheets = SheetsManager()
         self.bot = DiscordBot("", self.db)
         self.hv_monitor = HVMonitor(self.db, log_callback=None, app=self)
+        self.tasks_manager = TasksManager(self.db, log_callback=self.log_message)
 
         # Bot state
         self.bot_thread = None
@@ -115,11 +128,21 @@ class MainApplication:
         # Create main UI
         self._create_ui()
 
-        # Auto-start bot if enabled
+        # Defer heavy operations to let UI render first
+        self.root.after(100, self._delayed_init)
+
+    def _delayed_init(self):
+        """Perform heavy initialization after UI is shown."""
+        # Initialize tasks manager (can be slow with large files)
+        self.bot.set_tasks_manager(self.tasks_manager)
+        self.tasks_manager.load_tasks()
+        self.tasks_manager.start_auto_refresh()
+
+        # Auto-start bot if enabled (deferred)
         if self.auto_start:
             self.root.after(500, self.start_bot)
 
-        # Auto-start HV monitor if enabled
+        # Auto-start HV monitor if enabled (deferred)
         if self.hv_monitor.auto_start:
             self.root.after(600, self.start_hv_monitor)
 

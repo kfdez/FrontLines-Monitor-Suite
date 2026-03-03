@@ -19,6 +19,9 @@ class DiscordBot:
         self.command_callback: Optional[Callable] = None
         self.on_email_changed_callback: Optional[Callable] = None
 
+        # Tasks manager reference
+        self.tasks_manager = None
+
         # Configuration set by GUI
         self.source_channel_id: Optional[int] = None
         self.target_channel_id: Optional[int] = None
@@ -69,6 +72,10 @@ class DiscordBot:
         """Set callback for email changes."""
         self.on_email_changed_callback = callback
 
+    def set_tasks_manager(self, tasks_manager):
+        """Set the tasks manager for task commands."""
+        self.tasks_manager = tasks_manager
+
     async def _handle_commands(self, message: discord.Message) -> bool:
         """Handle bot commands. Returns True if command was handled."""
         print(f"DEBUG _handle_commands: channel={message.channel}, type={type(message.channel)}")
@@ -106,7 +113,11 @@ class DiscordBot:
                            "**Emails:**\n"
                            "• !addemail *email* - Link an email\n"
                            "• !removeemail *email* - Remove an email\n"
-                           "• !lemails - List your emails",
+                           "• !lemails - List your emails\n\n"
+                           "**Tasks (Stellar):**\n"
+                           "• !platforms - List available platforms\n"
+                           "• !tasks *platform* - Show your tasks for a platform\n"
+                           "Example: !tasks walmart",
                 color=discord.Color.blue()
             )
             await message.channel.send(embed=embed)
@@ -236,6 +247,207 @@ class DiscordBot:
             )
             await message.channel.send(embed=embed)
 
+            return True
+
+        # !platforms - List available platforms
+        if command == 'platforms':
+            print(f"DEBUG: !platforms command - tasks_manager={self.tasks_manager}, tasks_data={self.tasks_manager.tasks_data if self.tasks_manager else None}")
+            if not self.tasks_manager or not self.tasks_manager.tasks_data:
+                embed = discord.Embed(
+                    description="No tasks data loaded. Please configure Tasks settings first.",
+                    color=discord.Color.orange()
+                )
+                await message.channel.send(embed=embed)
+                return True
+
+            platforms = self.tasks_manager.get_all_platforms()
+            print(f"DEBUG: platforms found: {platforms}")
+            if not platforms:
+                embed = discord.Embed(
+                    description="No platforms found in tasks data.",
+                    color=discord.Color.orange()
+                )
+                await message.channel.send(embed=embed)
+                return True
+
+            platform_list = "\n".join([f"- {p.capitalize()}" for p in platforms])
+            extracted_at = self.tasks_manager.tasks_data.get("extracted_at", "")
+
+            # Build footer with timestamp and stale data warning
+            footer_text = ""
+            if extracted_at and extracted_at != "Unknown":
+                try:
+                    from datetime import datetime as dt
+                    for fmt in ["%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M"]:
+                        try:
+                            extracted_dt = dt.strptime(extracted_at, fmt)
+                            now_dt = dt.now()
+                            age_hours = (now_dt - extracted_dt).total_seconds() / 3600
+                            if age_hours > 1:
+                                footer_text = f"⚠️ Data may be outdated ({int(age_hours)}h old) | Source: {extracted_at}"
+                            else:
+                                footer_text = f"Data from: {extracted_at}"
+                            break
+                        except ValueError:
+                            continue
+                    else:
+                        footer_text = f"Data from: {extracted_at}"
+                except Exception:
+                    footer_text = f"Data from: {extracted_at}"
+            else:
+                footer_text = "Data source unknown"
+
+            embed = discord.Embed(
+                title="📦 Available Platforms",
+                description=platform_list,
+                color=discord.Color.blue()
+            )
+            embed.set_footer(text=footer_text)
+            await message.channel.send(embed=embed)
+            return True
+
+        # !tasks <platform> - Show user's tasks for a platform
+        if command == 'tasks':
+            if not self.tasks_manager or not self.tasks_manager.tasks_data:
+                embed = discord.Embed(
+                    description="No tasks data loaded. Please configure Tasks settings first.",
+                    color=discord.Color.orange()
+                )
+                await message.channel.send(embed=embed)
+                return True
+
+            # Get platform from args
+            platform = None
+            if args:
+                platform = args[0].lower()
+
+            # Get user tasks
+            discord_id = message.author.id
+
+            # Get user's emails for debug
+            user_emails = self.tasks_manager.db.get_emails_by_discord_id(discord_id)
+            email_list = ", ".join([e['email'] for e in user_emails]) if user_emails else "none"
+
+            user_tasks = self.tasks_manager.get_user_tasks(discord_id, platform)
+            all_platforms = self.tasks_manager.get_all_platforms()
+            print(f"DEBUG !tasks: discord_id={discord_id}, platform={platform}, all_platforms={all_platforms}, tasks_found={len(user_tasks)}, emails={email_list}")
+
+            if not user_tasks:
+                if platform:
+                    embed = discord.Embed(
+                        title=f"No tasks found for '{platform}'",
+                        description=f"Your emails: {email_list}\n\nNo tasks found matching these emails for this platform.",
+                        color=discord.Color.orange()
+                    )
+                else:
+                    embed = discord.Embed(
+                        title="No tasks found",
+                        description=f"Your emails: {email_list}\n\nNo tasks found matching these emails.",
+                        color=discord.Color.orange()
+                    )
+                await message.channel.send(embed=embed)
+                return True
+
+            # Build embed with tasks
+            embed = discord.Embed(
+                title=f"📋 Your Tasks",
+                color=discord.Color.blue()
+            )
+
+            # Group tasks by platform
+            tasks_by_platform = {}
+            for task in user_tasks:
+                plat = task.get("platform", "Unknown")
+                if plat not in tasks_by_platform:
+                    tasks_by_platform[plat] = []
+                tasks_by_platform[plat].append(task)
+
+            # Add fields for each platform - show all tasks
+            for plat, tasks in tasks_by_platform.items():
+                task_lines = []
+                for task in tasks:
+                    task_name = task.get("name", task.get("title", "Unnamed Task"))
+                    if not task_name or task_name == "Unnamed Task":
+                        task_name = task.get("site", "")
+                    if not task_name:
+                        # Use mode as fallback (capitalized)
+                        mode = task.get("mode", "Task")
+                        task_name = f"{mode.capitalize()} Task"
+
+                    # Get task group name
+                    task_group_name = task.get("task_group_name", "")
+
+                    profile_email = task.get("profile_email", "")
+                    if task_group_name and profile_email:
+                        task_lines.append(f"• {task_name} - {task_group_name} [{profile_email}]")
+                    elif task_group_name:
+                        task_lines.append(f"• {task_name} - {task_group_name}")
+                    elif profile_email:
+                        task_lines.append(f"• {task_name} [{profile_email}]")
+                    else:
+                        task_lines.append(f"• {task_name}")
+
+                # Split into multiple fields if too long (Discord limit ~1024 chars per field)
+                value = "\n".join(task_lines)
+                if len(value) > 1024:
+                    # Split into multiple parts - keep reducing until each part fits
+                    lines = task_lines
+                    part_num = 1
+                    while lines:
+                        # Start with 25, reduce if needed
+                        chunk_size = 25
+                        part_lines = lines[:chunk_size]
+                        part_value = "\n".join(part_lines)
+
+                        # Keep reducing until under 1024 chars
+                        while len(part_value) > 1024 and chunk_size > 1:
+                            chunk_size -= 1
+                            part_lines = lines[:chunk_size]
+                            part_value = "\n".join(part_lines)
+
+                        embed.add_field(
+                            name=f"{plat.capitalize()} ({len(tasks)} tasks) - Part {part_num}",
+                            value=part_value,
+                            inline=False
+                        )
+                        lines = lines[chunk_size:]
+                        part_num += 1
+                else:
+                    embed.add_field(
+                        name=f"{plat.capitalize()} ({len(tasks)} tasks)",
+                        value=value,
+                        inline=False
+                    )
+
+            # Add footer with extraction time and stale data warning
+            extracted_at = self.tasks_manager.tasks_data.get("extracted_at", "")
+            footer_text = ""
+            if extracted_at and extracted_at != "Unknown":
+                try:
+                    # Try to parse the timestamp
+                    from datetime import datetime as dt
+                    # Common formats to try
+                    for fmt in ["%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M"]:
+                        try:
+                            extracted_dt = dt.strptime(extracted_at, fmt)
+                            now_dt = dt.now()
+                            age_hours = (now_dt - extracted_dt).total_seconds() / 3600
+                            if age_hours > 1:
+                                footer_text = f"⚠️ Data may be outdated ({int(age_hours)}h old) | Source: {extracted_at}"
+                            else:
+                                footer_text = f"Data from: {extracted_at}"
+                            break
+                        except ValueError:
+                            continue
+                    else:
+                        footer_text = f"Data from: {extracted_at}"
+                except Exception:
+                    footer_text = f"Data from: {extracted_at}"
+            else:
+                footer_text = "Data source unknown"
+            embed.set_footer(text=footer_text)
+
+            await message.channel.send(embed=embed)
             return True
 
         return False

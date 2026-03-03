@@ -1,5 +1,6 @@
 """Settings tab for bot configuration."""
 import tkinter as tk
+import os
 from tkinter import ttk, messagebox
 
 
@@ -115,7 +116,68 @@ class SettingsTab(ttk.Frame):
             command=self.save_auto_start
         ).pack(anchor='w', pady=5)
 
-        # Save/Load buttons
+        # Tasks Settings Section
+        tasks_frame = ttk.LabelFrame(self, text="Stellar Tasks Settings", padding=10)
+        tasks_frame.pack(fill=tk.X, padx=10, pady=10)
+
+        # Configure column weights for proper alignment
+        tasks_frame.columnconfigure(0, weight=0)
+        tasks_frame.columnconfigure(1, weight=1)
+        tasks_frame.columnconfigure(2, weight=0)
+
+        # Row 0: File Path
+        ttk.Label(tasks_frame, text="Stellar Export File:").grid(
+            row=0, column=0, sticky='w', pady=5)
+        self.tasks_file_path_var = tk.StringVar()
+        self.tasks_file_path_entry = ttk.Entry(
+            tasks_frame,
+            textvariable=self.tasks_file_path_var,
+            width=40
+        )
+        self.tasks_file_path_entry.grid(row=0, column=1, sticky='ew', pady=5, padx=5)
+
+        ttk.Button(
+            tasks_frame,
+            text="Auto-detect",
+            command=self._auto_detect_tasks_file,
+            width=12
+        ).grid(row=0, column=2, sticky='w', padx=5)
+
+        # Row 1: Auto-refresh Interval
+        ttk.Label(tasks_frame, text="Auto-refresh (min):").grid(
+            row=1, column=0, sticky='w', pady=5)
+        # Use a frame to group spinbox and label together
+        spinbox_frame = ttk.Frame(tasks_frame)
+        spinbox_frame.grid(row=1, column=1, columnspan=2, sticky='w', pady=5, padx=5)
+        self.tasks_refresh_var = tk.IntVar(value=0)
+        spinbox = ttk.Spinbox(
+            spinbox_frame,
+            from_=0,
+            to=1440,
+            width=8,
+            textvariable=self.tasks_refresh_var
+        )
+        spinbox.pack(side=tk.LEFT)
+        ttk.Label(spinbox_frame, text="(0 to disable)", font=("Segoe UI", 8)).pack(side=tk.LEFT, padx=(5, 0))
+
+        # Row 2: Manual refresh button
+        self.tasks_refresh_btn = ttk.Button(
+            tasks_frame,
+            text="Refresh Now",
+            command=self._refresh_tasks_now,
+            width=12
+        )
+        self.tasks_refresh_btn.grid(row=2, column=1, sticky='w', pady=5)
+
+        # Row 3: Status label
+        self.tasks_status_label = ttk.Label(
+            tasks_frame,
+            text="",
+            foreground="gray"
+        )
+        self.tasks_status_label.grid(row=3, column=0, columnspan=3, pady=5)
+
+        # Save/Load buttons - moved below Tasks section
         btn_frame = ttk.Frame(self)
         btn_frame.pack(fill=tk.X, padx=10, pady=10)
 
@@ -151,6 +213,11 @@ class SettingsTab(ttk.Frame):
         self.duplicate_timeout_var.set(int(self.app.db.get_config("duplicate_timeout", "60")))
         self.auto_start_var.set(self.app.auto_start)
 
+        # Load Tasks settings
+        self.tasks_file_path_var.set(self.app.db.get_config("tasks_file_path", ""))
+        self.tasks_refresh_var.set(int(self.app.db.get_config("tasks_auto_refresh_interval", "0")))
+        self._update_tasks_status()
+
     def save_config(self):
         """Save configuration to database."""
         self.app.db.set_config("bot_token", self.token_var.get().strip())
@@ -162,6 +229,10 @@ class SettingsTab(ttk.Frame):
         self.app.db.set_config("footer_icon_url", self.footer_icon_var.get().strip())
         self.app.db.set_config("duplicate_timeout", str(self.duplicate_timeout_var.get()))
 
+        # Save Tasks settings
+        self.app.db.set_config("tasks_file_path", self.tasks_file_path_var.get().strip())
+        self.app.db.set_config("tasks_auto_refresh_interval", str(self.tasks_refresh_var.get()))
+
         # Update bot config
         self.app.bot.token = self.token_var.get().strip()
         self.app.bot.source_channel_id = self._str_to_int(self.source_channel_var.get())
@@ -171,8 +242,40 @@ class SettingsTab(ttk.Frame):
         self.app.bot.enable_ping = self.enable_ping_var.get()
         self.app.duplicate_timeout = self.duplicate_timeout_var.get()
 
+        # Refresh tasks manager settings and scheduler
+        if self.app.tasks_manager:
+            self.app.tasks_manager.refresh_schedule()
+
         self.status_label.config(text="Configuration saved!")
         self.winfo_toplevel().after(2000, lambda: self.status_label.config(text=""))
+
+    def _auto_detect_tasks_file(self):
+        """Auto-detect the Stellar export file path."""
+        detected_path = self.app.tasks_manager.get_stellar_export_path()
+        if detected_path:
+            self.tasks_file_path_var.set(detected_path)
+            self.tasks_status_label.config(text=f"Detected: {os.path.basename(detected_path)}", foreground="green")
+        else:
+            self.tasks_status_label.config(text="No export file found in AppData", foreground="orange")
+
+    def _refresh_tasks_now(self):
+        """Manually refresh tasks now."""
+        if self.app.tasks_manager:
+            self.app.tasks_manager.process_tasks(force=True)
+            self._update_tasks_status()
+
+    def _update_tasks_status(self):
+        """Update the tasks status label."""
+        if self.app.tasks_manager and self.app.tasks_manager.tasks_data:
+            platforms = self.app.tasks_manager.get_all_platforms()
+            last_file = self.app.tasks_manager.last_processed_file or "N/A"
+            platform_str = ", ".join(platforms) if platforms else "none"
+            self.tasks_status_label.config(
+                text=f"Platforms: {platform_str}",
+                foreground="green"
+            )
+        else:
+            self.tasks_status_label.config(text="No tasks loaded", foreground="gray")
 
     def load_config(self):
         """Reload configuration from database."""
