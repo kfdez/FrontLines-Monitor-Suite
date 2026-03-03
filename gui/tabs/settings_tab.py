@@ -88,6 +88,20 @@ class SettingsTab(ttk.Frame):
             width=50
         ).grid(row=6, column=1, pady=5, padx=5)
 
+        # Duplicate Timeout
+        ttk.Label(config_frame, text="Duplicate Timeout (sec):").grid(
+            row=7, column=0, sticky='w', pady=5)
+        self.duplicate_timeout_var = tk.IntVar(value=60)
+        ttk.Spinbox(
+            config_frame,
+            from_=0,
+            to=3600,
+            width=10,
+            textvariable=self.duplicate_timeout_var
+        ).grid(row=7, column=1, sticky='w', pady=5, padx=5)
+        ttk.Label(config_frame, text="(0 to disable)", font=("Segoe UI", 8)).grid(
+            row=7, column=1, sticky='e', padx=60)
+
         # Application Settings Section
         app_frame = ttk.LabelFrame(self, text="Application Settings", padding=10)
         app_frame.pack(fill=tk.X, padx=10, pady=10)
@@ -134,6 +148,7 @@ class SettingsTab(ttk.Frame):
         self.admin_channel_var.set(self.app.db.get_config("admin_channel_id", ""))
         self.enable_ping_var.set(self.app.db.get_config("enable_ping", "false").lower() == "true")
         self.footer_icon_var.set(self.app.db.get_config("footer_icon_url", ""))
+        self.duplicate_timeout_var.set(int(self.app.db.get_config("duplicate_timeout", "60")))
         self.auto_start_var.set(self.app.auto_start)
 
     def save_config(self):
@@ -145,6 +160,7 @@ class SettingsTab(ttk.Frame):
         self.app.db.set_config("admin_channel_id", self.admin_channel_var.get().strip())
         self.app.db.set_config("enable_ping", "true" if self.enable_ping_var.get() else "false")
         self.app.db.set_config("footer_icon_url", self.footer_icon_var.get().strip())
+        self.app.db.set_config("duplicate_timeout", str(self.duplicate_timeout_var.get()))
 
         # Update bot config
         self.app.bot.token = self.token_var.get().strip()
@@ -153,6 +169,7 @@ class SettingsTab(ttk.Frame):
         self.app.bot.checkouts_channel_id = self._str_to_int(self.checkouts_channel_var.get())
         self.app.bot.admin_channel_id = self._str_to_int(self.admin_channel_var.get())
         self.app.bot.enable_ping = self.enable_ping_var.get()
+        self.app.duplicate_timeout = self.duplicate_timeout_var.get()
 
         self.status_label.config(text="Configuration saved!")
         self.winfo_toplevel().after(2000, lambda: self.status_label.config(text=""))

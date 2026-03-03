@@ -16,6 +16,7 @@ class DiscordBot:
         # Callbacks for events
         self.on_ready_callback: Optional[Callable] = None
         self.on_message_callback: Optional[Callable] = None
+        self.command_callback: Optional[Callable] = None
         self.on_email_changed_callback: Optional[Callable] = None
 
         # Configuration set by GUI
@@ -60,6 +61,10 @@ class DiscordBot:
         """Set the on_message callback."""
         self.on_message_callback = callback
 
+    def set_command_callback(self, callback: Callable):
+        """Set the command callback for logging bot commands."""
+        self.command_callback = callback
+
     def set_on_email_changed(self, callback: Callable):
         """Set callback for email changes."""
         self.on_email_changed_callback = callback
@@ -79,17 +84,29 @@ class DiscordBot:
         args = parts[1:]
         print(f"DEBUG: processing command '{command}'")
 
+        # Log command to callback if set
+        if self.command_callback:
+            user_id = message.author.id
+            user_name = str(message.author)
+            callback = self.command_callback
+            # Check if callback is coroutine (async) or regular function
+            import asyncio
+            if asyncio.iscoroutinefunction(callback):
+                await callback(f"!{command} from {user_name} ({user_id})")
+            else:
+                callback(f"!{command} from {user_name} ({user_id})")
+
         # !help - works in DMs
         if command == 'help':
             embed = discord.Embed(
                 title="📋 Available Commands",
                 description="**SKU Submission:**\n"
-                           "• `!addsku <sku> <name> [url]` - Submit a new SKU\n"
-                           "Example: `!addsku NSW-LITE-BLU Nintendo Switch Lite Blue`\n\n"
+                           "• !addsku *sku* *name* *url* - Submit a new SKU\n"
+                           "Example: !addsku NSW-LITE-BLU Nintendo Switch Lite Blue\n\n"
                            "**Emails:**\n"
-                           "• `!addemail <email>` - Link an email\n"
-                           "• `!removeemail <email>` - Remove an email\n"
-                           "• `!lemails` - List your emails",
+                           "• !addemail *email* - Link an email\n"
+                           "• !removeemail *email* - Remove an email\n"
+                           "• !lemails - List your emails",
                 color=discord.Color.blue()
             )
             await message.channel.send(embed=embed)

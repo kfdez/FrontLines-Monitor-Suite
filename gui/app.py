@@ -106,6 +106,9 @@ class MainApplication:
         # Bot state
         self.bot_thread = None
 
+        # Duplicate forwarding prevention
+        self.recent_forwards = {}  # SKU -> timestamp
+
         # Load saved config
         self._load_config()
 
@@ -173,6 +176,9 @@ class MainApplication:
 
         # Auto-start setting
         self.auto_start = self.db.get_config("auto_start", "false").lower() == "true"
+
+        # Duplicate timeout (in seconds)
+        self.duplicate_timeout = int(self.db.get_config("duplicate_timeout", "60"))
 
     def _str_to_int(self, value: str) -> int:
         """Convert string to int safely."""
@@ -707,6 +713,9 @@ class MainApplication:
             # Store role_id from product for pinging
             embed_dict["role_id"] = product.get("roleid", "")
 
+            # Store matched SKU for duplicate checking
+            embed_dict["matched_sku"] = sku_value
+
             # Keep the original timestamp from the embed (don't delete it)
 
         return embed_dict
@@ -724,27 +733,35 @@ class MainApplication:
         # Extract emails from embed fields and message content
         emails_found = set()
 
+        def extract_emails(text):
+            """Extract plain emails from text, stripping hyperlinks."""
+            if not text:
+                return set()
+            # Remove markdown links: [email@example.com](mailto:email@example.com)
+            text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+            # Remove mailto: prefix
+            text = re.sub(r'mailto:', '', text)
+            # Extract plain emails
+            found = re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', text)
+            return set(found)
+
         # Check embed fields
         for embed in message.embeds:
             embed_dict = embed.to_dict()
             # Check field values
             for field in embed_dict.get("fields", []):
                 value = field.get("value", "")
-                found = re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', value)
-                emails_found.update(found)
+                emails_found.update(extract_emails(value))
             # Check embed description
             if embed.description:
-                found = re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', embed.description)
-                emails_found.update(found)
+                emails_found.update(extract_emails(embed.description))
             # Check embed title
             if embed.title:
-                found = re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', embed.title)
-                emails_found.update(found)
+                emails_found.update(extract_emails(embed.title))
 
         # Also check message content
         if message.content:
-            found = re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', message.content)
-            emails_found.update(found)
+            emails_found.update(extract_emails(message.content))
 
         self.log_message(f"🔍 Found emails in checkout: {emails_found}")
 
@@ -821,6 +838,17 @@ class MainApplication:
                             title = processed.get('title', 'No title')
                             fields_count = len(processed.get('fields', []))
                             self.log_message(f"🔍 Processed embed: '{title}' with {fields_count} fields")
+
+                            # Check for duplicate
+                            matched_sku = processed.get('matched_sku', '')
+                            if matched_sku:
+                                import time
+                                current_time = time.time()
+                                last_forwarded = self.recent_forwards.get(matched_sku, 0)
+                                if current_time - last_forwarded < self.duplicate_timeout:
+                                    self.log_message(f"⏭️ Skipping duplicate: {matched_sku} (within {self.duplicate_timeout}s)")
+                                    continue
+
                             new_embed = discord.Embed.from_dict(processed)
 
                             # Send role ping if enabled and role_id exists in product (separate message first)
@@ -830,6 +858,11 @@ class MainApplication:
                                 self.log_message(f"📣 Pinging role: {role_id}")
                                 await target_channel.send(content=mention)
                             await target_channel.send(embed=new_embed)
+
+                            # Record forward time for duplicate check
+                            if matched_sku:
+                                import time
+                                self.recent_forwards[matched_sku] = time.time()
                         self.log_message(f"📤 Forwarded {len(message.embeds)} embed(s) to target channel")
                     elif message.content:
                         # Send role ping if enabled
@@ -879,6 +912,7 @@ class MainApplication:
         # Set up callbacks with proper message handler
         self.bot.set_on_ready(self._on_bot_ready)
         self.bot.set_on_message(self._handle_message)
+        self.bot.set_command_callback(self.log_message)
         self.bot.set_on_email_changed(self._on_email_changed)
 
         self.bot_thread = self.bot.start()
