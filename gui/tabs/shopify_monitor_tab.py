@@ -87,7 +87,7 @@ class ShopifyMonitorTab(ttk.Frame):
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=900)
         canvas.configure(yscrollcommand=scrollbar.set)
 
         canvas.pack(side="left", fill="both", expand=True)
@@ -103,24 +103,26 @@ class ShopifyMonitorTab(ttk.Frame):
         # Main Webhook URL
         webhook_frame = ttk.Frame(discord_frame)
         webhook_frame.pack(fill="x", pady=2)
-        ttk.Label(webhook_frame, text="Main Webhook URL:", width=22).pack(side=tk.LEFT)
+        ttk.Label(webhook_frame, text="Main Webhook URL:").pack(side=tk.LEFT, padx=(0, 10))
         self.main_webhook_var = tk.StringVar()
-        ttk.Entry(webhook_frame, textvariable=self.main_webhook_var, width=50).pack(side=tk.LEFT, fill="x", expand=True)
+        ttk.Entry(webhook_frame, textvariable=self.main_webhook_var).pack(side=tk.LEFT, fill="x", expand=True, padx=(0, 10))
 
         # Singles Webhook URL
         singles_frame = ttk.Frame(discord_frame)
         singles_frame.pack(fill="x", pady=2)
-        ttk.Label(singles_frame, text="Singles Webhook URL:", width=22).pack(side=tk.LEFT)
+        ttk.Label(singles_frame, text="Singles Webhook URL:").pack(side=tk.LEFT, padx=(0, 10))
         self.singles_webhook_var = tk.StringVar()
-        ttk.Entry(singles_frame, textvariable=self.singles_webhook_var, width=50).pack(side=tk.LEFT, fill="x", expand=True)
+        ttk.Entry(singles_frame, textvariable=self.singles_webhook_var).pack(side=tk.LEFT, fill="x", expand=True, padx=(0, 10))
 
         # Ignore Singles checkbox
+        ignore_singles_container = ttk.Frame(discord_frame)
+        ignore_singles_container.pack(fill="x", pady=2)
         self.ignore_singles_var = tk.BooleanVar()
         ttk.Checkbutton(
-            discord_frame,
+            ignore_singles_container,
             text="Ignore Singles (don't send singles notifications)",
             variable=self.ignore_singles_var
-        ).pack(anchor="w", pady=2)
+        ).pack(side=tk.LEFT)
 
         # Role Ping Settings
         ping_frame = ttk.LabelFrame(discord_frame, text="Role Ping Settings", padding=5)
@@ -128,16 +130,15 @@ class ShopifyMonitorTab(ttk.Frame):
 
         ping_id_frame = ttk.Frame(ping_frame)
         ping_id_frame.pack(fill="x", pady=2)
-        ttk.Label(ping_id_frame, text="Role ID to Ping:", width=18).pack(side=tk.LEFT)
+        ttk.Label(ping_id_frame, text="Role ID to Ping:").pack(side=tk.LEFT, padx=(0, 10))
         self.ping_role_id_var = tk.StringVar()
-        ttk.Entry(ping_id_frame, textvariable=self.ping_role_id_var, width=30).pack(side=tk.LEFT, fill="x", expand=True)
-
+        ttk.Entry(ping_id_frame, textvariable=self.ping_role_id_var, width=30).pack(side=tk.LEFT, padx=(0, 20))
         self.ping_enabled_var = tk.BooleanVar(value=True)
         ttk.Checkbutton(
-            ping_frame,
+            ping_id_frame,
             text="Enable role pings on notifications",
             variable=self.ping_enabled_var
-        ).pack(anchor="w", pady=2)
+        ).pack(side=tk.LEFT)
 
         # Scraping Settings
         scraping_frame = ttk.LabelFrame(parent, text="Scraping Settings", padding=10)
@@ -147,92 +148,98 @@ class ShopifyMonitorTab(ttk.Frame):
         settings_row1 = ttk.Frame(scraping_frame)
         settings_row1.pack(fill="x", pady=2)
 
-        ttk.Label(settings_row1, text="Check Interval (sec):", width=22).pack(side=tk.LEFT)
+        ttk.Label(settings_row1, text="Check Interval (sec):").grid(row=0, column=0, sticky="w", padx=(0, 5))
         self.interval_var = tk.IntVar(value=300)
-        ttk.Spinbox(settings_row1, from_=30, to=3600, width=10, textvariable=self.interval_var).pack(side=tk.LEFT, padx=5)
+        ttk.Spinbox(settings_row1, from_=30, to=3600, width=12, textvariable=self.interval_var).grid(row=0, column=1, sticky="w", padx=(0, 20))
 
-        ttk.Label(settings_row1, text="Max Pages:", width=15).pack(side=tk.LEFT)
+        ttk.Label(settings_row1, text="Max Pages:").grid(row=0, column=2, sticky="w", padx=(0, 5))
         self.max_pages_var = tk.IntVar(value=3)
-        ttk.Spinbox(settings_row1, from_=1, to=10, width=8, textvariable=self.max_pages_var).pack(side=tk.LEFT, padx=5)
+        ttk.Spinbox(settings_row1, from_=1, to=10, width=8, textvariable=self.max_pages_var).grid(row=0, column=3, sticky="w", padx=(0, 20))
+
+        ttk.Label(settings_row1, text="Workers:").grid(row=0, column=4, sticky="w", padx=(0, 5))
+        self.workers_var = tk.IntVar(value=3)
+        ttk.Spinbox(settings_row1, from_=1, to=10, width=8, textvariable=self.workers_var).grid(row=0, column=5, sticky="w")
 
         # Settings row 2
         settings_row2 = ttk.Frame(scraping_frame)
         settings_row2.pack(fill="x", pady=2)
 
-        ttk.Label(settings_row2, text="Workers:", width=22).pack(side=tk.LEFT)
-        self.workers_var = tk.IntVar(value=3)
-        ttk.Spinbox(settings_row2, from_=1, to=10, width=10, textvariable=self.workers_var).pack(side=tk.LEFT, padx=5)
-
-        ttk.Label(settings_row2, text="Timeout (sec):", width=15).pack(side=tk.LEFT)
+        ttk.Label(settings_row2, text="Timeout (sec):").grid(row=0, column=0, sticky="w", padx=(0, 5))
         self.timeout_var = tk.IntVar(value=15)
-        ttk.Spinbox(settings_row2, from_=5, to=60, width=8, textvariable=self.timeout_var).pack(side=tk.LEFT, padx=5)
+        ttk.Spinbox(settings_row2, from_=5, to=60, width=12, textvariable=self.timeout_var).grid(row=0, column=1, sticky="w", padx=(0, 20))
 
-        # Settings row 3
-        settings_row3 = ttk.Frame(scraping_frame)
-        settings_row3.pack(fill="x", pady=2)
-
-        ttk.Label(settings_row3, text="Max Retries:", width=22).pack(side=tk.LEFT)
+        ttk.Label(settings_row2, text="Max Retries:").grid(row=0, column=2, sticky="w", padx=(0, 5))
         self.retries_var = tk.IntVar(value=3)
-        ttk.Spinbox(settings_row3, from_=1, to=10, width=10, textvariable=self.retries_var).pack(side=tk.LEFT, padx=5)
+        ttk.Spinbox(settings_row2, from_=1, to=10, width=8, textvariable=self.retries_var).grid(row=0, column=3, sticky="w", padx=(0, 20))
 
-        ttk.Label(settings_row3, text="Webhook Delay (s):", width=18).pack(side=tk.LEFT)
+        ttk.Label(settings_row2, text="Webhook Delay (s):").grid(row=0, column=4, sticky="w", padx=(0, 5))
         self.webhook_delay_var = tk.DoubleVar(value=0.8)
-        ttk.Spinbox(settings_row3, from_=0.1, to=5.0, increment=0.1, width=8, textvariable=self.webhook_delay_var).pack(side=tk.LEFT, padx=5)
+        ttk.Spinbox(settings_row2, from_=0.1, to=5.0, increment=0.1, width=8, textvariable=self.webhook_delay_var).grid(row=0, column=5, sticky="w")
 
         # Options
         options_frame = ttk.LabelFrame(parent, text="Options", padding=10)
         options_frame.pack(fill="x", padx=10, pady=5)
 
+        options_inner = ttk.Frame(options_frame)
+        options_inner.pack(fill="x")
+
         self.auto_start_var = tk.BooleanVar()
         ttk.Checkbutton(
-            options_frame,
+            options_inner,
             text="Auto-start when application launches",
             variable=self.auto_start_var
-        ).pack(anchor="w", pady=2)
+        ).pack(side=tk.LEFT, padx=10)
 
         self.detailed_log_var = tk.BooleanVar()
         ttk.Checkbutton(
-            options_frame,
+            options_inner,
             text="Detailed logging (verbose scanning output)",
             variable=self.detailed_log_var
-        ).pack(anchor="w", pady=2)
+        ).pack(side=tk.LEFT, padx=10)
 
         self.data_collection_var = tk.BooleanVar()
         ttk.Checkbutton(
-            options_frame,
+            options_inner,
             text="Data Collection Mode (run without sending Discord webhooks)",
             variable=self.data_collection_var
-        ).pack(anchor="w", pady=2)
+        ).pack(side=tk.LEFT, padx=10)
 
         # Actions frame
         actions_frame = ttk.LabelFrame(parent, text="Actions", padding=10)
         actions_frame.pack(fill="x", padx=10, pady=5)
 
-        ttk.Button(actions_frame, text="Clear Tracked Products", command=self._clear_tracker).pack(side="left", padx=5)
+        actions_inner = ttk.Frame(actions_frame)
+        actions_inner.pack(fill="x")
+
+        ttk.Button(actions_inner, text="Clear Tracked Products", command=self._clear_tracker).pack(side=tk.LEFT, padx=5)
 
         # Stores and Keywords
         data_frame = ttk.LabelFrame(parent, text="Stores & Keywords", padding=10)
         data_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-        # Stores
-        stores_container = ttk.Frame(data_frame)
-        stores_container.pack(fill=tk.BOTH, expand=True, pady=2)
-        ttk.Label(stores_container, text="Stores (one per line):").pack(anchor="w")
+        # Use a paned window to split stores and keywords side by side
+        stores_keywords_paned = ttk.PanedWindow(data_frame, orient=tk.HORIZONTAL)
+        stores_keywords_paned.pack(fill=tk.BOTH, expand=True)
 
-        stores_scroll = ttk.Scrollbar(stores_container)
+        # Stores
+        stores_frame = ttk.Frame(stores_keywords_paned)
+        stores_keywords_paned.add(stores_frame, weight=1)
+        ttk.Label(stores_frame, text="Stores (one per line):").pack(anchor="w", pady=(0, 5))
+
+        stores_scroll = ttk.Scrollbar(stores_frame)
         stores_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        self.stores_text = tk.Text(stores_container, height=6, width=50, yscrollcommand=stores_scroll.set)
+        self.stores_text = tk.Text(stores_frame, height=8, yscrollcommand=stores_scroll.set)
         self.stores_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         stores_scroll.config(command=self.stores_text.yview)
 
         # Keywords
-        keywords_container = ttk.Frame(data_frame)
-        keywords_container.pack(fill=tk.BOTH, expand=True, pady=2)
-        ttk.Label(keywords_container, text="Keywords (one per line):").pack(anchor="w")
+        keywords_frame = ttk.Frame(stores_keywords_paned)
+        stores_keywords_paned.add(keywords_frame, weight=1)
+        ttk.Label(keywords_frame, text="Keywords (one per line):").pack(anchor="w", pady=(0, 5))
 
-        keywords_scroll = ttk.Scrollbar(keywords_container)
+        keywords_scroll = ttk.Scrollbar(keywords_frame)
         keywords_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        self.keywords_text = tk.Text(keywords_container, height=6, width=50, yscrollcommand=keywords_scroll.set)
+        self.keywords_text = tk.Text(keywords_frame, height=8, yscrollcommand=keywords_scroll.set)
         self.keywords_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         keywords_scroll.config(command=self.keywords_text.yview)
 
@@ -240,9 +247,12 @@ class ShopifyMonitorTab(ttk.Frame):
         button_frame = ttk.Frame(parent)
         button_frame.pack(fill="x", padx=10, pady=10)
 
-        ttk.Button(button_frame, text="Save Configuration", command=self.save_config).pack(side="left", padx=5)
-        ttk.Button(button_frame, text="Test Webhook", command=self._test_webhook).pack(side="left", padx=5)
-        ttk.Button(button_frame, text="Reload Data", command=self._reload_data).pack(side="left", padx=5)
+        button_inner = ttk.Frame(button_frame)
+        button_inner.pack(fill="x")
+
+        ttk.Button(button_inner, text="Save Configuration", command=self.save_config).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_inner, text="Test Webhook", command=self._test_webhook).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_inner, text="Reload Data", command=self._reload_data).pack(side=tk.LEFT, padx=5)
 
     def _log_message(self, message: str):
         """Add a message to the activity log."""
