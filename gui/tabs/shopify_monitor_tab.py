@@ -78,7 +78,7 @@ class ShopifyMonitorTab(ttk.Frame):
     def _create_config_ui(self):
         """Create the configuration tab UI."""
         # Create a canvas with scrollbar for vertical scrolling
-        canvas = tk.Canvas(self.config_frame)
+        canvas = tk.Canvas(self.config_frame, highlightthickness=0)
         scrollbar = ttk.Scrollbar(self.config_frame, orient="vertical", command=canvas.yview)
         scrollable_frame = ttk.Frame(canvas)
 
@@ -87,7 +87,8 @@ class ShopifyMonitorTab(ttk.Frame):
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=900)
+        # Create canvas window - use a large width and let it fill
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         canvas.configure(yscrollcommand=scrollbar.set)
 
         canvas.pack(side="left", fill="both", expand=True)
@@ -95,6 +96,10 @@ class ShopifyMonitorTab(ttk.Frame):
 
         # Use scrollable_frame as parent for all widgets
         parent = scrollable_frame
+
+        # Set minimum width for scrollable frame
+        parent.pack_propagate(False)
+        parent.configure(width=1200)
 
         # Discord Settings
         discord_frame = ttk.LabelFrame(parent, text="Discord Settings", padding=10)
