@@ -8,7 +8,8 @@ SKUtto 3.0 is a Discord bot monitoring application with a Tkinter GUI. It monito
 
 The application has multiple monitoring modules:
 - **SKUtto**: Discord embed monitoring for product restocks
-- **Hobbiesville (HV Monitor)**: Shopify product monitoring via GraphQL API
+- **Hobbiesville (HV Monitor)**: Shopify product monitoring via GraphQL API (single store, product ID based)
+- **Shopify Monitor**: Multi-store Shopify scraping with keyword matching and Discord webhooks
 - **Proxies**: Proxy management for HTTP requests
 
 ## Running the Application
@@ -32,19 +33,20 @@ git status                  # Show working tree status
 ### Core Components
 
 - **gui/app.py**: Main Tkinter application with sidebar navigation, header controls (start/stop buttons, status indicator), tabbed content area, and activity log panel
-- **gui/tabs/**: Tabbed interface - ProductsTab, EmailsTab, SettingsTab, HVMonitorTab, ProxiesTab
+- **gui/tabs/**: Tabbed interface - ProductsTab, EmailsTab, SettingsTab, HVMonitorTab, ProxiesTab, ShopifyMonitorTab
 - **core/bot.py**: Discord bot wrapper running in a separate thread with its own asyncio event loop
 - **core/database.py**: SQLite database interface for config, products, emails, pending SKUs
 - **core/sheets.py**: Google Sheets integration for importing product data
 - **core/hv_monitor.py**: HV Monitor backend for Shopify GraphQL API polling
+- **core/shopify_monitor.py**: Shopify Monitor backend for multi-store keyword-based product monitoring
 
 ### Views (Sidebar Navigation)
 
 The app uses a sidebar with collapsible navigation:
 - **SKUtto**: Discord bot monitoring (default view)
-- **Hobbiesville**: Shopify product monitor
+- **Hobbiesville**: Shopify product monitor (HV Monitor - single store, GraphQL)
+- **Shopify Monitor**: Multi-store scraping with keywords (new)
 - **Proxies**: Proxy management
-- **Shopify Monitor**: Placeholder for future module
 
 ### Data Flow (SKUtto)
 
@@ -57,9 +59,10 @@ The app uses a sidebar with collapsible navigation:
 ### Key Classes
 
 - **DiscordBot** (core/bot.py): Manages Discord client with slash commands, runs in daemon thread with its own asyncio event loop
-- **MainApplication** (gui/app.py): Tkinter main window, owns DiscordBot and HVMonitor instances, handles UI events
+- **MainApplication** (gui/app.py): Tkinter main window, owns DiscordBot, HVMonitor, and ShopifyMonitor instances, handles UI events
 - **Database** (core/database.py): SQLite CRUD operations
 - **HVMonitor** (core/hv_monitor.py): Shopify GraphQL polling, stock tracking, Discord webhook notifications
+- **ShopifyMonitor** (core/shopify_monitor.py): Multi-store keyword-based Shopify monitoring with Discord webhooks
 - **ProductsTab** (gui/tabs/products_tab.py): Product management - columns: SKU, SKU2, Name, URL, Platform, RoleID, Role
 
 ### Important Implementation Notes
@@ -105,6 +108,43 @@ Monitors Shopify products via GraphQL API and sends Discord webhooks on stock ch
 - Format: `host:port:username:password` (one per line)
 - HV Monitor uses random proxy from list for each request
 
+## Shopify Monitor
+
+Monitors multiple Shopify stores for products matching configured keywords and sends Discord webhooks on new/in-stock items.
+
+### Configuration (stored in SQLite `config` table)
+- `shopify_main_webhook` - Main Discord webhook URL
+- `shopify_singles_webhook` - Separate webhook for card singles
+- `shopify_ignore_singles` - Skip singles notifications
+- `shopify_check_interval` - Polling interval in seconds (default 300)
+- `shopify_max_pages` - Max pages to fetch per store (default 3)
+- `shopify_max_workers` - Concurrent store checks (default 3)
+- `shopify_request_timeout` - HTTP timeout (default 15s)
+- `shopify_max_retries` - Failed request retries (default 3)
+- `shopify_detailed_logging` - Verbose scan output
+- `shopify_auto_start` - Auto-start on app launch
+- `shopify_data_collection_mode` - Track without sending webhooks
+- `shopify_stores_json` - JSON array of store domains
+- `shopify_keywords_json` - JSON array of keywords to match
+
+### Features
+- Multi-store concurrent monitoring with ThreadPoolExecutor
+- Keyword-based product filtering (title, tags, product type)
+- Card single detection and filtering (via regex patterns)
+- Graded slab detection (PSA, BGS, CGC, etc.)
+- Per-variant stock tracking with price change detection
+- Separate webhooks for main products vs singles
+- Data collection mode for building product database without notifications
+
+### Key Classes
+- **ShopifyMonitor** (core/shopify_monitor.py): Main monitor with GraphQL product fetching, keyword matching, and webhook notifications
+- **ProductFilter**: Filters out card singles and graded slabs based on title/variant patterns
+- **ProductTracker**: Persists variant state to avoid duplicate notifications
+
+### Data Storage
+- Tracked products in `shopify_monitor_data/found.json`
+- Stores and keywords stored in database as JSON
+
 ## Configuration
 
 Settings stored in SQLite database (`skutto.db`) `config` table:
@@ -118,6 +158,7 @@ Settings stored in SQLite database (`skutto.db`) `config` table:
 | enable_ping | Whether to ping roles on restocks |
 | google_sheets_id | Google Sheets spreadsheet ID |
 | hv_* | HV Monitor settings (see above) |
+| shopify_* | Shopify Monitor settings (see above) |
 | proxies | Proxy list (one per line) |
 
 ## Dependencies
