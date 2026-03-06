@@ -14,7 +14,23 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import Dict, List, Optional, Any
+from urllib.parse import quote_plus
 import requests
+
+
+def encode_proxy(proxy: str) -> str:
+    """Encode proxy URL for requests with special characters in password."""
+    if not proxy or ':' not in proxy:
+        return proxy
+    parts = proxy.split(':')
+    if len(parts) >= 4:
+        # Format: host:port:username:password -> http://username:password@host:port
+        host = parts[0]
+        port = parts[1]
+        username = parts[2]
+        password = ':'.join(parts[3:])  # Handle password with colons
+        return f"http://{quote_plus(username)}:{quote_plus(password)}@{host}:{port}"
+    return f"http://{proxy}"
 
 
 class ProductFilter:
@@ -137,7 +153,8 @@ class ProductTracker:
         var_id: str,
         price: str,
         available: bool,
-        product_title: str = None
+        product_title: str = None,
+        keywords: list = None
     ) -> bool:
         """Check if we should send a notification for this variant."""
         with self.lock:
@@ -156,6 +173,10 @@ class ProductTracker:
 
             if product_title and '_product_title' not in self.data[store][prod_id]:
                 self.data[store][prod_id]['_product_title'] = product_title
+
+            # Store matched keywords
+            if keywords and '_keywords' not in self.data[store][prod_id]:
+                self.data[store][prod_id]['_keywords'] = keywords
 
             # Notify if: never seen, back in stock, or price changed while available
             if not prev_state:
@@ -249,7 +270,7 @@ class ShopifyMonitor:
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
 
-    def log(self, message: str):
+    def log(self, message: str, level: str = None):
         """Log a message via callbacks."""
         if self.log_callback:
             self.log_callback(message)
@@ -401,16 +422,23 @@ class ShopifyMonitor:
             self._failed_proxies.clear()
             available = self._proxies
 
-        # Rotate through proxies
+        # Rotate through proxies and encode special characters
         proxy = available[self._proxy_index % len(available)]
         self._proxy_index += 1
-        return proxy
+        return encode_proxy(proxy)
 
     def _on_proxy_failure(self, proxy: str):
         """Mark a proxy as failed and rotate to next."""
         if proxy:
             self._failed_proxies.add(proxy)
-            self.log(f"Proxy failed: {proxy}")
+            # Extract info from proxy URL for clearer logging
+            if '@' in proxy:
+                try:
+                    # Format: http://username:password@host:port
+                    proxy_short = proxy.split('@')[-1] if '@' in proxy else proxy
+                    self.log(f"Proxy failed: {proxy_short}")
+                except:
+                    self.log(f"Proxy failed: {proxy}")
 
     def _fetch_products(self, store: str, page: int = 1) -> Optional[List[Dict]]:
         """Fetch products from a Shopify store using Storefront API."""
@@ -470,16 +498,40 @@ class ShopifyMonitor:
                     data = response.json()
                     products = data.get('products', [])
                     if products:
+                        # Debug: Log first variant fields to see what's available
+                        if products and products[0].get('variants'):
+                            first_var = products[0]['variants'][0]
+                            if self.detailed_logging:
+                                self.log(f"Debug - Variant fields: {list(first_var.keys())}")
                         # Transform to consistent format
                         transformed = []
                         for p in products:
                             variants = []
                             for v in p.get('variants', []):
+                                # Try multiple fields to determine availability
+                                # Priority: inventory_quantity (if explicitly 0 = out of stock) > available field
+                                # If inventory_quantity is not in the response, assume in stock
+                                inventory_qty = v.get('inventory_quantity')
+                                available_field = v.get('available')
+
+                                # If inventory_quantity is returned and is 0, definitely out of stock
+                                # If inventory_quantity is returned and > 0, definitely in stock
+                                # If inventory_quantity is NOT returned, assume in stock (common for stores without inventory tracking)
+                                if 'inventory_quantity' in v:
+                                    # Field is explicitly in response
+                                    is_available = inventory_qty > 0
+                                elif available_field is not None:
+                                    # Fall back to 'available' field
+                                    is_available = available_field
+                                else:
+                                    # Neither field available - assume in stock
+                                    is_available = True
+
                                 variants.append({
                                     'id': v.get('id'),
                                     'title': v.get('title'),
                                     'price': v.get('price', ''),
-                                    'available': v.get('available_for_sale', False),
+                                    'available': is_available,
                                 })
                             transformed.append({
                                 'id': p.get('id'),
@@ -488,7 +540,7 @@ class ShopifyMonitor:
                                 'productType': p.get('product_type'),
                                 'vendor': p.get('vendor'),
                                 'tags': p.get('tags', []),
-                                'image': p.get('images', [{}])[0] if p.get('images') else None,
+                                'image': p.get('images', [{}])[0].get('src') if p.get('images') else None,
                                 'variants': variants,
                             })
                         return transformed
@@ -496,12 +548,14 @@ class ShopifyMonitor:
                 elif response.status_code == 404:
                     return None
                 else:
-                    self.log(f"Error fetching {store}: HTTP {response.status_code}")
+                    proxy_info = f" via {proxy.split('@')[-1]}" if proxy and '@' in proxy else ""
+                    self.log(f"Error fetching {store}: HTTP {response.status_code}{proxy_info}")
                     # Mark proxy as failed if we got a bad response
                     if proxy:
                         self._on_proxy_failure(proxy)
             except requests.exceptions.Timeout:
-                self.log(f"Timeout fetching {store} (attempt {attempt + 1}/{self.max_retries})")
+                proxy_info = f" via {proxy.split('@')[-1]}" if proxy and '@' in proxy else ""
+                self.log(f"Timeout fetching {store} (attempt {attempt + 1}/{self.max_retries}){proxy_info}")
             except Exception as e:
                 self.log(f"Error fetching {store}: {e}")
 
@@ -656,7 +710,7 @@ class ShopifyMonitor:
             available = variant.get('available', False)
 
             if self.tracker.update_variant(
-                store, product_id, variant_id, price, available, product_title
+                store, product_id, variant_id, price, available, product_title, matched_keywords
             ):
                 should_notify = True
 
@@ -706,14 +760,7 @@ class ShopifyMonitor:
         product_url = f"https://{store}/products/{product.get('handle', '')}"
 
         # Get thumbnail
-        thumbnail_url = None
-        if product.get('image') and isinstance(product['image'], dict):
-            thumbnail_url = product['image'].get('url')
-        elif product.get('images') and isinstance(product['images'], list):
-            for img in product['images']:
-                if isinstance(img, dict) and img.get('url'):
-                    thumbnail_url = img['url']
-                    break
+        thumbnail_url = product.get('image')  # Now directly contains the URL string
 
         # Build variant info
         variants = product.get('variants', [])
@@ -761,7 +808,7 @@ class ShopifyMonitor:
             fields=fields,
             thumbnail_url=thumbnail_url,
             url=product_url,
-            footer_text="FrontLines - Shopify Monitor"
+            footer_text=f"FrontLines - Shopify Monitor - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         )
 
         if success:
@@ -781,36 +828,32 @@ class ShopifyMonitor:
         url: str = None,
         footer_text: str = None
     ) -> bool:
-        """Send a Discord webhook."""
-        import discord
-
+        """Send a Discord webhook using requests."""
         try:
-            webhook = discord.Webhook.from_url(webhook_url, adapter=discord.AsyncWebhookAdapter(None))
-
-            embed = discord.Embed(
-                title=title[:256] if title else title,
-                description=description[:4096] if description else description,
-                color=discord.Color(color),
-                url=url
-            )
-
-            for field in fields:
-                embed.add_field(
-                    name=field.get('name', '')[:256],
-                    value=field.get('value', '')[:1024],
-                    inline=field.get('inline', False)
-                )
+            # Build embed manually (no discord.py needed)
+            embed = {
+                "title": title[:256] if title else title,
+                "description": description[:4096] if description else description,
+                "color": color,
+                "url": url,
+                "fields": [
+                    {
+                        "name": field.get('name', '')[:256],
+                        "value": field.get('value', '')[:1024],
+                        "inline": field.get('inline', False)
+                    }
+                    for field in fields
+                ]
+            }
 
             if thumbnail_url:
-                embed.set_thumbnail(url=thumbnail_url)
+                embed["thumbnail"] = {"url": thumbnail_url}
 
             if footer_text:
-                embed.set_footer(text=footer_text)
+                embed["footer"] = {"text": footer_text}
 
-            # Send synchronously since we're in a thread
-            import requests
             payload = {
-                "embeds": [embed.to_dict()]
+                "embeds": [embed]
             }
 
             # Add role ping if enabled

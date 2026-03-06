@@ -9,8 +9,25 @@ import json
 import os
 import threading
 import time
+from datetime import datetime
 from typing import Dict, List, Optional, Tuple
+from urllib.parse import quote_plus
 import requests
+
+
+def encode_proxy(proxy: str) -> str:
+    """Encode proxy URL for requests with special characters in password."""
+    if not proxy or ':' not in proxy:
+        return proxy
+    parts = proxy.split(':')
+    if len(parts) >= 4:
+        # Format: host:port:username:password -> http://username:password@host:port
+        host = parts[0]
+        port = parts[1]
+        username = parts[2]
+        password = ':'.join(parts[3:])  # Handle password with colons
+        return f"http://{quote_plus(username)}:{quote_plus(password)}@{host}:{port}"
+    return f"http://{proxy}"
 
 
 class HVMonitor:
@@ -57,6 +74,11 @@ class HVMonitor:
         self._monitor_thread = None
         self._running = False
 
+        # Proxy management
+        self._proxies: List[str] = []
+        self._proxy_index = 0
+        self._failed_proxies: set = set()
+
         # Data file paths
         self.data_dir = "hv_monitor_data"
         self._ensure_data_dir()
@@ -79,6 +101,39 @@ class HVMonitor:
         if self.hv_log_callback:
             self.hv_log_callback(message)
         print(f"[HVMonitor] {message}")
+
+    def _load_proxies(self):
+        """Load proxies from app if available."""
+        self._proxies = []
+        self._failed_proxies = set()
+        self._proxy_index = 0
+        if self.app and hasattr(self.app, 'proxies'):
+            self._proxies = list(self.app.proxies)
+        if self._proxies:
+            self.log(f"Loaded {len(self._proxies)} proxies")
+
+    def _get_proxy(self) -> Optional[str]:
+        """Get next available proxy, rotating on failure."""
+        if not self._proxies:
+            return None
+
+        # Filter out failed proxies
+        available = [p for p in self._proxies if p not in self._failed_proxies]
+        if not available:
+            # Reset failed proxies if all have failed
+            self._failed_proxies.clear()
+            available = self._proxies
+
+        # Rotate through proxies and encode special characters
+        proxy = available[self._proxy_index % len(available)]
+        self._proxy_index += 1
+        return encode_proxy(proxy)
+
+    def _on_proxy_failure(self, proxy: str):
+        """Mark a proxy as failed and rotate to next."""
+        if proxy:
+            self._failed_proxies.add(proxy)
+            self.log(f"Proxy failed: {proxy}")
 
     # ============ CONFIG OPERATIONS ============
 
@@ -266,11 +321,12 @@ class HVMonitor:
 
     # ============ GRAPHQL API ============
 
-    def _graphql_request(self, query: str) -> Optional[Dict]:
+    def _graphql_request(self, query: str, retries: int = 3) -> Optional[Dict]:
         """Make a GraphQL request to Shopify.
 
         Args:
             query: GraphQL query string
+            retries: Number of retries on failure
 
         Returns:
             Response JSON dict, or None on error
@@ -279,27 +335,28 @@ class HVMonitor:
             self.log("Store URL or token not configured")
             return None
 
-        # Get proxy if available
-        proxy = None
-        if self.app and hasattr(self.app, 'proxies_tab'):
-            proxy = self.app.proxies_tab.get_random_proxy()
+        for attempt in range(retries):
+            proxy = self._get_proxy()
 
-        try:
-            response = requests.post(
-                self.store_url,
-                json={"query": query},
-                headers={
-                    "Content-Type": "application/json",
-                    "X-Shopify-Storefront-Access-Token": self.token
-                },
-                proxies=proxy,
-                timeout=30
-            )
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            self.log(f"GraphQL request failed: {e}")
-            return None
+            try:
+                response = requests.post(
+                    self.store_url,
+                    json={"query": query},
+                    headers={
+                        "Content-Type": "application/json",
+                        "X-Shopify-Storefront-Access-Token": self.token
+                    },
+                    proxies={"http": proxy, "https": proxy} if proxy else None,
+                    timeout=30
+                )
+                response.raise_for_status()
+                return response.json()
+            except requests.RequestException as e:
+                self.log(f"GraphQL request failed (attempt {attempt + 1}/{retries}): {e}")
+                if proxy:
+                    self._on_proxy_failure(proxy)
+
+        return None
 
     def search_products(self, keyword: str, limit: int = 10) -> List[Dict]:
         """Search for products by keyword.
@@ -420,6 +477,14 @@ class HVMonitor:
 
     def _monitor_loop(self):
         """Main monitoring loop."""
+        # Load proxies at startup
+        self._load_proxies()
+
+        if self._proxies:
+            self.log(f"Using {len(self._proxies)} proxies")
+        else:
+            self.log("No proxies configured")
+
         while not self._stop_flag.is_set():
             current_status = {}
 
@@ -551,7 +616,7 @@ class HVMonitor:
             "title": product["title"],
             "url": product_url if product_url else None,
             "color": 0x00FF00,  # Green
-            "footer": {"text": "HV Monitor"},
+            "footer": {"text": f"FrontLines - Hobbiesville Monitor - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"},
             "fields": []
         }
 

@@ -9,7 +9,90 @@ class PendingTab(ttk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
+        self._tooltip_window = None
+        self._tooltip_timer = None
+        self._tooltip_event = None
+        self._tooltip_tree = None
+        self._last_tooltip_item = None
         self._create_ui()
+
+    def _show_tooltip(self, event, tree):
+        """Show tooltip on hover with delay."""
+        # Get current item
+        item = tree.identify_row(event.y)
+
+        # If tooltip is showing for a different item, hide it immediately
+        if self._tooltip_window and item != self._last_tooltip_item:
+            if self._tooltip_window:
+                self._tooltip_window.destroy()
+                self._tooltip_window = None
+            self._last_tooltip_item = None
+
+        if self._tooltip_timer:
+            self.after_cancel(self._tooltip_timer)
+            self._tooltip_timer = None
+
+        if not item:
+            return
+
+        self._tooltip_event = event
+        self._tooltip_tree = tree
+        self._tooltip_event_item = item
+
+        self._tooltip_timer = self.after(600, lambda: self._display_tooltip(tree))
+
+    def _display_tooltip(self, tree):
+        """Display the tooltip after delay."""
+        event = self._tooltip_event
+        if not event:
+            return
+
+        item = tree.identify_row(event.y)
+        if not item:
+            return
+
+        # Check if we're still on the same item
+        if hasattr(self, '_tooltip_event_item') and item != self._tooltip_event_item:
+            return
+
+        column = tree.identify_column(event.x)
+        if not column:
+            return
+
+        values = tree.item(item, "values")
+        col_idx = int(column[1:]) - 1
+        if col_idx < 0 or col_idx >= len(values):
+            return
+
+        value = values[col_idx]
+        if not value:
+            return
+
+        self._tooltip_window = tk.Toplevel(tree)
+        self._tooltip_window.wm_overrideredirect(True)
+        x = tree.winfo_rootx() + event.x + 15
+        y = tree.winfo_rooty() + event.y + 10
+        self._tooltip_window.wm_geometry(f"+{x}+{y}")
+        label = tk.Label(self._tooltip_window, text=value, background="#ffffe0", relief="solid", borderwidth=1, padx=5, pady=2)
+        label.pack()
+
+        self._last_tooltip_item = item
+
+    def _hide_tooltip(self, event=None):
+        """Hide tooltip."""
+        if self._tooltip_timer:
+            self.after_cancel(self._tooltip_timer)
+            self._tooltip_timer = None
+        self._tooltip_event = None
+        self._tooltip_tree = None
+        if hasattr(self, '_tooltip_event_item'):
+            self._tooltip_event_item = None
+        self._last_tooltip_item = None
+
+        if self._tooltip_window:
+            self._tooltip_window.destroy()
+            self._tooltip_window = None
+            self._tooltip_window = None
 
     def _create_ui(self):
         """Create the pending tab UI."""
@@ -86,6 +169,10 @@ class PendingTab(ttk.Frame):
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         vsb.pack(side=tk.RIGHT, fill=tk.Y)
         hsb.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # Tooltip bindings
+        self.tree.bind("<Motion>", lambda e: self._show_tooltip(e, self.tree))
+        self.tree.bind("<Leave>", self._hide_tooltip)
 
     def load_pending(self):
         """Load pending SKUs from database."""

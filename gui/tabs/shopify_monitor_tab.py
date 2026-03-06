@@ -1,11 +1,54 @@
-"""Shopify Monitor tab with Configuration and Monitor sub-tabs."""
+"""Shopify Monitor tab with Products and Configuration sub-tabs."""
 
 import tkinter as tk
 from tkinter import ttk, messagebox
 
 
+class ToolTip:
+    """Tooltip for tkinter widgets."""
+
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tooltip = None
+        self.widget.bind("<Enter>", self._show)
+        self.widget.bind("<Leave>", self._hide)
+
+    def _show(self, event=None):
+        # Get the item under the cursor
+        x, y, cx, cy = self.widget.bbox(event.x, event.y) if hasattr(event, 'x') else (None, None, None, None)
+        if x is None:
+            return
+
+        item = self.widget.identify_row(event.y)
+        if not item:
+            return
+
+        column = self.widget.identify_column(event.x)
+        if not column:
+            return
+
+        # Get the value at this position
+        values = self.widget.item(item, "values")
+        col_idx = int(column[1:]) - 1  # Convert #1 to index 0
+        if col_idx < len(values):
+            value = values[col_idx]
+            if value:
+                # Create tooltip window
+                self.tooltip = tk.Toplevel(self.widget)
+                self.tooltip.wm_overrideredirect(True)
+                self.tooltip.wm_geometry(f"+{self.widget.winfo_rootx() + event.x + 15}+{self.widget.winfo_rooty() + event.y + 10}")
+                label = tk.Label(self.tooltip, text=value, background="#ffffe0", relief="solid", borderwidth=1, padx=5, pady=2)
+                label.pack()
+
+    def _hide(self, event=None):
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
+
+
 class ShopifyMonitorTab(ttk.Frame):
-    """Shopify Monitor tab with configuration and monitoring."""
+    """Shopify Monitor tab with products and configuration."""
 
     def __init__(self, parent, app):
         super().__init__(parent)
@@ -15,10 +58,13 @@ class ShopifyMonitorTab(ttk.Frame):
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill=tk.BOTH, expand=True)
 
-        # Monitor sub-tab (first)
-        self.monitor_frame = ttk.Frame(self.notebook)
-        self.monitor_frame.pack(fill=tk.BOTH, expand=True)
-        self.notebook.add(self.monitor_frame, text="Monitor")
+        # Bind tab change to refresh config data
+        self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
+
+        # Products sub-tab (first)
+        self.products_frame = ttk.Frame(self.notebook)
+        self.products_frame.pack(fill=tk.BOTH, expand=True)
+        self.notebook.add(self.products_frame, text="Products")
 
         # Configuration sub-tab
         self.config_frame = ttk.Frame(self.notebook)
@@ -26,80 +72,331 @@ class ShopifyMonitorTab(ttk.Frame):
         self.notebook.add(self.config_frame, text="Configuration")
 
         # Create UI
-        self._create_monitor_ui()
+        self._create_products_ui()
         self._create_config_ui()
 
         # Load initial data
         self.load_config()
 
-    def _create_monitor_ui(self):
-        """Create the monitor tab UI."""
-        # Top controls frame (start/stop)
-        top_frame = ttk.Frame(self.monitor_frame)
+    def _create_products_ui(self):
+        """Create the products tab UI."""
+        # Top frame for search and actions
+        top_frame = ttk.Frame(self.products_frame)
         top_frame.pack(fill="x", padx=10, pady=5)
 
-        self.start_btn = ttk.Button(top_frame, text="Start Monitor", command=self._start_monitor)
-        self.start_btn.pack(side="left", padx=2)
+        # Search bar
+        ttk.Label(top_frame, text="Search:").pack(side="left", padx=(0, 5))
+        self.search_var = tk.StringVar()
+        self.search_var.trace("w", self._on_search)
+        search_entry = ttk.Entry(top_frame, textvariable=self.search_var, width=30)
+        search_entry.pack(side="left", padx=(0, 10))
 
-        self.stop_btn = ttk.Button(top_frame, text="Stop Monitor", command=self._stop_monitor, state="disabled")
-        self.stop_btn.pack(side="left", padx=2)
+        # Reset selected button
+        ttk.Button(top_frame, text="Reset Selected Stock Status", command=self._reset_selected).pack(side="left", padx=5)
 
-        ttk.Button(top_frame, text="Refresh Stats", command=self._update_stats).pack(side="left", padx=10)
+        # Clear all button
+        ttk.Button(top_frame, text="Clear All", command=self._clear_all).pack(side="left", padx=5)
 
-        # Status label
-        self.status_label = ttk.Label(top_frame, text="Status: Stopped")
-        self.status_label.pack(side="left", padx=10)
+        # Refresh button
+        ttk.Button(top_frame, text="Refresh", command=self._refresh_products).pack(side="left", padx=5)
 
-        # Statistics
-        stats_frame = ttk.LabelFrame(self.monitor_frame, text="Statistics", padding=10)
-        stats_frame.pack(fill="x", padx=10, pady=5)
+        # Products treeview
+        tree_frame = ttk.Frame(self.products_frame)
+        tree_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
-        self.stats_label = ttk.Label(stats_frame, text="")
-        self.stats_label.pack(anchor="w")
+        # Scrollbars
+        y_scroll = ttk.Scrollbar(tree_frame, orient="vertical")
+        y_scroll.pack(side="right", fill="y")
 
-        self._update_stats()
+        x_scroll = ttk.Scrollbar(tree_frame, orient="horizontal")
+        x_scroll.pack(side="bottom", fill="x")
 
-        # Activity Log
-        log_frame = ttk.LabelFrame(self.monitor_frame, text="Activity Log", padding=10)
-        log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        # Treeview
+        columns = ("store", "product", "keywords", "status", "price", "last_seen")
+        self.products_tree = ttk.Treeview(tree_frame, columns=columns, show="headings",
+                                          yscrollcommand=y_scroll.set, xscrollcommand=x_scroll.set)
+        y_scroll.config(command=self.products_tree.yview)
+        x_scroll.config(command=self.products_tree.xview)
 
-        log_scroll = ttk.Scrollbar(log_frame)
-        log_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        self.products_tree.heading("store", text="Store", command=lambda: self._sort("store"))
+        self.products_tree.heading("product", text="Product", command=lambda: self._sort("product"))
+        self.products_tree.heading("keywords", text="Keywords", command=lambda: self._sort("keywords"))
+        self.products_tree.heading("status", text="Status", command=lambda: self._sort("status"))
+        self.products_tree.heading("price", text="Price", command=lambda: self._sort("price"))
+        self.products_tree.heading("last_seen", text="Last Seen", command=lambda: self._sort("last_seen"))
 
-        self.log_text = tk.Text(log_frame, height=15, width=50, yscrollcommand=log_scroll.set, state="disabled")
-        self.log_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        log_scroll.config(command=self.log_text.yview)
+        self.products_tree.column("store", width=150)
+        self.products_tree.column("product", width=250)
+        self.products_tree.column("keywords", width=150)
+        self.products_tree.column("status", width=80)
+        self.products_tree.column("price", width=80)
+        self.products_tree.column("last_seen", width=150)
 
-        # Set up log callback
-        self.app.shopify_monitor.shopify_log_callback = self._log_message
+        self.products_tree.pack(fill="both", expand=True)
 
-        self._update_button_states()
+        # Bind double-click to reset
+        self.products_tree.bind("<Double-1>", lambda e: self._reset_selected())
+
+        # Add tooltip for hover
+        self._tooltip_window = None
+        self._tooltip_timer = None
+        self._tooltip_event = None
+        self._tooltip_data = {}
+        self._last_tooltip_item = None
+        self.products_tree.bind("<Motion>", self._show_tooltip)
+        self.products_tree.bind("<Leave>", self._hide_tooltip)
+
+        # Load products
+        self._refresh_products()
+
+    def _show_tooltip(self, event):
+        """Show tooltip on hover with delay."""
+        # Get current item
+        item = self.products_tree.identify_row(event.y)
+
+        # If tooltip is showing for a different item, hide it immediately
+        if self._tooltip_window and item != self._last_tooltip_item:
+            if self._tooltip_window:
+                self._tooltip_window.destroy()
+                self._tooltip_window = None
+            self._last_tooltip_item = None
+
+        # Cancel any pending tooltip
+        if self._tooltip_timer:
+            self.after_cancel(self._tooltip_timer)
+            self._tooltip_timer = None
+
+        # If no item under cursor, don't show tooltip
+        if not item:
+            return
+
+        # Store event for delayed showing
+        self._tooltip_event = event
+        self._tooltip_event_item = item
+
+        # Set timer to show tooltip after 0.6 seconds
+        self._tooltip_timer = self.after(600, self._display_tooltip)
+
+    def _display_tooltip(self):
+        """Display the tooltip after delay."""
+        event = self._tooltip_event
+        if not event:
+            return
+
+        # Get the item under the cursor
+        item = self.products_tree.identify_row(event.y)
+        if not item:
+            return
+
+        # Check if we're still on the same item that triggered the timer
+        if hasattr(self, '_tooltip_event_item') and item != self._tooltip_event_item:
+            return
+
+        column = self.products_tree.identify_column(event.x)
+        if not column:
+            return
+
+        col_idx = int(column[1:]) - 1  # Convert #1 to index 0
+        if col_idx < 0:
+            return
+
+        # Get full data for tooltip if available
+        full_data = self._tooltip_data.get(item, {})
+        value = None
+
+        # Column 1 = Product, Column 2 = Keywords
+        if col_idx == 1 and full_data.get('product'):
+            value = full_data['product']
+        elif col_idx == 2 and full_data.get('keywords'):
+            value = full_data['keywords']
+        else:
+            # Fall back to tree values
+            values = self.products_tree.item(item, "values")
+            if col_idx < len(values):
+                value = values[col_idx]
+
+        if not value:
+            return
+
+        # Create tooltip window
+        self._tooltip_window = tk.Toplevel(self.products_tree)
+        self._tooltip_window.wm_overrideredirect(True)
+        x = self.products_tree.winfo_rootx() + event.x + 15
+        y = self.products_tree.winfo_rooty() + event.y + 10
+        self._tooltip_window.wm_geometry(f"+{x}+{y}")
+
+        label = tk.Label(self._tooltip_window, text=value, background="#ffffe0", relief="solid", borderwidth=1, padx=5, pady=2)
+        label.pack()
+
+        # Track this item so we can hide when moving to different item
+        self._last_tooltip_item = item
+
+    def _hide_tooltip(self, event=None):
+        """Hide tooltip."""
+        # Cancel any pending tooltip
+        if self._tooltip_timer:
+            self.after_cancel(self._tooltip_timer)
+            self._tooltip_timer = None
+        self._tooltip_event = None
+        if hasattr(self, '_tooltip_event_item'):
+            self._tooltip_event_item = None
+        self._last_tooltip_item = None
+
+        if self._tooltip_window:
+            self._tooltip_window.destroy()
+            self._tooltip_window = None
+
+    def _refresh_products(self):
+        """Refresh the products list."""
+        self.products_tree.delete(*self.products_tree.get_children())
+        # Clear tooltip data mapping
+        self._tooltip_data = {}
+
+        sm = self.app.shopify_monitor
+        if not sm or not sm.tracker:
+            return
+
+        search_term = self.search_var.get().lower()
+
+        # Get tracker data
+        for store, products in sm.tracker.data.items():
+            for prod_id, variants in products.items():
+                if prod_id.startswith('_'):
+                    continue
+
+                product_title = variants.get('_product_title', 'Unknown')
+                keywords = variants.get('_keywords', [])
+
+                # Filter by search
+                if search_term and search_term not in store.lower() and search_term not in product_title.lower() and not any(search_term in k.lower() for k in keywords):
+                    continue
+
+                for var_id, data in variants.items():
+                    if var_id.startswith('_'):
+                        continue
+
+                    status = "In Stock" if data.get('available') else "Out of Stock"
+                    price = data.get('price', 'N/A')
+                    last_seen = data.get('last_seen', 'N/A')
+                    keywords_str = ", ".join(keywords) if keywords else ""
+
+                    # Insert with truncated display but store full data for tooltip
+                    item_id = self.products_tree.insert("", "end", values=(
+                        store,
+                        product_title[:50] + "..." if len(product_title) > 50 else product_title,
+                        keywords_str,
+                        status,
+                        price,
+                        last_seen[:19] if len(last_seen) > 19 else last_seen
+                    ))
+                    # Store full data for tooltip
+                    self._tooltip_data[item_id] = {
+                        'product': product_title,
+                        'keywords': keywords_str,
+                        'store': store
+                    }
+
+    def _on_search(self, *args):
+        """Handle search input."""
+        self._refresh_products()
+
+    def _sort(self, column):
+        """Sort tree by column."""
+        # Get all items
+        items = []
+        for item in self.products_tree.get_children(""):
+            values = self.products_tree.item(item, "values")
+            items.append((values, item))
+
+        # Sort based on column
+        col_index = ("store", "product", "keywords", "status", "price", "last_seen").index(column)
+        try:
+            items.sort(key=lambda x: x[0][col_index].lower())
+        except:
+            items.sort(key=lambda x: x[0][col_index])
+
+        # Re-insert in sorted order
+        for values, item in items:
+            self.products_tree.move(item, "", "end")
+
+    def _reset_selected(self):
+        """Reset stock status for selected product."""
+        selection = self.products_tree.selection()
+        if not selection:
+            messagebox.showwarning("No Selection", "Please select a product to reset.")
+            return
+
+        if not messagebox.askyesno("Reset Stock Status", "Reset stock status for selected product(s)?\n\nThis will allow them to be notified again on the next scan."):
+            return
+
+        sm = self.app.shopify_monitor
+        if not sm or not sm.tracker:
+            return
+
+        reset_count = 0
+        for item in selection:
+            values = self.products_tree.item(item, "values")
+            store = values[0]
+            product_title = values[1]
+
+            # Find and reset matching variants
+            if store in sm.tracker.data:
+                for prod_id, variants in sm.tracker.data[store].items():
+                    if variants.get('_product_title', '').endswith('...'):
+                        stored_title = variants.get('_product_title', '')[:-3]
+                    else:
+                        stored_title = variants.get('_product_title', '')
+
+                    if stored_title == product_title or product_title.startswith(stored_title[:20]):
+                        for var_id in list(variants.keys()):
+                            if not var_id.startswith('_'):
+                                variants[var_id]['available'] = False
+                                reset_count += 1
+
+        if reset_count > 0:
+            sm.tracker.save()
+            self._refresh_products()
+            messagebox.showinfo("Reset", f"Reset {reset_count} variant(s).")
+        else:
+            messagebox.showwarning("Not Found", "Could not find matching product in tracker.")
+
+    def _clear_all(self):
+        """Clear all tracked products."""
+        if not messagebox.askyesno("Clear All", "Clear all tracked products?\n\nThis will reset the stock status for ALL tracked products."):
+            return
+
+        sm = self.app.shopify_monitor
+        if sm and sm.tracker:
+            sm.tracker.clear()
+            sm.tracker.save()
+            self._refresh_products()
+            messagebox.showinfo("Cleared", "All tracked products cleared.")
+
 
     def _create_config_ui(self):
         """Create the configuration tab UI."""
         # Create a canvas with scrollbar for vertical scrolling
-        canvas = tk.Canvas(self.config_frame, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(self.config_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
+        self.canvas = tk.Canvas(self.config_frame)
+        scrollbar = ttk.Scrollbar(self.config_frame, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas)
 
-        scrollable_frame.bind(
+        self.scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
 
-        # Create canvas window - use a large width and let it fill
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
+        # Create canvas window
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=scrollbar.set)
 
-        canvas.pack(side="left", fill="both", expand=True)
+        self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-        # Use scrollable_frame as parent for all widgets
-        parent = scrollable_frame
+        # Bind resize event to update canvas width
+        self.config_frame.bind("<Configure>", self._on_config_resize)
 
-        # Set minimum width for scrollable frame
-        parent.pack_propagate(False)
-        parent.configure(width=1200)
+        # Use scrollable_frame as parent for all widgets
+        parent = self.scrollable_frame
 
         # Discord Settings
         discord_frame = ttk.LabelFrame(parent, text="Discord Settings", padding=10)
@@ -209,15 +506,6 @@ class ShopifyMonitorTab(ttk.Frame):
             variable=self.data_collection_var
         ).pack(side=tk.LEFT, padx=10)
 
-        # Actions frame
-        actions_frame = ttk.LabelFrame(parent, text="Actions", padding=10)
-        actions_frame.pack(fill="x", padx=10, pady=5)
-
-        actions_inner = ttk.Frame(actions_frame)
-        actions_inner.pack(fill="x")
-
-        ttk.Button(actions_inner, text="Clear Tracked Products", command=self._clear_tracker).pack(side=tk.LEFT, padx=5)
-
         # Stores and Keywords
         data_frame = ttk.LabelFrame(parent, text="Stores & Keywords", padding=10)
         data_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
@@ -257,7 +545,14 @@ class ShopifyMonitorTab(ttk.Frame):
 
         ttk.Button(button_inner, text="Save Configuration", command=self.save_config).pack(side=tk.LEFT, padx=5)
         ttk.Button(button_inner, text="Test Webhook", command=self._test_webhook).pack(side=tk.LEFT, padx=5)
-        ttk.Button(button_inner, text="Reload Data", command=self._reload_data).pack(side=tk.LEFT, padx=5)
+
+    def _on_config_resize(self, event):
+        """Handle resize events to update canvas width."""
+        if hasattr(self, 'canvas') and hasattr(self, 'scrollable_frame'):
+            # Only update on configure events from the frame, not from canvas children
+            if event.widget == self.config_frame:
+                width = event.width - 20  # Account for scrollbar
+                self.canvas.itemconfig(1, width=max(width, 1000))
 
     def _log_message(self, message: str):
         """Add a message to the activity log."""
@@ -298,9 +593,6 @@ class ShopifyMonitorTab(ttk.Frame):
         self.keywords_text.delete("1.0", tk.END)
         self.keywords_text.insert("1.0", '\n'.join(sm.keywords))
 
-        self._update_stats()
-        self._update_button_states()
-
     def save_config(self):
         """Save configuration."""
         sm = self.app.shopify_monitor
@@ -328,7 +620,11 @@ class ShopifyMonitorTab(ttk.Frame):
         sm.keywords = [line.strip().lower() for line in keywords_content.split('\n') if line.strip()]
 
         sm.save_config()
-        self._update_stats()
+        # Update text areas with the saved values (e.g., keywords are lowercased)
+        self.stores_text.delete("1.0", tk.END)
+        self.stores_text.insert("1.0", '\n'.join(sm.stores))
+        self.keywords_text.delete("1.0", tk.END)
+        self.keywords_text.insert("1.0", '\n'.join(sm.keywords))
         messagebox.showinfo("Saved", "Configuration saved successfully.")
 
     def _test_webhook(self):
@@ -356,58 +652,16 @@ class ShopifyMonitorTab(ttk.Frame):
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def _reload_data(self):
-        """Reload stores and keywords from database."""
-        self.app.shopify_monitor.reload_data()
-        # Reload the text areas
-        sm = self.app.shopify_monitor
-        self.stores_text.delete("1.0", tk.END)
-        self.stores_text.insert("1.0", '\n'.join(sm.stores))
-        self.keywords_text.delete("1.0", tk.END)
-        self.keywords_text.insert("1.0", '\n'.join(sm.keywords))
-        self._update_stats()
-        messagebox.showinfo("Reloaded", "Stores and keywords reloaded from database.")
-
-    def _update_stats(self):
-        """Update statistics display."""
-        sm = self.app.shopify_monitor
-        tracker_stats = sm.tracker.get_stats() if sm.tracker else {}
-
-        stats_text = (
-            f"Stores configured: {len(sm.stores)}\n"
-            f"Keywords configured: {len(sm.keywords)}\n"
-            f"Tracked stores: {tracker_stats.get('stores', 0)}\n"
-            f"Tracked products: {tracker_stats.get('products', 0)}\n"
-            f"Tracked variants: {tracker_stats.get('variants', 0)}"
-        )
-        self.stats_label.config(text=stats_text)
-
-    def _update_button_states(self):
-        """Update start/stop button states based on monitor status."""
-        if self.app.shopify_monitor._running:
-            self.start_btn.config(state="disabled")
-            self.stop_btn.config(state="normal")
-            self.status_label.config(text="Status: Running")
-        else:
-            self.start_btn.config(state="normal")
-            self.stop_btn.config(state="disabled")
-            self.status_label.config(text="Status: Stopped")
-
-    def _start_monitor(self):
-        """Start the Shopify monitor."""
-        self.app.shopify_monitor.start()
-        self._update_button_states()
-
-    def _stop_monitor(self):
-        """Stop the Shopify monitor."""
-        self.app.shopify_monitor.stop()
-        self._update_button_states()
-
-    def _clear_tracker(self):
-        """Clear all tracked products to force re-check."""
-        if messagebox.askyesno("Clear Tracker", "Clear all tracked products?\n\nThis will reset the stock status for all tracked products, causing them to be re-checked and re-notified on the next scan cycle."):
-            self.app.shopify_monitor.tracker.clear()
-            self.app.shopify_monitor.tracker.save()
-            self._update_stats()
-            self.app.shopify_monitor.log("Cleared tracked products - all products will be re-notified on next scan")
-            messagebox.showinfo("Cleared", "Tracked products cleared. Products will be re-checked on next scan.")
+    def _on_tab_changed(self, event=None):
+        """Handle tab change - refresh config from database."""
+        # Get current tab index (0 = Products, 1 = Configuration)
+        current = self.notebook.index(self.notebook.select())
+        if current == 1:  # Configuration tab
+            # Reload from database to get latest values
+            self.app.shopify_monitor.reload_data()
+            # Update text areas
+            sm = self.app.shopify_monitor
+            self.stores_text.delete("1.0", tk.END)
+            self.stores_text.insert("1.0", '\n'.join(sm.stores))
+            self.keywords_text.delete("1.0", tk.END)
+            self.keywords_text.insert("1.0", '\n'.join(sm.keywords))

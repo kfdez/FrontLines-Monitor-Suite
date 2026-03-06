@@ -15,11 +15,13 @@ from core.database import Database
 from core.sheets import SheetsManager
 from core.bot import DiscordBot
 from core.hv_monitor import HVMonitor
+from core.shopify_monitor import ShopifyMonitor
 from core.tasks import TasksManager
 from gui.tabs.products_tab import ProductsTab
 from gui.tabs.emails_tab import EmailsTab
 from gui.tabs.settings_tab import SettingsTab
 from gui.tabs.hv_monitor_tab import HVMonitorTab
+from gui.tabs.shopify_monitor_tab import ShopifyMonitorTab
 from gui.tabs.proxies_tab import ProxiesTab
 
 
@@ -32,6 +34,8 @@ class ColoredButton(ttk.Button):
 
 class LogPanel(ttk.Frame):
     """Scrolling log panel for bot events."""
+
+    MAX_LINES = 1000  # Maximum lines to keep in log
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -71,6 +75,12 @@ class LogPanel(ttk.Frame):
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.log_text.insert(tk.END, f"[{timestamp}] {message}\n")
         self.log_text.see(tk.END)
+
+        # Trim old lines if over limit
+        line_count = int(self.log_text.index("end-1c").split('.')[0])
+        if line_count > self.MAX_LINES:
+            lines_to_delete = line_count - self.MAX_LINES
+            self.log_text.delete("1.0", f"{lines_to_delete + 1}.0")
 
     def clear_log(self):
         """Clear the log."""
@@ -114,6 +124,7 @@ class MainApplication:
         self.sheets = SheetsManager()
         self.bot = DiscordBot("", self.db)
         self.hv_monitor = HVMonitor(self.db, log_callback=None, app=self)
+        self.shopify_monitor = ShopifyMonitor(self.db, log_callback=None, app=self)
         self.tasks_manager = TasksManager(self.db, log_callback=self.log_message)
 
         # Bot state
@@ -145,6 +156,10 @@ class MainApplication:
         # Auto-start HV monitor if enabled (deferred)
         if self.hv_monitor.auto_start:
             self.root.after(600, self.start_hv_monitor)
+
+        # Auto-start Shopify monitor if enabled (deferred)
+        if self.shopify_monitor.auto_start:
+            self.root.after(700, self.start_shopify_monitor)
 
     def _configure_styles(self):
         """Configure custom styles."""
@@ -203,6 +218,19 @@ class MainApplication:
         # Duplicate timeout (in seconds)
         self.duplicate_timeout = int(self.db.get_config("duplicate_timeout", "60"))
 
+    @property
+    def proxies(self) -> list:
+        """Get list of proxies from database."""
+        proxies_config = self.db.get_config("proxies", "")
+        if not proxies_config:
+            return []
+        proxies_list = []
+        for line in proxies_config.strip().split('\n'):
+            line = line.strip()
+            if line and ':' in line:
+                proxies_list.append(line)
+        return proxies_list
+
     def _str_to_int(self, value: str) -> int:
         """Convert string to int safely."""
         try:
@@ -212,13 +240,42 @@ class MainApplication:
 
     def log_message(self, message: str):
         """Add a message to the log panel."""
-        if self.log_panel is not None:
+        if hasattr(self, 'log_panel') and self.log_panel is not None:
             self.root.after(0, self._add_log_to_panel, message)
 
     def _add_log_to_panel(self, message: str):
         """Actually add the log message to the panel (called on main thread)."""
-        if self.log_panel is not None:
+        if hasattr(self, 'log_panel') and self.log_panel is not None:
             self.log_panel.add_log(message)
+
+    def _update_nav_indicator(self, module: str, running: bool):
+        """Update the sidebar indicator for a module."""
+        self._module_status[module] = running
+        if module not in self.nav_buttons:
+            return
+
+        btn_data = self.nav_buttons[module]
+
+        # Skip if this button doesn't have an indicator (e.g., proxies)
+        if not btn_data.get('has_indicator', True):
+            return
+
+        btn = btn_data['btn']
+
+        # Use the stored base name (without indicator)
+        base_text = btn_data['expanded']
+
+        # Update with new indicator using colored circles
+        indicator = '●' if running else '○'
+        new_text = f"{indicator} {base_text}"
+
+        if running:
+            btn.config(text=new_text, fg="#28a745")  # Green
+        else:
+            btn.config(text=new_text, fg="#dc3545")  # Red
+
+        # Keep expanded updated with base name (not including indicator)
+        btn_data['expanded'] = base_text
 
     def _create_ui(self):
         """Create the main UI."""
@@ -262,21 +319,29 @@ class MainApplication:
 
         # Navigation buttons
         self.nav_buttons = {}
-        # Format: (view_id, view_name, expanded_text, collapsed_text)
+        # Format: (view_id, expanded_text, collapsed_text)
         views = [
-            ("skutto", "SKUtto", "  🔐 SKUtto", "  [S]"),
-            ("shopify", "Shopify Monitor", "  🛒 Shopify Monitor", "  [$]"),
-            ("hobbiesville", "Hobbiesville", "  🎮 Hobbiesville", "  [H]"),
-            ("proxies", "Proxies", "  🌐 Proxies", "  [P]"),
+            ("skutto", "SKUtto", "[S]"),
+            ("shopify", "Shopify Monitor", "[$]"),
+            ("hobbiesville", "Hobbiesville", "[H]"),
+            ("proxies", "🌐 Proxies", "[P]"),  # Proxies doesn't get indicator
         ]
 
-        for view_id, view_name, expanded_text, collapsed_text in views:
+        for view_id, expanded_text, collapsed_text in views:
+            # Skip indicator for proxies
+            if view_id == "proxies":
+                btn_text = expanded_text
+                btn_fg = "white"
+            else:
+                btn_text = f"○ {expanded_text}"
+                btn_fg = "#dc3545"  # Red for stopped
+
             btn = tk.Button(
                 self.sidebar_frame,
-                text=expanded_text,
+                text=btn_text,
                 font=("Segoe UI", 11),
                 bg="#2d2d30" if view_id != "skutto" else "#0e639c",
-                fg="white",
+                fg=btn_fg,
                 relief=tk.FLAT,
                 anchor="w",
                 padx=15,
@@ -287,9 +352,17 @@ class MainApplication:
             btn.pack(fill=tk.X, padx=5, pady=2)
             self.nav_buttons[view_id] = {
                 'btn': btn,
-                'expanded': expanded_text,
-                'collapsed': collapsed_text
+                'expanded': expanded_text,  # Store base name without indicator
+                'collapsed': collapsed_text,
+                'has_indicator': view_id != "proxies"  # Flag to track if this button has indicator
             }
+
+        # Track which modules are running for indicator updates
+        self._module_status = {
+            'skutto': False,
+            'hobbiesville': False,
+            'shopify': False
+        }
 
         # === CONTENT AREA ===
         # Container for the right side
@@ -310,11 +383,11 @@ class MainApplication:
         # Create Hobbiesville (HV Monitor) view
         self._create_hv_monitor_view(content_container)
 
+        # Create Shopify Monitor view
+        self._create_shopify_monitor_view(content_container)
+
         # Create Proxies view
         self._create_proxies_view(content_container)
-
-        # Create placeholder views with logs
-        self._create_placeholder_view("shopify", "🛒 Shopify Monitor", "Coming Soon - Shopify monitoring functionality will be added here.", has_log=True)
 
         # Set initial view (show SKUtto by default)
         self._switch_view("skutto")
@@ -551,6 +624,7 @@ class MainApplication:
         self.hv_status_indicator.itemconfig(self.hv_status_circle, fill="#28a745")
         self.hv_start_btn.config(state=tk.DISABLED, bg="#6c757d")
         self.hv_stop_btn.config(state=tk.NORMAL, bg="#dc3545")
+        self._update_nav_indicator('hobbiesville', True)
         self.hv_log_panel.add_log("Monitor started")
 
     def stop_hv_monitor(self):
@@ -560,7 +634,136 @@ class MainApplication:
         self.hv_status_indicator.itemconfig(self.hv_status_circle, fill="#dc3545")
         self.hv_start_btn.config(state=tk.NORMAL, bg="#28a745")
         self.hv_stop_btn.config(state=tk.DISABLED, bg="#6c757d")
+        self._update_nav_indicator('hobbiesville', False)
         self.hv_log_panel.add_log("Monitor stopped")
+
+    def _create_shopify_monitor_view(self, parent):
+        """Create the Shopify Monitor view."""
+        shopify_frame = ttk.Frame(self.views_container)
+        self.views["shopify"] = shopify_frame
+
+        # Header
+        header_frame = tk.Frame(shopify_frame, bg="#2d2d30", height=50)
+        header_frame.pack(fill=tk.X, pady=(0, 10))
+        header_frame.pack_propagate(False)
+
+        # Title
+        tk.Label(
+            header_frame,
+            text="Shopify Monitor",
+            font=("Segoe UI", 14, "bold"),
+            bg="#2d2d30",
+            fg="white"
+        ).pack(side=tk.LEFT, padx=10)
+
+        # Shopify Monitor status indicator
+        self.shopify_status_indicator = tk.Canvas(header_frame, width=20, height=20, bg="#2d2d30", highlightthickness=0)
+        self.shopify_status_indicator.pack(side=tk.RIGHT, padx=10)
+
+        # Status circle
+        self.shopify_status_circle = self.shopify_status_indicator.create_oval(2, 2, 18, 18, fill="#dc3545", outline="")
+
+        # Status area frame
+        shopify_status_area = tk.Frame(header_frame, bg="#2d2d30")
+        shopify_status_area.pack(side=tk.RIGHT, padx=5)
+
+        # Status label
+        self.shopify_status_label = tk.Label(
+            shopify_status_area,
+            text="Offline",
+            font=("Segoe UI", 10),
+            bg="#2d2d30",
+            fg="#dc3545"
+        )
+        self.shopify_status_label.pack()
+
+        # Control buttons in header
+        self.shopify_start_btn = tk.Button(
+            header_frame,
+            text="▶ Start",
+            command=self.start_shopify_monitor,
+            bg="#28a745",
+            fg="white",
+            font=("Segoe UI", 9, "bold"),
+            relief=tk.FLAT,
+            padx=12,
+            pady=5,
+            cursor="hand2"
+        )
+        self.shopify_start_btn.pack(side=tk.RIGHT, padx=5, pady=10)
+
+        self.shopify_stop_btn = tk.Button(
+            header_frame,
+            text="⏹ Stop",
+            command=self.stop_shopify_monitor,
+            bg="#dc3545",
+            fg="white",
+            font=("Segoe UI", 9, "bold"),
+            relief=tk.FLAT,
+            padx=12,
+            pady=5,
+            cursor="hand2",
+            state=tk.DISABLED
+        )
+        self.shopify_stop_btn.pack(side=tk.RIGHT, padx=5, pady=10)
+
+        # Create Shopify Monitor tab
+        self.shopify_monitor_tab = ShopifyMonitorTab(shopify_frame, self)
+        self.shopify_monitor_tab.pack(fill=tk.BOTH, expand=True)
+
+        # Log panel for Shopify Monitor
+        self.shopify_log_panel = LogPanel(shopify_frame)
+        self.shopify_log_panel.pack(fill=tk.X, pady=(10, 0))
+        self.shopify_log_panel.add_log("Shopify Monitor loaded")
+        self.shopify_log_panel.add_log("Configure settings in the Configuration tab")
+
+        # Set shopify_monitor's own log callback to use shopify_log_panel
+        self.shopify_monitor.shopify_log_callback = self.shopify_log_panel.add_log
+
+        # Update button states
+        self._update_shopify_button_states()
+
+        # Update button states
+        self._update_shopify_button_states()
+
+    def start_shopify_monitor(self):
+        """Start the Shopify Monitor."""
+        if not self.shopify_monitor.stores:
+            self.shopify_log_panel.add_log("Error: No stores configured")
+            messagebox.showerror("Error", "Please configure stores in stores.txt first.")
+            return
+
+        if not self.shopify_monitor.keywords:
+            self.shopify_log_panel.add_log("Error: No keywords configured")
+            messagebox.showerror("Error", "Please configure keywords in keywords.txt first.")
+            return
+
+        self.shopify_monitor.start()
+        self.shopify_status_label.config(text="Running", fg="#28a745")
+        self.shopify_status_indicator.itemconfig(self.shopify_status_circle, fill="#28a745")
+        self.shopify_start_btn.config(state=tk.DISABLED, bg="#6c757d")
+        self.shopify_stop_btn.config(state=tk.NORMAL, bg="#dc3545")
+        self._update_nav_indicator('shopify', True)
+        self.shopify_log_panel.add_log("Monitor started")
+
+    def stop_shopify_monitor(self):
+        """Stop the Shopify Monitor."""
+        self.shopify_monitor.stop()
+        self.shopify_status_label.config(text="Offline", fg="#dc3545")
+        self.shopify_status_indicator.itemconfig(self.shopify_status_circle, fill="#dc3545")
+        self.shopify_start_btn.config(state=tk.NORMAL, bg="#28a745")
+        self.shopify_stop_btn.config(state=tk.DISABLED, bg="#6c757d")
+        self._update_nav_indicator('shopify', False)
+        self.shopify_log_panel.add_log("Monitor stopped")
+
+    def _update_shopify_button_states(self):
+        """Update Shopify Monitor start/stop button states."""
+        if self.shopify_monitor._running:
+            self.shopify_start_btn.config(state=tk.DISABLED, bg="#6c757d")
+            self.shopify_stop_btn.config(state=tk.NORMAL, bg="#dc3545")
+        else:
+            self.shopify_start_btn.config(state=tk.NORMAL, bg="#28a745")
+            self.shopify_stop_btn.config(state=tk.DISABLED, bg="#6c757d")
 
     def _create_proxies_view(self, parent):
         """Create the Proxies view."""
@@ -722,8 +925,8 @@ class MainApplication:
             platform = product.get("platform", "Unknown")
             embed_dict["title"] = f"[{platform.capitalize()} Restock] - {product['name']}"
 
-            # Update footer with SKUtto 3.0 and optional icon
-            footer_text = "SKUtto 3.0"
+            # Update footer with timestamp
+            footer_text = f"FrontLines - SKUtto - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
 
             # Get the footer icon URL from config
             footer_icon = self.db.get_config("footer_icon_url", "")
@@ -945,6 +1148,7 @@ class MainApplication:
         self.status_indicator.itemconfig(self.status_circle, fill="orange")
         self.start_btn.config(state=tk.DISABLED, bg="#6c757d")
         self.stop_btn.config(state=tk.NORMAL, bg="#dc3545")
+        self._update_nav_indicator('skutto', True)
 
     async def _on_bot_ready(self, bot):
         """Callback when bot is ready."""
@@ -982,6 +1186,7 @@ class MainApplication:
         self.status_indicator.itemconfig(self.status_circle, fill="#dc3545")
         self.start_btn.config(state=tk.NORMAL, bg="#28a745")
         self.stop_btn.config(state=tk.DISABLED, bg="#6c757d")
+        self._update_nav_indicator('skutto', False)
         self.log_message("⏹ Bot stopped")
 
     def stop_bot(self):
