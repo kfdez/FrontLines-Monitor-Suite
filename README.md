@@ -7,6 +7,7 @@ A Discord bot monitoring application with a Tkinter GUI. Monitors source Discord
 - **Tkinter GUI** - Easy configuration with sidebar navigation and multiple monitoring modules
 - **SKUtto** - Discord embed monitoring for product restocks with SKU matching
 - **Hobbiesville (HV Monitor)** - Shopify product monitoring via GraphQL API with stock alerts
+- **Shopify Monitor** - Multi-store Shopify scraping with keyword matching and Discord webhooks
 - **Proxies** - Proxy management for HTTP requests
 - **Discord Slash Commands** - `/help`, `/addsku`, `/addemail`, `/removeemail`, `/lemails`
 - **Role Pings** - Automatically pings Discord roles for matched products
@@ -31,6 +32,21 @@ Monitors Shopify products via GraphQL API and sends Discord webhooks when items 
 
 **Products:**
 Add product IDs in the format `gid://shopify/Product/123456789` (one per line). Add `|ping` suffix for per-product ping override.
+
+### Shopify Monitor
+Monitors multiple Shopify stores for products matching configured keywords and sends Discord webhooks on new/in-stock items.
+
+**Configuration:**
+- Main Webhook URL (for all products)
+- Singles Webhook URL (separate for card singles)
+- Ignore Singles option
+- Check interval (30-3600 seconds)
+- Max pages per store
+- Max concurrent workers
+- Auto-start option
+
+**Stores & Keywords:**
+Configure store domains and keywords to match against product titles, tags, and types.
 
 ### Proxies
 Manage HTTP proxies for monitoring modules. Format: `host:port:username:password` (one per line).
