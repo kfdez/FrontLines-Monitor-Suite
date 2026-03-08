@@ -317,6 +317,24 @@ class MainApplication:
         )
         self.sidebar_title.pack()
 
+        # Minimize to tray checkbox
+        self.minimize_to_tray_var = tk.BooleanVar(value=False)
+        self.minimize_to_tray_checkbox = tk.Checkbutton(
+            self.sidebar_frame,
+            text="Minimize to tray",
+            variable=self.minimize_to_tray_var,
+            bg="#252526",
+            fg="white",
+            selectcolor="#252526",
+            activebackground="#252526",
+            activeforeground="white",
+            pady=5
+        )
+        self.minimize_to_tray_checkbox.pack(pady=(0, 10))
+
+        # Load minimize to tray setting
+        self._load_minimize_to_tray_setting()
+
         # Collapse/expand button
         self.collapse_btn = tk.Button(
             self.sidebar_frame,
@@ -1228,14 +1246,16 @@ class MainApplication:
             import pystray
             from PIL import Image
             import sys
+            import os
 
             # Load icon image - use exe directory for installed version
             if getattr(sys, 'frozen', False):
-                # Running as bundled exe
-                icon_path = os.path.join(os.path.dirname(sys.executable), "Bag_Safari_Ball_SV_Sprite.png")
+                # Running as bundled exe - icon is in _internal folder
+                icon_path = os.path.join(os.path.dirname(sys.executable), "_internal", "Bag_Safari_Ball_SV_Sprite.png")
             else:
                 # Running in development
                 icon_path = "Bag_Safari_Ball_SV_Sprite.png"
+
             self._tray_icon_image = Image.open(icon_path)
 
             # Create menu items
@@ -1252,7 +1272,7 @@ class MainApplication:
 
             # Create tray icon
             self._tray_icon = pystray.Icon(
-                "FrontLines Monitor Suite",
+                "FrontLinesMonitor",
                 self._tray_icon_image,
                 "FrontLines Monitor Suite",
                 menu
@@ -1263,21 +1283,59 @@ class MainApplication:
             self._tray_thread = threading.Thread(target=self._tray_icon.run, daemon=True)
             self._tray_thread.start()
 
-            # Handle minimize to tray
-            self.root.bind("<Unmap>", self._on_minimize)
+            # Handle minimize to tray - poll window state
+            self._check_minimize_state()
 
         except Exception as e:
             print(f"System tray setup failed: {e}")
 
-    def _on_minimize(self, event):
-        """Handle window minimize - minimize to tray instead."""
-        if self.root.state() == 'iconic':
-            self._minimize_to_tray()
+    def _check_minimize_state(self):
+        """Poll window state to detect minimize."""
+        if hasattr(self, '_was_minimized'):
+            # Check if we were minimized and now restored
+            if self._was_minimized and self.root.state() != 'iconic':
+                self._was_minimized = False
+
+        # Check if window is minimized
+        if self.root.state() == 'iconic' and self.minimize_to_tray_var.get():
+            if not hasattr(self, '_was_minimized') or not self._was_minimized:
+                print("Window minimized, hiding to tray")
+                self._was_minimized = True
+                self.root.withdraw()
+                if hasattr(self, '_tray_icon'):
+                    self._tray_icon.notify("FrontLines Monitor Suite", "Minimized to system tray")
+
+        # Poll every 500ms
+        self.root.after(500, self._check_minimize_state)
+
+    def _load_minimize_to_tray_setting(self):
+        """Load minimize to tray setting from database."""
+        try:
+            value = self.db.get_config("minimize_to_tray")
+            if value is not None:
+                self.minimize_to_tray_var.set(value.lower() == "true")
+        except Exception as e:
+            print(f"Failed to load minimize to tray setting: {e}")
+
+        # Bind checkbox change to save setting
+        self.minimize_to_tray_checkbox.config(
+            command=self._save_minimize_to_tray_setting
+        )
+
+    def _save_minimize_to_tray_setting(self):
+        """Save minimize to tray setting to database."""
+        try:
+            value = "true" if self.minimize_to_tray_var.get() else "false"
+            self.db.set_config("minimize_to_tray", value)
+        except Exception as e:
+            print(f"Failed to save minimize to tray setting: {e}")
 
     def _minimize_to_tray(self):
         """Minimize window to system tray."""
+        print("_minimize_to_tray called")
         self.root.withdraw()
         if hasattr(self, '_tray_icon'):
+            print("Sending tray notification")
             self._tray_icon.notify("FrontLines Monitor Suite", "Minimized to system tray")
 
     def _show_from_tray(self):
@@ -1299,21 +1357,8 @@ class MainApplication:
         sys.exit()
 
     def on_close(self):
-        """Handle window close - minimize to tray instead of closing."""
-        # Ask if they want to minimize to tray or exit
-        from tkinter import messagebox
-        answer = messagebox.askyesnocancel(
-            "Minimize to Tray?",
-            "Do you want to minimize to system tray?\n\nYes = Minimize to tray\nNo = Exit completely\nCancel = Do nothing"
-        )
-        if answer is None:
-            return  # Cancel - do nothing
-        elif answer:
-            # Yes - minimize to tray
-            self._minimize_to_tray()
-        else:
-            # No - exit completely
-            self._exit_application()
+        """Handle window close - exit the application."""
+        self._exit_application()
 
     def _exit_application(self):
         """Exit the application completely."""

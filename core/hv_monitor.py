@@ -7,6 +7,7 @@ when items come back in stock.
 
 import json
 import os
+import sys
 import threading
 import time
 from datetime import datetime
@@ -63,6 +64,12 @@ class HVMonitor:
         # Products to monitor: List of (product_id, ping_enabled)
         self.products: List[Tuple[str, bool]] = []
 
+        # Data directory - use exe directory if bundled
+        if getattr(sys, 'frozen', False):
+            self.data_dir = os.path.join(os.path.dirname(sys.executable), "hv_monitor_data")
+        else:
+            self.data_dir = "hv_monitor_data"
+
         # Product metadata: product_id -> metadata dict
         self.metadata: Dict[str, Dict] = {}
 
@@ -80,7 +87,6 @@ class HVMonitor:
         self._failed_proxies: set = set()
 
         # Data file paths
-        self.data_dir = "hv_monitor_data"
         self._ensure_data_dir()
 
         # Load configuration and data

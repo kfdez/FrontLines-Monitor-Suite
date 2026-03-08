@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(cd:*)",
-      "Bash(true:*)"
+      "Bash(true:*)",
+      "Bash(pip show:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(cmd:*)",
+      "Bash(\"C:\\\\Users\\\\Kyle\\\\AppData\\\\Local\\\\Programs\\\\Inno Setup 6\\\\ISCC.exe\":*)"
     ]
   }
 }

@@ -6,7 +6,15 @@ from datetime import datetime
 
 
 class Database:
-    def __init__(self, db_path: str = "skutto.db"):
+    def __init__(self, db_path: str = None):
+        import sys
+        if db_path is None:
+            # Use the directory where the exe is located
+            if getattr(sys, 'frozen', False):
+                # Running as bundled exe
+                db_path = os.path.join(os.path.dirname(sys.executable), "skutto.db")
+            else:
+                db_path = "skutto.db"
         self.db_path = db_path
         self._init_db()
 

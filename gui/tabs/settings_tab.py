@@ -350,9 +350,35 @@ class SettingsTab(ttk.Frame):
     def _get_app_dir(self):
         """Get the app data directory."""
         import sys
+        import os
         if getattr(sys, 'frozen', False):
             return os.path.dirname(sys.executable)
-        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # For development, go up from gui/tabs to project root
+        return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    def _copy_dir(self, src, dst):
+        """Copy directory tree, handling locked files gracefully."""
+        import os
+        import shutil
+
+        if not os.path.exists(dst):
+            os.makedirs(dst)
+
+        if not os.path.isdir(src):
+            return
+
+        for item in os.listdir(src):
+            src_path = os.path.join(src, item)
+            dst_path = os.path.join(dst, item)
+
+            if os.path.isdir(src_path):
+                self._copy_dir(src_path, dst_path)
+            else:
+                try:
+                    shutil.copy2(src_path, dst_path)
+                except (PermissionError, OSError):
+                    # Skip locked files - continue with backup/restore
+                    print(f"Skipped locked file: {src_path}")
 
     def _create_backup(self):
         """Create a backup of all application data."""
@@ -361,13 +387,17 @@ class SettingsTab(ttk.Frame):
         import json
         from datetime import datetime
         import tempfile
+        import os
 
         app_dir = self._get_app_dir()
+
+        # Get user's documents folder as default save location
+        documents_dir = os.path.expanduser("~/Documents")
 
         # Ask for save location
         filepath = filedialog.asksaveasfilename(
             title="Save Backup",
-            initialdir=app_dir,
+            initialdir=documents_dir,
             defaultextension=".zip",
             filetypes=[("ZIP Archive", "*.zip"), ("All Files", "*.*")]
         )
@@ -385,22 +415,34 @@ class SettingsTab(ttk.Frame):
             # Backup database
             db_path = os.path.join(app_dir, "skutto.db")
             if os.path.exists(db_path):
-                shutil.copy2(db_path, os.path.join(temp_dir, "skutto.db"))
+                try:
+                    shutil.copy2(db_path, os.path.join(temp_dir, "skutto.db"))
+                except Exception as e:
+                    print(f"Failed to copy db: {e}")
 
             # Backup HV Monitor data
             hv_dir = os.path.join(app_dir, "hv_monitor_data")
             if os.path.exists(hv_dir):
-                shutil.copytree(hv_dir, os.path.join(temp_dir, "hv_monitor_data"))
+                try:
+                    self._copy_dir(hv_dir, os.path.join(temp_dir, "hv_monitor_data"))
+                except Exception as e:
+                    print(f"Failed to copy hv_monitor_data: {e}")
 
             # Backup Shopify Monitor data
             shopify_dir = os.path.join(app_dir, "shopify_monitor_data")
             if os.path.exists(shopify_dir):
-                shutil.copytree(shopify_dir, os.path.join(temp_dir, "shopify_monitor_data"))
+                try:
+                    self._copy_dir(shopify_dir, os.path.join(temp_dir, "shopify_monitor_data"))
+                except Exception as e:
+                    print(f"Failed to copy shopify_monitor_data: {e}")
 
             # Backup skutto data
             skutto_dir = os.path.join(app_dir, "skutto_data")
             if os.path.exists(skutto_dir):
-                shutil.copytree(skutto_dir, os.path.join(temp_dir, "skutto_data"))
+                try:
+                    self._copy_dir(skutto_dir, os.path.join(temp_dir, "skutto_data"))
+                except Exception as e:
+                    print(f"Failed to copy skutto_data: {e}")
 
             # Create manifest
             manifest = {
@@ -424,12 +466,14 @@ class SettingsTab(ttk.Frame):
         import shutil
         import json
         import tempfile
+        import os
 
         app_dir = self._get_app_dir()
+        documents_dir = os.path.expanduser("~/Documents")
 
         filepath = filedialog.askopenfilename(
             title="Restore Backup",
-            initialdir=app_dir,
+            initialdir=documents_dir,
             filetypes=[("ZIP Archive", "*.zip"), ("All Files", "*.*")]
         )
 
@@ -470,24 +514,42 @@ class SettingsTab(ttk.Frame):
             if os.path.exists(hv_backup):
                 hv_dir = os.path.join(app_dir, "hv_monitor_data")
                 if os.path.exists(hv_dir):
-                    shutil.rmtree(hv_dir)
-                shutil.copytree(hv_backup, hv_dir)
+                    try:
+                        shutil.rmtree(hv_dir)
+                    except (PermissionError, OSError):
+                        pass  # Continue even if can't delete
+                try:
+                    self._copy_dir(hv_backup, hv_dir)
+                except Exception as e:
+                    print(f"Warning: Could not fully restore hv_monitor_data: {e}")
 
             # Restore Shopify Monitor data
             shopify_backup = os.path.join(temp_dir, "shopify_monitor_data")
             if os.path.exists(shopify_backup):
                 shopify_dir = os.path.join(app_dir, "shopify_monitor_data")
                 if os.path.exists(shopify_dir):
-                    shutil.rmtree(shopify_dir)
-                shutil.copytree(shopify_backup, shopify_dir)
+                    try:
+                        shutil.rmtree(shopify_dir)
+                    except (PermissionError, OSError):
+                        pass
+                try:
+                    self._copy_dir(shopify_backup, shopify_dir)
+                except Exception as e:
+                    print(f"Warning: Could not fully restore shopify_monitor_data: {e}")
 
             # Restore skutto data
             skutto_backup = os.path.join(temp_dir, "skutto_data")
             if os.path.exists(skutto_backup):
                 skutto_dir = os.path.join(app_dir, "skutto_data")
                 if os.path.exists(skutto_dir):
-                    shutil.rmtree(skutto_dir)
-                shutil.copytree(skutto_backup, skutto_dir)
+                    try:
+                        shutil.rmtree(skutto_dir)
+                    except (PermissionError, OSError):
+                        pass
+                try:
+                    self._copy_dir(skutto_backup, skutto_dir)
+                except Exception as e:
+                    print(f"Warning: Could not fully restore skutto_data: {e}")
 
             shutil.rmtree(temp_dir)
 

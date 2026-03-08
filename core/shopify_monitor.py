@@ -7,6 +7,7 @@ and sends Discord notifications when new/updated products are found.
 
 import json
 import os
+import sys
 import random
 import re
 import threading
@@ -257,8 +258,11 @@ class ShopifyMonitor:
         self._monitor_thread = None
         self._running = False
 
-        # Data file paths
-        self.data_dir = "shopify_monitor_data"
+        # Data file paths - use exe directory if bundled
+        if getattr(sys, 'frozen', False):
+            self.data_dir = os.path.join(os.path.dirname(sys.executable), "shopify_monitor_data")
+        else:
+            self.data_dir = "shopify_monitor_data"
         self._ensure_data_dir()
 
         # Load configuration (includes stores/keywords from database)

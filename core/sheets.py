@@ -1,12 +1,44 @@
 """Google Sheets integration for products."""
 import os
+import sys
 from typing import List, Dict, Any, Optional
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
 
+def get_resource_path(filename: str) -> str:
+    """Get the path to a resource file, works for both development and bundled exe."""
+    if getattr(sys, 'frozen', False):
+        # Running as bundled exe
+        base_path = sys._MEIPASS
+    else:
+        # Running in development
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, filename)
+
+
 class SheetsManager:
-    def __init__(self, credentials_path: str = "credentials.json"):
+    def __init__(self, credentials_path: str = None):
+        if credentials_path is None:
+            # Try multiple locations for credentials
+            possible_paths = [
+                "credentials.json",
+                os.path.join(os.getcwd(), "credentials.json"),
+                os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "credentials.json"),
+            ]
+            # Add bundled path for exe
+            if getattr(sys, 'frozen', False):
+                possible_paths.insert(0, os.path.join(sys._MEIPASS, "credentials.json"))
+
+            credentials_path = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    credentials_path = path
+                    break
+
+            if credentials_path is None:
+                raise FileNotFoundError(f"Credentials file not found. Searched: {possible_paths}")
+
         self.credentials_path = credentials_path
         self.service = None
         self._authenticate()
