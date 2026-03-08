@@ -15,8 +15,27 @@ class SettingsTab(ttk.Frame):
 
     def _create_ui(self):
         """Create the settings tab UI."""
+        # Canvas with scrollbar
+        self.canvas = tk.Canvas(self)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        self.canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Bind resize event to update canvas width
+        self.bind("<Configure>", self._on_resize)
+
         # Bot Configuration Section
-        config_frame = ttk.LabelFrame(self, text="Bot Configuration", padding=10)
+        config_frame = ttk.LabelFrame(self.scrollable_frame, text="Bot Configuration", padding=10)
         config_frame.pack(fill=tk.X, padx=10, pady=10)
 
         # Bot Token
@@ -104,7 +123,7 @@ class SettingsTab(ttk.Frame):
             row=7, column=1, sticky='e', padx=60)
 
         # Application Settings Section
-        app_frame = ttk.LabelFrame(self, text="Application Settings", padding=10)
+        app_frame = ttk.LabelFrame(self.scrollable_frame, text="Application Settings", padding=10)
         app_frame.pack(fill=tk.X, padx=10, pady=10)
 
         # Auto-start checkbox
@@ -117,7 +136,7 @@ class SettingsTab(ttk.Frame):
         ).pack(anchor='w', pady=5)
 
         # Tasks Settings Section
-        tasks_frame = ttk.LabelFrame(self, text="Stellar Tasks Settings", padding=10)
+        tasks_frame = ttk.LabelFrame(self.scrollable_frame, text="Stellar Tasks Settings", padding=10)
         tasks_frame.pack(fill=tk.X, padx=10, pady=10)
 
         # Configure column weights for proper alignment
@@ -178,7 +197,7 @@ class SettingsTab(ttk.Frame):
         self.tasks_status_label.grid(row=3, column=0, columnspan=3, pady=5)
 
         # Save/Load buttons - moved below Tasks section
-        btn_frame = ttk.Frame(self)
+        btn_frame = ttk.Frame(self.scrollable_frame)
         btn_frame.pack(fill=tk.X, padx=10, pady=10)
 
         ttk.Button(
@@ -200,6 +219,38 @@ class SettingsTab(ttk.Frame):
             foreground="green"
         )
         self.status_label.pack(side=tk.LEFT, padx=20)
+
+        # Backup/Restore Section
+        backup_frame = ttk.LabelFrame(self.scrollable_frame, text="Backup & Restore", padding=10)
+        backup_frame.pack(fill=tk.X, padx=10, pady=10)
+
+        backup_btn_frame = ttk.Frame(backup_frame)
+        backup_btn_frame.pack(fill=tk.X)
+
+        ttk.Button(
+            backup_btn_frame,
+            text="Create Backup",
+            command=self._create_backup
+        ).pack(side=tk.LEFT, padx=5)
+
+        ttk.Button(
+            backup_btn_frame,
+            text="Restore Backup",
+            command=self._restore_backup
+        ).pack(side=tk.LEFT, padx=5)
+
+        ttk.Label(
+            backup_frame,
+            text="Backs up: Database, HV Monitor data, Shopify Monitor data, Tasks data",
+            font=("Segoe UI", 8),
+            foreground="gray"
+        ).pack(anchor='w', pady=(5, 0))
+
+    def _on_resize(self, event):
+        """Handle resize events to update canvas width."""
+        if hasattr(self, 'canvas') and hasattr(self, 'scrollable_frame'):
+            width = event.width - 20  # Account for scrollbar
+            self.canvas.itemconfig(1, width=max(width, 800))
 
     def _load_settings(self):
         """Load settings from database."""
@@ -295,3 +346,155 @@ class SettingsTab(ttk.Frame):
             return int(value) if value else None
         except (ValueError, TypeError):
             return None
+
+    def _get_app_dir(self):
+        """Get the app data directory."""
+        import sys
+        if getattr(sys, 'frozen', False):
+            return os.path.dirname(sys.executable)
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def _create_backup(self):
+        """Create a backup of all application data."""
+        from tkinter import filedialog
+        import shutil
+        import json
+        from datetime import datetime
+        import tempfile
+
+        app_dir = self._get_app_dir()
+
+        # Ask for save location
+        filepath = filedialog.asksaveasfilename(
+            title="Save Backup",
+            initialdir=app_dir,
+            defaultextension=".zip",
+            filetypes=[("ZIP Archive", "*.zip"), ("All Files", "*.*")]
+        )
+
+        if not filepath:
+            return
+
+        # Ensure .zip extension
+        if not filepath.endswith(".zip"):
+            filepath += ".zip"
+
+        try:
+            temp_dir = tempfile.mkdtemp()
+
+            # Backup database
+            db_path = os.path.join(app_dir, "skutto.db")
+            if os.path.exists(db_path):
+                shutil.copy2(db_path, os.path.join(temp_dir, "skutto.db"))
+
+            # Backup HV Monitor data
+            hv_dir = os.path.join(app_dir, "hv_monitor_data")
+            if os.path.exists(hv_dir):
+                shutil.copytree(hv_dir, os.path.join(temp_dir, "hv_monitor_data"))
+
+            # Backup Shopify Monitor data
+            shopify_dir = os.path.join(app_dir, "shopify_monitor_data")
+            if os.path.exists(shopify_dir):
+                shutil.copytree(shopify_dir, os.path.join(temp_dir, "shopify_monitor_data"))
+
+            # Backup skutto data
+            skutto_dir = os.path.join(app_dir, "skutto_data")
+            if os.path.exists(skutto_dir):
+                shutil.copytree(skutto_dir, os.path.join(temp_dir, "skutto_data"))
+
+            # Create manifest
+            manifest = {
+                "version": "3.0",
+                "created_at": datetime.now().isoformat()
+            }
+            with open(os.path.join(temp_dir, "manifest.json"), "w") as f:
+                json.dump(manifest, f)
+
+            # Create zip
+            shutil.make_archive(filepath.replace(".zip", ""), "zip", temp_dir)
+            shutil.rmtree(temp_dir)
+
+            messagebox.showinfo("Success", f"Backup created:\n{filepath}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Backup failed:\n{str(e)}")
+
+    def _restore_backup(self):
+        """Restore from a backup file."""
+        from tkinter import filedialog
+        import shutil
+        import json
+        import tempfile
+
+        app_dir = self._get_app_dir()
+
+        filepath = filedialog.askopenfilename(
+            title="Restore Backup",
+            initialdir=app_dir,
+            filetypes=[("ZIP Archive", "*.zip"), ("All Files", "*.*")]
+        )
+
+        if not filepath:
+            return
+
+        # Confirm restore
+        if not messagebox.askyesno(
+            "Confirm Restore",
+            "This will replace all current data with the backup.\n\n"
+            "Continue?"
+        ):
+            return
+
+        try:
+            temp_dir = tempfile.mkdtemp()
+
+            # Extract backup
+            shutil.unpack_archive(filepath, temp_dir)
+
+            # Verify manifest
+            manifest_path = os.path.join(temp_dir, "manifest.json")
+            if not os.path.exists(manifest_path):
+                messagebox.showerror("Error", "Invalid backup file - no manifest found")
+                shutil.rmtree(temp_dir)
+                return
+
+            # Restore database
+            db_backup = os.path.join(temp_dir, "skutto.db")
+            if os.path.exists(db_backup):
+                db_path = os.path.join(app_dir, "skutto.db")
+                if os.path.exists(db_path):
+                    shutil.copy2(db_path, db_path + ".bak")
+                shutil.copy2(db_backup, db_path)
+
+            # Restore HV Monitor data
+            hv_backup = os.path.join(temp_dir, "hv_monitor_data")
+            if os.path.exists(hv_backup):
+                hv_dir = os.path.join(app_dir, "hv_monitor_data")
+                if os.path.exists(hv_dir):
+                    shutil.rmtree(hv_dir)
+                shutil.copytree(hv_backup, hv_dir)
+
+            # Restore Shopify Monitor data
+            shopify_backup = os.path.join(temp_dir, "shopify_monitor_data")
+            if os.path.exists(shopify_backup):
+                shopify_dir = os.path.join(app_dir, "shopify_monitor_data")
+                if os.path.exists(shopify_dir):
+                    shutil.rmtree(shopify_dir)
+                shutil.copytree(shopify_backup, shopify_dir)
+
+            # Restore skutto data
+            skutto_backup = os.path.join(temp_dir, "skutto_data")
+            if os.path.exists(skutto_backup):
+                skutto_dir = os.path.join(app_dir, "skutto_data")
+                if os.path.exists(skutto_dir):
+                    shutil.rmtree(skutto_dir)
+                shutil.copytree(skutto_backup, skutto_dir)
+
+            shutil.rmtree(temp_dir)
+
+            messagebox.showinfo(
+                "Success",
+                "Backup restored!\n\nPlease restart the application for changes to take effect."
+            )
+        except Exception as e:
+            import traceback
+            messagebox.showerror("Error", f"Restore failed:\n{str(e)}\n\n{traceback.format_exc()}")

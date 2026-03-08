@@ -25,7 +25,7 @@ class ProductsTab(ttk.Frame):
 
         # Products sub-tab
         self.products_frame = ttk.Frame(self.notebook)
-        self.notebook.add(self.products_frame, text="Products")
+        self.notebook.add(self.products_frame, text="SKUs")
 
         # Pending sub-tab
         self.pending_frame = ttk.Frame(self.notebook)
@@ -172,7 +172,8 @@ class ProductsTab(ttk.Frame):
         self.tree = ttk.Treeview(
             tree_frame,
             columns=("SKU", "SKU2", "Name", "URL", "Platform", "RoleID", "Role"),
-            show="headings"
+            show="headings",
+            height=15
         )
         # Add sorting
         self.sort_col = "SKU"

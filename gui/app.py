@@ -93,14 +93,13 @@ class MainApplication:
     def __init__(self, root):
         self.root = root
         self.root.title("FrontLines Monitor Suite")
-        self.root.geometry("1200x900")
 
         # Center window on screen manually
         self.root.update_idletasks()
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         window_width = 1200
-        window_height = 900
+        window_height = 950
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
@@ -110,11 +109,15 @@ class MainApplication:
         # Handle window close
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
-        # Set window icon
+        # Set window and taskbar icon using ICO file
+        ico_path = "app.ico"
         try:
-            self.root.iconbitmap("favicon.ico")
+            self.root.iconbitmap(ico_path)
         except Exception:
             pass
+
+        # Setup system tray
+        self._setup_system_tray()
 
         # Configure custom styles
         self._configure_styles()
@@ -142,8 +145,20 @@ class MainApplication:
         # Defer heavy operations to let UI render first
         self.root.after(100, self._delayed_init)
 
+    def _set_taskbar_icon(self):
+        """Set the taskbar icon after window is displayed."""
+        # Use ICO file for proper Windows taskbar support
+        ico_path = "app.ico"
+        try:
+            self.root.iconbitmap(ico_path)
+        except Exception:
+            pass
+
     def _delayed_init(self):
         """Perform heavy initialization after UI is shown."""
+        # Set taskbar icon after window is fully displayed
+        self.root.after_idle(self._set_taskbar_icon)
+
         # Initialize tasks manager (can be slow with large files)
         self.bot.set_tasks_manager(self.tasks_manager)
         self.tasks_manager.load_tasks()
@@ -1207,23 +1222,107 @@ class MainApplication:
         import threading
         threading.Thread(target=do_stop, daemon=True).start()
 
-    def on_close(self):
-        """Handle window close."""
-        if self.bot.is_running():
-            from tkinter import messagebox
-            answer = messagebox.askyesnocancel(
-                "Exit Confirmation",
-                "The bot is still running. Do you want to stop and exit?"
+    def _setup_system_tray(self):
+        """Setup system tray icon and menu."""
+        try:
+            import pystray
+            from PIL import Image
+
+            # Load icon image
+            self._tray_icon_image = Image.open("Bag_Safari_Ball_SV_Sprite.png")
+
+            # Create menu items
+            def show_window(icon, item):
+                self.root.after(0, self._show_from_tray)
+
+            def exit_app(icon, item):
+                self.root.after(0, self._force_exit)
+
+            menu = pystray.Menu(
+                pystray.MenuItem("Show", show_window),
+                pystray.MenuItem("Exit", exit_app)
             )
-            if answer is None:
-                return
-            elif answer:
-                self.stop_bot()
-                # Show loading and wait for bot to stop
-                self._show_loading()
-                self._wait_and_close()
-                return
+
+            # Create tray icon
+            self._tray_icon = pystray.Icon(
+                "FrontLines Monitor Suite",
+                self._tray_icon_image,
+                "FrontLines Monitor Suite",
+                menu
+            )
+
+            # Run tray icon in separate thread
+            import threading
+            self._tray_thread = threading.Thread(target=self._tray_icon.run, daemon=True)
+            self._tray_thread.start()
+
+            # Handle minimize to tray
+            self.root.bind("<Unmap>", self._on_minimize)
+
+        except Exception as e:
+            print(f"System tray setup failed: {e}")
+
+    def _on_minimize(self, event):
+        """Handle window minimize - minimize to tray instead."""
+        if self.root.state() == 'iconic':
+            self._minimize_to_tray()
+
+    def _minimize_to_tray(self):
+        """Minimize window to system tray."""
+        self.root.withdraw()
+        if hasattr(self, '_tray_icon'):
+            self._tray_icon.notify("FrontLines Monitor Suite", "Minimized to system tray")
+
+    def _show_from_tray(self):
+        """Show window from system tray."""
+        self.root.deiconify()
+        self.root.state('normal')
+        self.root.lift()
+        self.root.focus_force()
+
+    def _force_exit(self):
+        """Force exit application."""
+        # Stop tray icon
+        if hasattr(self, '_tray_icon'):
+            self._tray_icon.stop()
+        # Exit
+        self.root.quit()
         self.root.destroy()
+        import sys
+        sys.exit()
+
+    def on_close(self):
+        """Handle window close - minimize to tray instead of closing."""
+        # Ask if they want to minimize to tray or exit
+        from tkinter import messagebox
+        answer = messagebox.askyesnocancel(
+            "Minimize to Tray?",
+            "Do you want to minimize to system tray?\n\nYes = Minimize to tray\nNo = Exit completely\nCancel = Do nothing"
+        )
+        if answer is None:
+            return  # Cancel - do nothing
+        elif answer:
+            # Yes - minimize to tray
+            self._minimize_to_tray()
+        else:
+            # No - exit completely
+            self._exit_application()
+
+    def _exit_application(self):
+        """Exit the application completely."""
+        # Stop tray icon if running
+        if hasattr(self, '_tray_icon'):
+            try:
+                self._tray_icon.stop()
+            except Exception:
+                pass
+
+        if self.bot.is_running():
+            self.stop_bot()
+            self._show_loading()
+            self._wait_and_close()
+        else:
+            self.root.destroy()
 
     def _wait_and_close(self):
         """Wait for bot to stop, then close the window."""
@@ -1232,6 +1331,12 @@ class MainApplication:
             self.root.after(500, self._wait_and_close)
         else:
             self._hide_loading()
+            # Stop tray icon
+            if hasattr(self, '_tray_icon'):
+                try:
+                    self._tray_icon.stop()
+                except Exception:
+                    pass
             self.root.destroy()
 
 

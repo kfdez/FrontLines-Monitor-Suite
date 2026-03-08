@@ -159,7 +159,8 @@ class EmailsTab(ttk.Frame):
         self.tree = ttk.Treeview(
             tree_frame,
             columns=("ID", "Email", "Discord ID", "Created"),
-            show="headings"
+            show="headings",
+            height=15
         )
         self.tree.heading("ID", text="ID")
         self.tree.heading("Email", text="Email")
