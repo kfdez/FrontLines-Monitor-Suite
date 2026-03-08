@@ -1227,9 +1227,16 @@ class MainApplication:
         try:
             import pystray
             from PIL import Image
+            import sys
 
-            # Load icon image
-            self._tray_icon_image = Image.open("Bag_Safari_Ball_SV_Sprite.png")
+            # Load icon image - use exe directory for installed version
+            if getattr(sys, 'frozen', False):
+                # Running as bundled exe
+                icon_path = os.path.join(os.path.dirname(sys.executable), "Bag_Safari_Ball_SV_Sprite.png")
+            else:
+                # Running in development
+                icon_path = "Bag_Safari_Ball_SV_Sprite.png"
+            self._tray_icon_image = Image.open(icon_path)
 
             # Create menu items
             def show_window(icon, item):

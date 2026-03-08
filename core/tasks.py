@@ -1,5 +1,6 @@
 """Tasks manager for Stellar Bot task extraction."""
 import os
+import sys
 import json
 import shutil
 import threading
@@ -20,8 +21,13 @@ class TasksManager:
         self._scheduler_timer: Optional[threading.Timer] = None
         self._is_running = False
 
-        # Data folder path
-        self.data_folder = "skutto_data"
+        # Data folder path - use AppData for installed version
+        if getattr(sys, 'frozen', False):
+            # Running as compiled exe
+            self.data_folder = os.path.join(os.path.expandvars(r"%APPDATA%\FrontLinesMonitorSuite"), "tasks_data")
+        else:
+            # Running as script
+            self.data_folder = "skutto_data"
         self.tasks_file = os.path.join(self.data_folder, "tasks.json")
 
         # Ensure data folder exists
