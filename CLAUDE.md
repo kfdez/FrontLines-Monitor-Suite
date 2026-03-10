@@ -18,6 +18,26 @@ The application has multiple monitoring modules:
 python main.py
 ```
 
+## Building the Application
+
+### Prerequisites
+- Python 3.13+
+- Inno Setup 6 (for installer)
+
+### Build Executable
+```bash
+# Clean and build with PyInstaller
+rm -rf dist/FrontLinesMonitorSuite build/FrontLinesMonitorSuite
+python -m PyInstaller FrontLinesMonitorSuite.spec
+```
+
+### Build Installer
+```bash
+"C:\Users\Kyle\AppData\Local\Programs\Inno Setup 6\ISCC.exe" installer.iss
+```
+
+The installer outputs to `installer/FrontLinesMonitorSuite_Setup_v7.exe`.
+
 ## Git Commands
 
 ```bash
@@ -167,5 +187,41 @@ Settings stored in SQLite database (`skutto.db`) `config` table:
 - `google-api-python-client` - Google Sheets API
 - `google-auth-oauthlib` - Google authentication
 - `requests` - HTTP library for GraphQL/proxy requests
+- `pystray` - System tray support
+- `Pillow` - Image processing for tray icon
 - `tkinter` - GUI (built into Python)
 - `sqlite3` - Database (built into Python)
+
+## Backup & Restore
+
+The Settings tab includes backup/restore functionality that saves:
+- SQLite database (skutto.db)
+- HV Monitor data (hv_monitor_data/)
+- Shopify Monitor data (shopify_monitor_data/)
+- SKUtto data (skutto_data/)
+
+Backup handles locked files gracefully by skipping them with a warning.
+
+## Auto-Start
+
+The application supports auto-start on launch via a checkbox in Settings. When enabled, the Discord bot, HV Monitor, and Shopify Monitor will start automatically when the application launches.
+
+## Tasks Manager (Stellar Integration)
+
+The Settings tab includes Stellar Tasks integration for tracking task completion from Stellar export files.
+
+### Configuration
+- `tasks_file_path` - Path to Stellar export file (or auto-detect from AppData)
+- `tasks_auto_refresh_interval` - Auto-refresh interval in minutes (0 to disable)
+
+### Data Location
+- Development: Project root `tasks_data/` folder
+- Installed: `%APPDATA%\FrontLinesMonitorSuite\tasks_data\`
+
+## Installed vs Development Paths
+
+The application detects if running as PyInstaller executable using `sys.frozen`:
+- **Installed**: Data stored alongside executable, icon in `_internal` folder
+- **Development**: Data stored in project root directories
+
+Always use `getattr(sys, 'frozen', False)` to check and use appropriate paths.
