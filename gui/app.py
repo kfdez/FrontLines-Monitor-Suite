@@ -919,7 +919,7 @@ class MainApplication:
         sku_value = None
         for field in embed_dict.get("fields", []):
             field_name = field.get("name", "").strip().lower()
-            if field_name in ["sku", "title/sku", "title"]:
+            if field_name in ["sku", "title/sku", "title", "product"]:
                 sku_value = field.get("value", "").strip()
                 print(f"Debug - Found SKU field '{field_name}': {sku_value}")
                 break
