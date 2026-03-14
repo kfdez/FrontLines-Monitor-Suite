@@ -958,6 +958,11 @@ class MainApplication:
             platform = product.get("platform", "Unknown")
             embed_dict["title"] = f"[{platform.capitalize()} Restock] - {product['name']}"
 
+            # Add URL from product if available
+            product_url = product.get("url", "")
+            if product_url:
+                embed_dict["url"] = product_url
+
             # Update footer with timestamp
             footer_text = f"FrontLines - SKUtto - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
 

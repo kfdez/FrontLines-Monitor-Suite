@@ -218,7 +218,9 @@ class DiscordBot:
             # Determine platform from URL
             platform = "unknown"
             url_lower = url.lower()
-            if "walmart" in url_lower:
+            if "walmart.ca" in url_lower:
+                platform = "walmartca"
+            elif "walmart" in url_lower:
                 platform = "walmart"
             elif "gamestop" in url_lower:
                 platform = "gamestop"
