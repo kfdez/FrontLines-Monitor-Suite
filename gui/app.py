@@ -233,6 +233,9 @@ class MainApplication:
         # Duplicate timeout (in seconds)
         self.duplicate_timeout = int(self.db.get_config("duplicate_timeout", "60"))
 
+        # Debug logging toggle
+        self.debug_logging = self.db.get_config("debug_logging", "false").lower() == "true"
+
     @property
     def proxies(self) -> list:
         """Get list of proxies from database."""
@@ -914,38 +917,64 @@ class MainApplication:
         # Debug: log all field names
         field_names = [f.get("name", "") for f in embed_dict.get("fields", [])]
         print(f"Debug - Embed fields: {field_names}")
+        if self.debug_logging:
+            self.log_message(f"🔍 Debug - Fields: {field_names}")
 
-        # 1. Find SKU in embed fields
+        # 1. Find SKU in embed fields - prioritize SKU field over product/name fields
         sku_value = None
+        # First pass: look for SKU-specific fields
+        sku_priority_fields = ["sku", "title/sku"]
         for field in embed_dict.get("fields", []):
             field_name = field.get("name", "").strip().lower()
-            if field_name in ["sku", "title/sku", "title", "product"]:
+            if field_name in sku_priority_fields:
                 sku_value = field.get("value", "").strip()
                 print(f"Debug - Found SKU field '{field_name}': {sku_value}")
+                if self.debug_logging:
+                    self.log_message(f"🔍 Debug - Found SKU field '{field_name}': {sku_value}")
                 break
+        # Second pass: only use title/product if no SKU field found
+        if not sku_value:
+            for field in embed_dict.get("fields", []):
+                field_name = field.get("name", "").strip().lower()
+                if field_name in ["title", "product"]:
+                    sku_value = field.get("value", "").strip()
+                    print(f"Debug - Found SKU field '{field_name}': {sku_value}")
+                    if self.debug_logging:
+                        self.log_message(f"🔍 Debug - Found SKU field '{field_name}': {sku_value}")
+                    break
 
         if not sku_value:
             print(f"Debug - No SKU field found in embed")
+            if self.debug_logging:
+                self.log_message(f"🔍 Debug - No SKU field found in embed")
 
         # 2. Match against products
         product = None
         if sku_value and hasattr(self, 'bot') and self.bot.sku_data:
             print(f"Debug - Looking up SKU: {sku_value}")
             print(f"Debug - SKU data keys: {list(self.bot.sku_data.keys())[:5]}...")  # Show first 5
+            if self.debug_logging:
+                self.log_message(f"🔍 Debug - Looking up SKU: {sku_value}, bot.sku_data has {len(self.bot.sku_data)} products")
             # Check SKU, SKU2, Name
             for key in ['sku', 'sku2', 'name']:
                 for sku, data in self.bot.sku_data.items():
                     if data.get(key, "").upper() == sku_value.upper():
                         product = data
                         print(f"Debug - Matched product: {product.get('name')}")
+                        if self.debug_logging:
+                            self.log_message(f"🔍 Debug - Matched! Product: {product.get('name')}, Platform: {product.get('platform')}")
                         break
                 if product:
                     break
         else:
             if not hasattr(self, 'bot'):
                 print(f"Debug - No bot attribute")
+                if self.debug_logging:
+                    self.log_message(f"🔍 Debug - No bot attribute")
             elif not self.bot.sku_data:
                 print(f"Debug - No sku_data or empty")
+                if self.debug_logging:
+                    self.log_message(f"🔍 Debug - sku_data is empty ({len(self.bot.sku_data) if hasattr(self, 'bot') and self.bot.sku_data else 0} products)")
 
         # 3. Transform if matched
         if product:

@@ -98,19 +98,27 @@ class SettingsTab(ttk.Frame):
             variable=self.enable_ping_var
         ).grid(row=5, column=1, sticky='w', pady=5)
 
+        # Debug Logging Checkbox
+        self.debug_logging_var = tk.BooleanVar()
+        ttk.Checkbutton(
+            config_frame,
+            text="Enable debug logging for embed processing",
+            variable=self.debug_logging_var
+        ).grid(row=6, column=1, sticky='w', pady=5)
+
         # Footer Icon URL
         ttk.Label(config_frame, text="Footer Icon URL:").grid(
-            row=6, column=0, sticky='w', pady=5)
+            row=7, column=0, sticky='w', pady=5)
         self.footer_icon_var = tk.StringVar()
         ttk.Entry(
             config_frame,
             textvariable=self.footer_icon_var,
             width=50
-        ).grid(row=6, column=1, pady=5, padx=5)
+        ).grid(row=7, column=1, pady=5, padx=5)
 
         # Duplicate Timeout
         ttk.Label(config_frame, text="Duplicate Timeout (sec):").grid(
-            row=7, column=0, sticky='w', pady=5)
+            row=8, column=0, sticky='w', pady=5)
         self.duplicate_timeout_var = tk.IntVar(value=60)
         ttk.Spinbox(
             config_frame,
@@ -118,9 +126,9 @@ class SettingsTab(ttk.Frame):
             to=3600,
             width=10,
             textvariable=self.duplicate_timeout_var
-        ).grid(row=7, column=1, sticky='w', pady=5, padx=5)
+        ).grid(row=8, column=1, sticky='w', pady=5, padx=5)
         ttk.Label(config_frame, text="(0 to disable)", font=("Segoe UI", 8)).grid(
-            row=7, column=1, sticky='e', padx=60)
+            row=8, column=1, sticky='e', padx=60)
 
         # Application Settings Section
         app_frame = ttk.LabelFrame(self.scrollable_frame, text="Application Settings", padding=10)
@@ -260,6 +268,7 @@ class SettingsTab(ttk.Frame):
         self.checkouts_channel_var.set(self.app.db.get_config("checkouts_channel_id", ""))
         self.admin_channel_var.set(self.app.db.get_config("admin_channel_id", ""))
         self.enable_ping_var.set(self.app.db.get_config("enable_ping", "false").lower() == "true")
+        self.debug_logging_var.set(self.app.db.get_config("debug_logging", "false").lower() == "true")
         self.footer_icon_var.set(self.app.db.get_config("footer_icon_url", ""))
         self.duplicate_timeout_var.set(int(self.app.db.get_config("duplicate_timeout", "60")))
         self.auto_start_var.set(self.app.auto_start)
@@ -277,6 +286,7 @@ class SettingsTab(ttk.Frame):
         self.app.db.set_config("checkouts_channel_id", self.checkouts_channel_var.get().strip())
         self.app.db.set_config("admin_channel_id", self.admin_channel_var.get().strip())
         self.app.db.set_config("enable_ping", "true" if self.enable_ping_var.get() else "false")
+        self.app.db.set_config("debug_logging", "true" if self.debug_logging_var.get() else "false")
         self.app.db.set_config("footer_icon_url", self.footer_icon_var.get().strip())
         self.app.db.set_config("duplicate_timeout", str(self.duplicate_timeout_var.get()))
 
@@ -292,6 +302,7 @@ class SettingsTab(ttk.Frame):
         self.app.bot.admin_channel_id = self._str_to_int(self.admin_channel_var.get())
         self.app.bot.enable_ping = self.enable_ping_var.get()
         self.app.duplicate_timeout = self.duplicate_timeout_var.get()
+        self.app.debug_logging = self.debug_logging_var.get()
 
         # Refresh tasks manager settings and scheduler
         if self.app.tasks_manager:
