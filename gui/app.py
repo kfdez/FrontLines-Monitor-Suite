@@ -1206,12 +1206,6 @@ class MainApplication:
                                 self.recent_forwards[matched_sku] = time.time()
                         self.log_message(f"📤 Forwarded {len(message.embeds)} embed(s) to target channel")
                     elif message.content:
-                        # Send role ping if enabled
-                        role_id = processed.get("role_id", "").strip()
-                        if self.bot.enable_ping and role_id and role_id.isdigit():
-                            mention = f"<@&{role_id}>"
-                            self.log_message(f"📣 Pinging role: {role_id}")
-                            await target_channel.send(content=mention)
                         await target_channel.send(message.content)
                         self.log_message(f"📤 Forwarded message to target channel")
                 except Exception as e:

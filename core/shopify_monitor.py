@@ -510,6 +510,14 @@ class ShopifyMonitor:
                         # Transform to consistent format
                         transformed = []
                         for p in products:
+                            raw_tags = p.get('tags', [])
+                            if isinstance(raw_tags, str):
+                                tags = [tag.strip() for tag in raw_tags.split(',') if tag.strip()]
+                            elif isinstance(raw_tags, list):
+                                tags = [str(tag).strip() for tag in raw_tags if str(tag).strip()]
+                            else:
+                                tags = []
+
                             variants = []
                             for v in p.get('variants', []):
                                 # Try multiple fields to determine availability
@@ -543,7 +551,7 @@ class ShopifyMonitor:
                                 'handle': p.get('handle'),
                                 'productType': p.get('product_type'),
                                 'vendor': p.get('vendor'),
-                                'tags': p.get('tags', []),
+                                'tags': tags,
                                 'image': p.get('images', [{}])[0].get('src') if p.get('images') else None,
                                 'variants': variants,
                             })
@@ -679,7 +687,11 @@ class ShopifyMonitor:
         """Process a single product."""
         # Check for keyword matches
         title_lower = product.get('title', '').lower()
-        tags_lower = ' '.join(product.get('tags', [])).lower()
+        raw_tags = product.get('tags', [])
+        if isinstance(raw_tags, str):
+            tags_lower = raw_tags.lower()
+        else:
+            tags_lower = ' '.join(str(tag) for tag in raw_tags).lower()
         product_type_lower = product.get('productType', '').lower()
 
         matched_keywords = []
@@ -690,14 +702,11 @@ class ShopifyMonitor:
         if not matched_keywords:
             return
 
-        # Use ProductFilter to check if should be monitored
-        if not ProductFilter.should_monitor(product):
+        is_single = ProductFilter.is_card_single(product)
+        if ProductFilter.is_graded_slab(product):
             if self.detailed_logging:
                 self.log(f"Filtered: {product.get('title', '')[:40]}")
             return
-
-        # Detect if it's a single (for webhook routing)
-        is_single = ProductFilter.is_card_single(product)
 
         # Check variants
         product_id = str(product.get('id', ''))
@@ -862,7 +871,7 @@ class ShopifyMonitor:
 
             # Add role ping if enabled
             if self.ping_enabled and self.ping_role_id:
-                payload["content"] = f"<@{self.ping_role_id}>"
+                payload["content"] = f"<@&{self.ping_role_id}>"
 
             response = requests.post(webhook_url, json=payload, timeout=10)
             return response.status_code in (200, 204)
