@@ -1,8 +1,10 @@
 """Discord bot handler for the application."""
 import asyncio
+import logging
 import discord
 from typing import Optional, Dict, Any, Callable
 from core.database import Database
+from core.logger import get_asyncio_exception_handler
 
 
 class DiscordBot:
@@ -26,6 +28,7 @@ class DiscordBot:
         self.source_channel_id: Optional[int] = None
         self.target_channel_id: Optional[int] = None
         self.checkouts_channel_id: Optional[int] = None
+        self.checkouts_target_channel_id: Optional[int] = None
         self.admin_channel_id: Optional[int] = None
         self.enable_ping: bool = False
 
@@ -39,12 +42,14 @@ class DiscordBot:
         source_channel_id: int,
         target_channel_id: int,
         checkouts_channel_id: int,
+        checkouts_target_channel_id: int,
         admin_channel_id: int
     ):
         """Set channel configuration."""
         self.source_channel_id = source_channel_id
         self.target_channel_id = target_channel_id
         self.checkouts_channel_id = checkouts_channel_id
+        self.checkouts_target_channel_id = checkouts_target_channel_id
         self.admin_channel_id = admin_channel_id
 
     def refresh_data(self):
@@ -153,11 +158,18 @@ class DiscordBot:
             email = args[0]
             discord_id = message.author.id
 
-            if self.db.email_exists(email):
-                embed = discord.Embed(
-                    description=f"❌ Email `{email}` is already linked to another account.",
-                    color=discord.Color.red()
-                )
+            existing_owner = self.db.get_discord_id_by_email(email)
+            if existing_owner is not None:
+                if existing_owner == discord_id:
+                    embed = discord.Embed(
+                        description=f"ℹ️ Email `{email}` is already linked to your account.",
+                        color=discord.Color.blue()
+                    )
+                else:
+                    embed = discord.Embed(
+                        description=f"❌ Email `{email}` is already linked to another account.",
+                        color=discord.Color.red()
+                    )
                 await message.channel.send(embed=embed)
                 return True
 
@@ -461,6 +473,7 @@ class DiscordBot:
         def run():
             asyncio.set_event_loop(asyncio.new_event_loop())
             self.loop = asyncio.get_event_loop()
+            self.loop.set_exception_handler(get_asyncio_exception_handler())
             self.loop.run_until_complete(self._run_bot())
 
         thread = threading.Thread(target=run, daemon=True)
@@ -491,21 +504,28 @@ class DiscordBot:
                 # Handle commands only in DMs
                 if isinstance(message.channel, discord.DMChannel):
                     if not message.author.bot:
-                        await self.bot_instance._handle_commands(message)
+                        try:
+                            await self.bot_instance._handle_commands(message)
+                        except Exception as e:
+                            logging.getLogger("bot.commands").error(
+                                "Error handling DM command", exc_info=e
+                            )
                 else:
                     # For server channels, forward to monitoring callback
                     if self.bot_instance.on_message_callback:
                         try:
                             await self.bot_instance.on_message_callback(message, self.bot_instance)
                         except Exception as e:
-                            print(f"Error in message callback: {e}")
+                            logging.getLogger("bot.events").error(
+                                "Error in message callback", exc_info=e
+                            )
 
         self.bot = MessageBot(intents, self)
 
         try:
             await self.bot.start(self.token)
         except Exception as e:
-            print(f"Bot stopped: {e}")
+            logging.getLogger("bot").error("Bot stopped with error", exc_info=e)
         finally:
             self._is_running = False
 

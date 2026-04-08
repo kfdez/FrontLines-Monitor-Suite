@@ -1,0 +1,2 @@
+# Store URLs - one per line
+# Example: example.myshopify.com

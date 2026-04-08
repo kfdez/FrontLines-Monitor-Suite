@@ -1,0 +1,3901 @@
+{
+  "extracted_at": "2026-04-02 10:27:18",
+  "source_file": "stellar-export-2026-04-02.json",
+  "task_groups": [
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Kanzen Games",
+      "tasks": [
+        {
+          "name": "mega evolution set 4 me04 booster box",
+          "site": "Shopify",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "normal",
+          "task_group_name": "Kanzen Games"
+        },
+        {
+          "name": "mega evolution set 4 me04 booster box",
+          "site": "Shopify",
+          "profile_email": "mchamp2903@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "normal",
+          "task_group_name": "Kanzen Games"
+        },
+        {
+          "name": "mega evolution set 4 me04 elite trainer box",
+          "site": "Shopify",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "normal",
+          "task_group_name": "Kanzen Games"
+        },
+        {
+          "name": "mega evolution set 4 me04 booster box",
+          "site": "Shopify",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "normal",
+          "task_group_name": "Kanzen Games"
+        },
+        {
+          "name": "mega evolution set 4 me04 booster box",
+          "site": "Shopify",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "normal",
+          "task_group_name": "Kanzen Games"
+        }
+      ]
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "Mar 20 - Collector Con",
+      "tasks": [
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Litlock416@hotmail.com",
+          "profile_name": "MICHAEL L-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkyle.fernandez@gmail.com",
+          "profile_name": "KYLE F-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernan.dez@gmail.com",
+          "profile_name": "KYLE F-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P4",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "asmoky9901@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "zachary2000@live.com",
+          "profile_name": "ETHAN S-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "africansharkethan@gmail.com",
+          "profile_name": "ETHAN S-P4",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mchamp2903@gmail.com",
+          "profile_name": "ETHAN S-P5",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "francesco.deleo0789@gmail.com",
+          "profile_name": "FRANK D-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "francescodeleo773@gmail.com",
+          "profile_name": "FRANK D-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "francescodeleo0707@gmail.com",
+          "profile_name": "FRANK D-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "shervinfaroj999@gmail.com",
+          "profile_name": "SHERVIN F-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "ant1995@myyahoo.com",
+          "profile_name": "AMIEN B-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "lc.pokemon1988@gmail.com",
+          "profile_name": "LUCA C-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "matteocaravella1989@gmail.com",
+          "profile_name": "LUCA C-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "juxz0016@gmail.com",
+          "profile_name": "JUSTINE M-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Jimothi6969@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Jimthia6969@gmail.com",
+          "profile_name": "JIMMY W-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        }
+      ]
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "WM Monitors",
+      "tasks": [
+        {
+          "name": "151 - Alakazam Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "151 - Poster Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "151 - Zapdos ex Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "151 Booster Bundle",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "151 UPC",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "CZ - Sea & Sky",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "Magic: The Gathering Final Fantasy Collector Omega",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ME - POKEMON MEGA EVOLUTION 3PK BLISTER",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ME - POKEMON MEGA EVOLUTION BOOSTER BUNDLE",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ME - POKEMON MEGA EVOLUTION ELITE TRAINER BOX",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ME - POKEMON MEGA EVOLUTION GARDEVOIR EX ETB",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ME - POKEMON MEGA EVOLUTION LUCARIO EX ETB",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PAF - GT IT. Prem Coll.",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PF - Booster Bundle",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PF - ETB",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PF - Mini Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "Pokemon Day 2026 Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "30th - First Partner Pack - Series 1",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Binder Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Booster Bundle",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Eevee Pouch Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Glaceon - Sticker Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Leafeon - Sticker Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Sticker Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Sylveon - Sticker Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Sylveon - Sticker Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - Tech Sticker 3PK",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - Lucario Poster",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - Poster Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - Mini Tin",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - Mini Tin - Display",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - Booster Bundle",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - ETB",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - 2PK",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "ASC - 2PK CASE",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Lucario Ex & Tyranitar Ex Premium Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Mini Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - POKEMON SV8.5 PREMIUM FIGURE BOX",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Poster Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Pouch Collection",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - SPC",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        },
+        {
+          "name": "PRE - Surprise Box",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "WM Monitors"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "MastermindToys",
+      "tasks": []
+    },
+    {
+      "site": "Costco",
+      "platform": "costco",
+      "task_group_name": "CA - Unova Heavy Hitters",
+      "tasks": [
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "francesco.deleo0789@gmail.com",
+          "profile_name": "FRANK D-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "roberto.deleo711@yahoo.com",
+          "profile_name": "FRANK D-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "Frgdeleo@gmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "xiang3188@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "Acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "wong.jimmy888@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "fp.mkfernandez@gmail.com",
+          "profile_name": "KYLE-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "L.caravella@live.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "a_saullo@hotmail.com",
+          "profile_name": "LUCA C-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "shervinfaroj48@gmail.com",
+          "profile_name": "SHERVIN F-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "Gorete-luis@hotmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "Michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "elemte@hotmail.com",
+          "profile_name": "MICHAEL L-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "nikauryoj@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "cidaliamedeiros@hotmail.com",
+          "profile_name": "JASON M-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "medeirosj@sentrexco.com",
+          "profile_name": "JASON M-P4",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "ovallesn@sentrexco.com",
+          "profile_name": "JASON M-P5",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P6",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "noahjmmedeiros@gmail.com",
+          "profile_name": "JASON M-P7",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "ethansingh2003@live.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "mo@bell.net",
+          "profile_name": "ETHAN S-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1943157.html",
+          "site": "Costco",
+          "profile_email": "asmoky9901@gmail.com",
+          "profile_name": "ETHAN S-P4",
+          "mode": "normal",
+          "task_group_name": "CA - Unova Heavy Hitters"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Card Board Gaming",
+      "tasks": []
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "Mar 20 - Collector Con",
+      "tasks": [
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "Gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "Acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "Litlock416@hotmail.com",
+          "profile_name": "MICHAEL L-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "mkyle.fernandez@gmail.com",
+          "profile_name": "KYLE F-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernan.dez@gmail.com",
+          "profile_name": "KYLE F-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P4",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "asmoky9901@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "zachary2000@live.com",
+          "profile_name": "ETHAN S-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "africansharkethan@gmail.com",
+          "profile_name": "ETHAN S-P4",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "mchamp2903@gmail.com",
+          "profile_name": "ETHAN S-P5",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "francesco.deleo0789@gmail.com",
+          "profile_name": "FRANK D-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "francescodeleo773@gmail.com",
+          "profile_name": "FRANK D-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "francescodeleo0707@gmail.com",
+          "profile_name": "FRANK D-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "shervinfaroj999@gmail.com",
+          "profile_name": "SHERVIN F-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "ant1995@myyahoo.com",
+          "profile_name": "AMIEN B-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "juxz0016@gmail.com",
+          "profile_name": "JUSTINE M-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "Jimothi6969@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - Pin Collection",
+          "site": "WalmartCa",
+          "profile_email": "Jimthia6969@gmail.com",
+          "profile_name": "JIMMY W-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        }
+      ]
+    },
+    {
+      "site": "AmazonV3",
+      "platform": "amazon",
+      "task_group_name": "PRE - Monitors",
+      "tasks": [
+        {
+          "name": "PRE - SPC",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "PRE - Monitors"
+        },
+        {
+          "name": "PRE - ETB",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "PRE - Monitors"
+        },
+        {
+          "name": "PRE - Booster Bundle",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "PRE - Monitors"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "New Realm Games",
+      "tasks": []
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "151 - Tin Display",
+      "tasks": [
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "Acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P3",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P2",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "mkyle.fernandez@gmail.com",
+          "profile_name": "KYLE F-P2",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernan.dez@gmail.com",
+          "profile_name": "KYLE F-P3",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "Jimothi6969@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        },
+        {
+          "name": "WM - 151 - Tin Display",
+          "site": "WalmartCa",
+          "profile_email": "medeirosj@sentrexco.com",
+          "profile_name": "JASON M-P3",
+          "mode": "account",
+          "task_group_name": "151 - Tin Display"
+        }
+      ]
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "OP Checkout Tasks",
+      "tasks": [
+        {
+          "name": "WM - OP - Illustration Box Vol 5, WM - OP - Double Pack Set 9, WM - OP - Illustration Box Vol 6, WM - OP - Tin Set Vol 2",
+          "site": "WalmartCa",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Illustration Box Vol 5, WM - OP - Double Pack Set 9",
+          "site": "WalmartCa",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Illustration Box Vol 5, WM - OP - Illustration Box Vol 6, WM - OP - Double Pack Set 9",
+          "site": "WalmartCa",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Illustration Box Vol 5, WM - OP - Illustration Box Vol 6",
+          "site": "WalmartCa",
+          "profile_email": "Jimothi6969@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Illustration Box Vol 5, WM - OP - Illustration Box Vol 6",
+          "site": "WalmartCa",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Illustration Box Vol 5, WM - OP - Illustration Box Vol 6",
+          "site": "WalmartCa",
+          "profile_email": "ant1995@myyahoo.com",
+          "profile_name": "AMIEN B-P2",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Illustration Box Vol 5, WM - OP - Double Pack Set 9",
+          "site": "WalmartCa",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Illustration Box Vol 5, WM - OP - Double Pack Set 9",
+          "site": "WalmartCa",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P2",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Tin Set Vol 2",
+          "site": "WalmartCa",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Tin Set Vol 2",
+          "site": "WalmartCa",
+          "profile_email": "asmoky9901@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Tin Set Vol 2",
+          "site": "WalmartCa",
+          "profile_email": "zachary2000@live.com",
+          "profile_name": "ETHAN S-P3",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Tin Set Vol 2",
+          "site": "WalmartCa",
+          "profile_email": "africansharkethan@gmail.com",
+          "profile_name": "ETHAN S-P4",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Tin Set Vol 2",
+          "site": "WalmartCa",
+          "profile_email": "mchamp2903@gmail.com",
+          "profile_name": "ETHAN S-P5",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Tin Set Vol 2",
+          "site": "WalmartCa",
+          "profile_email": "michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        },
+        {
+          "name": "WM - OP - Tin Set Vol 2",
+          "site": "WalmartCa",
+          "profile_email": "Litlock416@hotmail.com",
+          "profile_name": "MICHAEL L-P2",
+          "mode": "account",
+          "task_group_name": "OP Checkout Tasks"
+        }
+      ]
+    },
+    {
+      "site": "AmazonV3",
+      "platform": "amazon",
+      "task_group_name": "30th - Checkout",
+      "tasks": [
+        {
+          "name": "AMZ - 30th - First Partner Pack",
+          "site": "AmazonV3",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P1",
+          "mode": "special",
+          "task_group_name": "30th - Checkout"
+        },
+        {
+          "name": "AMZ - 30th - First Partner Pack",
+          "site": "AmazonV3",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "special",
+          "task_group_name": "30th - Checkout"
+        },
+        {
+          "name": "AMZ - 30th - First Partner Pack",
+          "site": "AmazonV3",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "special",
+          "task_group_name": "30th - Checkout"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Flaring Lair",
+      "tasks": []
+    },
+    {
+      "site": "Costco",
+      "platform": "costco",
+      "task_group_name": "CA - Charizard UPC",
+      "tasks": [
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "ethansingh2003@live.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "mo@bell.net",
+          "profile_name": "ETHAN S-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "asmoky9901@gmail.com",
+          "profile_name": "ETHAN S-P4",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "nikauryoj@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "cidaliamedeiros@hotmail.com",
+          "profile_name": "JASON M-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "medeirosj@sentrexco.com",
+          "profile_name": "JASON M-P4",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "ovallesn@sentrexco.com",
+          "profile_name": "JASON M-P5",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P6",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "noahjmmedeiros@gmail.com",
+          "profile_name": "JASON M-P7",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "fp.mkfernandez@gmail.com",
+          "profile_name": "KYLE-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "xiang3188@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "Acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "Gorete-luis@hotmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "elemte@hotmail.com",
+          "profile_name": "MICHAEL L-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.1930406.html",
+          "site": "Costco",
+          "profile_email": "Michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Charizard UPC"
+        }
+      ]
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "DB - Fusion World",
+      "tasks": [
+        {
+          "name": "Dragon Ball Super Card Game Fusion World Manga Booster Box 02",
+          "site": "WalmartCa",
+          "profile_email": "Jimothi6969@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "account",
+          "task_group_name": "DB - Fusion World"
+        },
+        {
+          "name": "Dragon Ball Super Card Game Fusion World Manga Booster Box 02",
+          "site": "WalmartCa",
+          "profile_email": "Jimthia6969@gmail.com",
+          "profile_name": "JIMMY W-P2",
+          "mode": "account",
+          "task_group_name": "DB - Fusion World"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Exor Games",
+      "tasks": []
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "OP Monitors",
+      "tasks": [
+        {
+          "name": "OP - Illustration Box Vol. 5",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "OP Monitors"
+        },
+        {
+          "name": "OP - Illustration Box Vol. 6",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "OP Monitors"
+        },
+        {
+          "name": "OP - Double Pack Set Vol. 9",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "OP Monitors"
+        },
+        {
+          "name": "OP - Tin Set Vol. 2",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "OP Monitors"
+        }
+      ]
+    },
+    {
+      "site": "AmazonV3",
+      "platform": "amazon",
+      "task_group_name": "ASC - Checkout",
+      "tasks": [
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "Play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "wong.jimmy888@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "Meadowsfox29@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "Ovoonxo@gmail.com",
+          "profile_name": "LUCA C-P2",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "L.caravella@live.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "17053317103",
+          "profile_name": "FRANK D-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        },
+        {
+          "name": "AMZ - ASC - Booster Bundle, AMZ - ASC - Poster Collection, AMZ - ASC - Sticker Collection, AMZ - ASC - Mini Tin, AMZ - ASC - Pin Collection, AMZ - ASC - Mega ex Box, AMZ - ASC - ETB, AMZ - ASC - 2PK",
+          "site": "AmazonV3",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "special",
+          "task_group_name": "ASC - Checkout"
+        }
+      ]
+    },
+    {
+      "site": "AmazonV3",
+      "platform": "amazon",
+      "task_group_name": "PRE - Checkout",
+      "tasks": [
+        {
+          "name": "AMZ - PRE - SPC, AMZ - PRE - ETB, AMZ - PRE - Booster Bundle",
+          "site": "AmazonV3",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P1",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - SPC",
+          "site": "AmazonV3",
+          "profile_email": "Meadowsfox29@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - SPC",
+          "site": "AmazonV3",
+          "profile_email": "Ovoonxo@gmail.com",
+          "profile_name": "LUCA C-P2",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - SPC",
+          "site": "AmazonV3",
+          "profile_email": "L.caravella@live.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - SPC",
+          "site": "AmazonV3",
+          "profile_email": "Play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - SPC",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - ETB, AMZ - PRE - Booster Bundle - PriceFilter",
+          "site": "AmazonV3",
+          "profile_email": "wong.jimmy888@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - SPC, AMZ - PRE - ETB, AMZ - PRE - Booster Bundle",
+          "site": "AmazonV3",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - SPC",
+          "site": "AmazonV3",
+          "profile_email": "17053317103",
+          "profile_name": "FRANK D-P1",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        },
+        {
+          "name": "AMZ - PRE - SPC",
+          "site": "AmazonV3",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "special",
+          "task_group_name": "PRE - Checkout"
+        }
+      ]
+    },
+    {
+      "site": "Costco",
+      "platform": "costco",
+      "task_group_name": "CA - Prismatic SPC",
+      "tasks": [
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "francesco.deleo0789@gmail.com",
+          "profile_name": "FRANK D-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "roberto.deleo711@yahoo.com",
+          "profile_name": "FRANK D-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "francescodeleo1989@gmail.com",
+          "profile_name": "FRANK D-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "mrfrancescodeleo@gmail.com",
+          "profile_name": "FRANK D-P4",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "Frgdeleo@gmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "xiang3188@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "Acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "wong.jimmy888@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "fp.mkfernandez@gmail.com",
+          "profile_name": "KYLE-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "L.caravella@live.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "a_saullo@hotmail.com",
+          "profile_name": "LUCA C-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "Lc.pokemon1988@gmail.com",
+          "profile_name": "LUCA C-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "Andreamcaravella@gmail.com",
+          "profile_name": "LUCA C-P4",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "shervinfaroj48@gmail.com",
+          "profile_name": "SHERVIN F-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "Gorete-luis@hotmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "Michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "elemte@hotmail.com",
+          "profile_name": "MICHAEL L-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "nikauryoj@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "cidaliamedeiros@hotmail.com",
+          "profile_name": "JASON M-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "medeirosj@sentrexco.com",
+          "profile_name": "JASON M-P4",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "ovallesn@sentrexco.com",
+          "profile_name": "JASON M-P5",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P6",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "noahjmmedeiros@gmail.com",
+          "profile_name": "JASON M-P7",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "annamarruda@gmail.com",
+          "profile_name": "JASON M-P8-S",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "ashley_m1990@hotmail.com",
+          "profile_name": "JASON M-P9-S",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "ryanjarruda26@gmail.com",
+          "profile_name": "JASON M-P10-S",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "rameshlatchmiah@gmail.com",
+          "profile_name": "JASON M-P11-S",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "ethansingh2003@live.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "mo@bell.net",
+          "profile_name": "ETHAN S-P3",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "asmoky9901@gmail.com",
+          "profile_name": "ETHAN S-P4",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "rlaiphoto@gmail.com",
+          "profile_name": "RYAN L-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        },
+        {
+          "name": "https://www.costco.ca/.product.2600511.html",
+          "site": "Costco",
+          "profile_email": "davidmrosero@gmail.com",
+          "profile_name": "DAVID R-P1",
+          "mode": "normal",
+          "task_group_name": "CA - Prismatic SPC"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "GTGames",
+      "tasks": []
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Lvl Up Games",
+      "tasks": []
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "401 Games",
+      "tasks": [
+        {
+          "name": "dragon ball super fusion world special booster vol 1",
+          "site": "Shopify",
+          "profile_email": "tisisjimmy@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "normal",
+          "task_group_name": "401 Games"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Comfy Hobbies",
+      "tasks": []
+    },
+    {
+      "site": "AmazonV3",
+      "platform": "amazon",
+      "task_group_name": "30th - Monitors",
+      "tasks": [
+        {
+          "name": "First Partner Illustration Collection",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "30th - Monitors"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Hobbiesville",
+      "tasks": [
+        {
+          "name": "dragon ball super fusion world special booster vol 1 pre order?utm_source=app&utm_medium=share&utm_campaign=pdp&referrer_id=331ff08a 338d 4c3c bc05 65ddb45f9be4",
+          "site": "Shopify",
+          "profile_email": "tisisjimmy@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "normal",
+          "task_group_name": "Hobbiesville"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Does Cards",
+      "tasks": []
+    },
+    {
+      "site": "GamestopCa",
+      "platform": "gamestopca",
+      "task_group_name": "ASC - Ascended Heroes",
+      "tasks": [
+        {
+          "name": "ASC - ETB",
+          "site": "GamestopCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "ASC - Mini Tin",
+          "site": "GamestopCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "ASC - 2pk",
+          "site": "GamestopCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "ASC - 3pk",
+          "site": "GamestopCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "ASC - 3pk",
+          "site": "GamestopCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "ASC - 3pk",
+          "site": "GamestopCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "monitor",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "866006",
+          "site": "GamestopCa",
+          "profile_email": "Michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "guest",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "866006",
+          "site": "GamestopCa",
+          "profile_email": "redseal.advanced@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "guest",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "866006",
+          "site": "GamestopCa",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "guest",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "866005,873179,866793,866009",
+          "site": "GamestopCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "account",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "866005,873179,866793,866009",
+          "site": "GamestopCa",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "account",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "866006",
+          "site": "GamestopCa",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "account",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "873179,86679,866009",
+          "site": "GamestopCa",
+          "profile_email": "acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "account",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "873179",
+          "site": "GamestopCa",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "account",
+          "task_group_name": "ASC - Ascended Heroes"
+        },
+        {
+          "name": "866005",
+          "site": "GamestopCa",
+          "profile_email": "Davidmrosero@gmail.com",
+          "profile_name": "DAVID R-P1",
+          "mode": "account",
+          "task_group_name": "ASC - Ascended Heroes"
+        }
+      ]
+    },
+    {
+      "site": "PokemonCenter",
+      "platform": "pokemoncenter",
+      "task_group_name": "OXY",
+      "tasks": [
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mchamp2903@gmail.com",
+          "profile_name": "ETHAN S-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "meadowsfox29@gmail.com",
+          "profile_name": "ETHAN S-P3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "pokehitzz@gmail.com",
+          "profile_name": "GIANLUCA D-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P4-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "xiang3188@gmail.com",
+          "profile_name": "JACKSON L-P5-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P6-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "powerlinksolutions@hotmail.com",
+          "profile_name": "AMIEN B-P2-PCONLY",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "pkmfrontlines@gmail.com",
+          "profile_name": "KYLE F-W1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "nikauryoj@hotmail.com",
+          "profile_name": "JASON M-P3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "Local",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylef.ernandez@gmail.com",
+          "profile_name": "KYLE F-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylef.ernandez@gmail.com",
+          "profile_name": "KYLE F-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernande.z@gmail.com",
+          "profile_name": "KYLE F-P3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "ravendradaniel@gmail.com",
+          "profile_name": "DANNY R-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "fp.mkfernandez@gmail.com",
+          "profile_name": "KYLE F-P1-ALT1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P2-ALT2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernande.z@gmail.com",
+          "profile_name": "KYLE F-P3-ALT3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "lc.pokemon1988@gmail.com",
+          "profile_name": "LUCA C-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "shervinfaroj48@gmail.com",
+          "profile_name": "SHERVIN F-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "francesco.deleo0789@gmail.com",
+          "profile_name": "FRANK D-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "cooldanny0712@gmail.com",
+          "profile_name": "DANNY R-P2-CA-PRIM-PCONLY",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "jimothi6969@gmail.com",
+          "profile_name": "JIMMY W-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "jimothipokemon@gmail.com",
+          "profile_name": "JIMMY W-P3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "jimthia6969@gmail.com",
+          "profile_name": "JIMMY W-P4-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "jimothipokemon@gmail.com",
+          "profile_name": "JIMMY W-P3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "tisisjimmy@gmail.com",
+          "profile_name": "JIMMY W-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mustafa.e.secure@gmail.com",
+          "profile_name": "MUSTAFA E-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "paul.jhung89@gmail.com",
+          "profile_name": "PAUL J-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "skylarker416@gmail.com",
+          "profile_name": "PAUL J-P3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "paul.jhung89@gmail.com",
+          "profile_name": "PAUL J-P4-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P5-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "Davidmrosero@gmail.com",
+          "profile_name": "DAVID R-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "noahjmmedeiros@gmail.com",
+          "profile_name": "JASON M-W1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "L.caravella@icloud.com",
+          "profile_name": "LUCA C-P2-PCONLY",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "Juxz0016@gmail.com",
+          "profile_name": "JUSTINE M-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "Juxz0016@gmail.com",
+          "profile_name": "JUSTINE M-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "Michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "redseal.advanced@gmail.com",
+          "profile_name": "AMIEN B-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "ryan.lai.m@gmail.com",
+          "profile_name": "RYAN L-P1-PRIM",
+          "mode": "guest",
+          "task_group_name": "OXY"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "OP17 Orders",
+      "tasks": [
+        {
+          "name": "one piece cg op 17 pre orders",
+          "site": "Shopify",
+          "profile_email": "redseal.advanced@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "normal",
+          "task_group_name": "OP17 Orders"
+        },
+        {
+          "name": "one piece card game op 17 booster box pre order",
+          "site": "Shopify",
+          "profile_email": "redseal.advanced@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "normal",
+          "task_group_name": "OP17 Orders"
+        },
+        {
+          "name": "one piece cg op 17 booster box pre order copy",
+          "site": "Shopify",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "normal",
+          "task_group_name": "OP17 Orders"
+        },
+        {
+          "name": "one piece cg op 17 booster box pre order",
+          "site": "Shopify",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "normal",
+          "task_group_name": "OP17 Orders"
+        },
+        {
+          "name": "one piece cg op 17 pre orders",
+          "site": "Shopify",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "normal",
+          "task_group_name": "OP17 Orders"
+        },
+        {
+          "name": "one piece card game op 17 booster box pre order",
+          "site": "Shopify",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "normal",
+          "task_group_name": "OP17 Orders"
+        }
+      ]
+    },
+    {
+      "site": "AmazonV3",
+      "platform": "amazon",
+      "task_group_name": "PO - Monitors",
+      "tasks": [
+        {
+          "name": "PO - ETB",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "PO - Monitors"
+        },
+        {
+          "name": "PO - Booster Bundle",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "PO - Monitors"
+        },
+        {
+          "name": "PO - Booster Box",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "PO - Monitors"
+        }
+      ]
+    },
+    {
+      "site": "PokemonCenter",
+      "platform": "pokemoncenter",
+      "task_group_name": "BART",
+      "tasks": [
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "cooldanny0712@gmail.com",
+          "profile_name": "DANNY R-P2-CA-PRIM-PCONLY",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylef.ernandez@gmail.com",
+          "profile_name": "KYLE F-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernande.z@gmail.com",
+          "profile_name": "KYLE F-P3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "ravendradaniel@gmail.com",
+          "profile_name": "DANNY R-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "Davidmrosero@gmail.com",
+          "profile_name": "DAVID R-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "fp.mkfernandez@gmail.com",
+          "profile_name": "KYLE F-P1-ALT1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P2-ALT2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mkylefernande.z@gmail.com",
+          "profile_name": "KYLE F-P3-ALT3-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "lc.pokemon1988@gmail.com",
+          "profile_name": "LUCA C-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "shervinfaroj48@gmail.com",
+          "profile_name": "SHERVIN F-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "francesco.deleo0789@gmail.com",
+          "profile_name": "FRANK D-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "tisisjimmy@gmail.com",
+          "profile_name": "JIMMY W-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "mustafa.e.secure@gmail.com",
+          "profile_name": "MUSTAFA E-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "paul.jhung89@gmail.com",
+          "profile_name": "PAUL J-P2-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "L.caravella@icloud.com",
+          "profile_name": "LUCA C-P2-PCONLY",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "Juxz0016@gmail.com",
+          "profile_name": "JUSTINE M-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "Michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "redseal.advanced@gmail.com",
+          "profile_name": "AMIEN B-P1-CA-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        },
+        {
+          "name": "134-42842848",
+          "site": "PokemonCenter",
+          "profile_email": "ryan.lai.m@gmail.com",
+          "profile_name": "RYAN L-P1-PRIM",
+          "mode": "guest",
+          "task_group_name": "BART"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Just-A-Hobby",
+      "tasks": []
+    },
+    {
+      "site": "AmazonV3",
+      "platform": "amazon",
+      "task_group_name": "PO - Checkout",
+      "tasks": [
+        {
+          "name": "AMZ - PO - ETB, AMZ - PO - Booster Bundle, AMZ - PO - Booster Box",
+          "site": "AmazonV3",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P1",
+          "mode": "special",
+          "task_group_name": "PO - Checkout"
+        },
+        {
+          "name": "AMZ - PO - ETB, AMZ - PO - Booster Bundle, AMZ - PO - Booster Box",
+          "site": "AmazonV3",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "special",
+          "task_group_name": "PO - Checkout"
+        },
+        {
+          "name": "AMZ - PO - ETB, AMZ - PO - Booster Bundle, AMZ - PO - Booster Box",
+          "site": "AmazonV3",
+          "profile_email": "Meadowsfox29@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "special",
+          "task_group_name": "PO - Checkout"
+        },
+        {
+          "name": "AMZ - PO - Booster Bundle, AMZ - PO - ETB",
+          "site": "AmazonV3",
+          "profile_email": "17053317103",
+          "profile_name": "FRANK D-P1",
+          "mode": "special",
+          "task_group_name": "PO - Checkout"
+        },
+        {
+          "name": "AMZ - PO - Booster Bundle",
+          "site": "AmazonV3",
+          "profile_email": "L.caravella@live.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "special",
+          "task_group_name": "PO - Checkout"
+        }
+      ]
+    },
+    {
+      "site": "AmazonV3",
+      "platform": "amazon",
+      "task_group_name": "ASC - Monitors",
+      "tasks": [
+        {
+          "name": "ASC - ETB",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - ETB",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Booster Bundle",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Premium Poster Collection",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Premium Poster Collection",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Premium Poster Collection\u2014Mega Lucario",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Premium Poster Collection\u2014Mega Gardevoir ",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Tech Sticker Collection\u2014Charmander ",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Tech Sticker Collection\u2014Gastly",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Tech Sticker Collection",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Mini Tin: Pikachu & Tepig",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - 2-Pack Blister (Random Promo)",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Pin Collection",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        },
+        {
+          "name": "ASC - Mega ex Collection Box",
+          "site": "AmazonV3",
+          "profile_email": "gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "monitor",
+          "task_group_name": "ASC - Monitors"
+        }
+      ]
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "Mar 20 - Collector Con",
+      "tasks": [
+        {
+          "name": "WM - ASC - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkyle.fernandez@gmail.com",
+          "profile_name": "KYLE F-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernan.dez@gmail.com",
+          "profile_name": "KYLE F-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - ASC - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P4",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        }
+      ]
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "DB Monitors",
+      "tasks": [
+        {
+          "name": "DB Super Card Game Fusion World Manga Booster Box",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "monitor",
+          "task_group_name": "DB Monitors"
+        }
+      ]
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "Mar 20 - Collector Con",
+      "tasks": [
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Litlock416@hotmail.com",
+          "profile_name": "MICHAEL L-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkyle.fernandez@gmail.com",
+          "profile_name": "KYLE F-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernan.dez@gmail.com",
+          "profile_name": "KYLE F-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mkfernandez@live.ca",
+          "profile_name": "KYLE F-P4",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "asmoky9901@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "zachary2000@live.com",
+          "profile_name": "ETHAN S-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "africansharkethan@gmail.com",
+          "profile_name": "ETHAN S-P4",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "mchamp2903@gmail.com",
+          "profile_name": "ETHAN S-P5",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "francesco.deleo0789@gmail.com",
+          "profile_name": "FRANK D-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "francescodeleo773@gmail.com",
+          "profile_name": "FRANK D-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "francescodeleo0707@gmail.com",
+          "profile_name": "FRANK D-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "shervinfaroj999@gmail.com",
+          "profile_name": "SHERVIN F-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "ant1995@myyahoo.com",
+          "profile_name": "AMIEN B-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "lc.pokemon1988@gmail.com",
+          "profile_name": "LUCA C-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "matteocaravella1989@gmail.com",
+          "profile_name": "LUCA C-P3",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "juxz0016@gmail.com",
+          "profile_name": "JUSTINE M-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Jimothi6969@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        },
+        {
+          "name": "WM - PRE - ETB",
+          "site": "WalmartCa",
+          "profile_email": "Jimthia6969@gmail.com",
+          "profile_name": "JIMMY W-P2",
+          "mode": "account",
+          "task_group_name": "Mar 20 - Collector Con"
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Derpy Cards",
+      "tasks": []
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Springer Garden",
+      "tasks": []
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Deck Out Gaming",
+      "tasks": []
+    },
+    {
+      "site": "WalmartCa",
+      "platform": "walmartca",
+      "task_group_name": "PAF - GT IT Prem. Coll.",
+      "tasks": [
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "amien94@gmail.com",
+          "profile_name": "AMIEN B-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "ant1995@myyahoo.com",
+          "profile_name": "AMIEN B-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "eralo2903@gmail.com",
+          "profile_name": "ETHAN S-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "asmoky9901@gmail.com",
+          "profile_name": "ETHAN S-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "zachary2000@live.com",
+          "profile_name": "ETHAN S-P3",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "africansharkethan@gmail.com",
+          "profile_name": "ETHAN S-P4",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "mchamp2903@gmail.com",
+          "profile_name": "ETHAN S-P5",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "francescodeleo773@gmail.com",
+          "profile_name": "FRANK D-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "Gianlucadeleo@hotmail.com",
+          "profile_name": "GIANLUCA D-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "play4gold@hotmail.com",
+          "profile_name": "GIANLUCA D-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "ACKSONL@hotmail.com",
+          "profile_name": "JACKSON L-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "Acksonlee@gmail.com",
+          "profile_name": "JACKSON L-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "Acksonl2@hotmail.com",
+          "profile_name": "JACKSON L-P3",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "jason_medeiros1988@live.com",
+          "profile_name": "JASON M-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "noah.jm.medeiros@hotmail.com",
+          "profile_name": "JASON M-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "medeirosj@sentrexco.com",
+          "profile_name": "JASON M-P3",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "Jimothi6969@gmail.com",
+          "profile_name": "JIMMY W-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "Jimthia6969@gmail.com",
+          "profile_name": "JIMMY W-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "jimothipokemon@gmail.com",
+          "profile_name": "JIMMY W-P3",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "mkylefernandez@gmail.com",
+          "profile_name": "KYLE F-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "mkyle.fernandez@gmail.com",
+          "profile_name": "KYLE F-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "l.caravella0811@gmail.com",
+          "profile_name": "LUCA C-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "michaelluis451@gmail.com",
+          "profile_name": "MICHAEL L-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "Litlock416@hotmail.com",
+          "profile_name": "MICHAEL L-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "paul.jhung@gmail.com",
+          "profile_name": "PAUL J-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "skylarker3@gmail.com",
+          "profile_name": "PAUL J-P2",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        },
+        {
+          "name": "GT IT Prem. Coll.",
+          "site": "WalmartCa",
+          "profile_email": "shervinfaroj999@gmail.com",
+          "profile_name": "SHERVIN F-P1",
+          "mode": "account",
+          "task_group_name": "PAF - GT IT Prem. Coll."
+        }
+      ]
+    },
+    {
+      "site": "Shopify",
+      "platform": "shopify",
+      "task_group_name": "Yume Cards",
+      "tasks": []
+    }
+  ]
+}

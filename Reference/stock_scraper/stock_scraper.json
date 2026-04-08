@@ -1,0 +1,14 @@
+{
+  "auto_start": true,
+  "enabled": true,
+  "main_webhook": "https://discord.com/api/webhooks/1416070593715109890/yoLIBY48oBFgYhMdRdGWh7G5vrLWnHlK-flE39ZOCyT_eqcTmdbgRAvA5bAm0UZ4mxzu",
+  "singles_webhook": "",
+  "ignore_singles": true,
+  "max_pages": 2,
+  "check_interval": 30,
+  "request_timeout": 15,
+  "max_workers": 3,
+  "max_retries": 3,
+  "webhook_delay": 0.8,
+  "detailed_logging": false
+}

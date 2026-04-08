@@ -223,6 +223,8 @@ class MainApplication:
             self.db.get_config("target_channel_id", ""))
         self.bot.checkouts_channel_id = self._str_to_int(
             self.db.get_config("checkouts_channel_id", ""))
+        self.bot.checkouts_target_channel_id = self._str_to_int(
+            self.db.get_config("checkouts_target_channel_id", ""))
         self.bot.admin_channel_id = self._str_to_int(
             self.db.get_config("admin_channel_id", ""))
         self.bot.enable_ping = self.db.get_config("enable_ping", "false").lower() == "true"
@@ -1013,6 +1015,33 @@ class MainApplication:
 
         return embed_dict
 
+    def _process_checkout_embed(self, embed_dict: dict) -> dict:
+        """Strip sensitive PII fields from a checkout embed before forwarding.
+
+        Amazon checkouts (detected via site field containing 'amazon') retain
+        the email field so it remains visible in the forwarded embed.
+        """
+        strip_set = {
+            "order email", "order id", "order link",
+            "account", "email", "purchase id",
+            "offer id", "proxy"
+        }
+
+        # Detect Amazon checkout by site field value
+        fields_list = embed_dict.get("fields", [])
+        is_amazon = any(
+            f.get("name", "").strip().lower() == "site" and
+            "amazon" in f.get("value", "").strip().lower()
+            for f in fields_list
+        )
+        if is_amazon:
+            strip_set = strip_set - {"email"}
+
+        fields = [f for f in fields_list
+                  if f.get("name", "").strip().lower() not in strip_set]
+        embed_dict["fields"] = fields
+        return embed_dict
+
     async def _handle_checkout(self, message, bot):
         """Handle checkout notifications - find email in embed and DM user."""
         import re
@@ -1084,6 +1113,25 @@ class MainApplication:
                     self.log_message(f"⚠️ Failed to DM {email}: {e}")
             else:
                 self.log_message(f"❓ Email {email} not found in database")
+
+        # Forward stripped checkout embeds to checkouts target channel
+        if self.bot.checkouts_target_channel_id and message.embeds:
+            target_channel = bot.bot.get_channel(self.bot.checkouts_target_channel_id)
+            if target_channel:
+                for embed in message.embeds:
+                    try:
+                        processed = self._process_checkout_embed(embed.to_dict())
+                        new_embed = discord.Embed.from_dict(processed)
+                        await target_channel.send(embed=new_embed)
+                    except Exception as e:
+                        self.log_message(f"⚠️ Failed to forward checkout embed: {e}")
+                self.log_message(
+                    f"📤 Forwarded {len(message.embeds)} checkout embed(s) to checkouts target channel"
+                )
+            else:
+                self.log_message(
+                    f"⚠️ Checkouts target channel {self.bot.checkouts_target_channel_id} not found"
+                )
 
     async def _handle_message(self, message, bot):
         """Handle messages from source channel - forward to target and log."""
@@ -1193,6 +1241,7 @@ class MainApplication:
             self.bot.source_channel_id,
             self.bot.target_channel_id,
             self.bot.checkouts_channel_id or 0,
+            self.bot.checkouts_target_channel_id or 0,
             self.bot.admin_channel_id or 0
         )
 

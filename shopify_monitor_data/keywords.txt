@@ -1,0 +1,2 @@
+# Keywords - one per line (case insensitive)
+# Example: booster box

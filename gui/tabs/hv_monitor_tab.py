@@ -381,10 +381,14 @@ class SearchDialog:
 
         self.dialog = tk.Toplevel(parent)
         self.dialog.title("Product Search")
-        self.dialog.geometry("800x600")
         self.dialog.transient(parent)
 
         self._build_ui()
+
+        self.dialog.geometry("800x620")
+        self.dialog.minsize(600, 500)
+        self.dialog.grab_set()
+        self.dialog.focus_set()
 
     def _build_ui(self):
         """Build the search dialog UI."""
@@ -402,9 +406,18 @@ class SearchDialog:
 
         ttk.Button(search_frame, text="Search", command=self._search).pack(side=tk.LEFT)
 
-        # Results list
+        # Action buttons — packed BEFORE results_frame so expand=True doesn't consume their space
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(fill="x", side=tk.BOTTOM, pady=(5, 0))
+
+        self.ping_var = tk.BooleanVar()
+        ttk.Checkbutton(btn_frame, text="Enable Ping", variable=self.ping_var).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame, text="Add Selected", command=self._add_selected).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame, text="Close", command=self.dialog.destroy).pack(side=tk.RIGHT, padx=5)
+
+        # Results list — packed last so it fills all remaining space
         results_frame = ttk.LabelFrame(main_frame, text="Results", padding=5)
-        results_frame.pack(fill="both", expand=True, pady=(0, 10))
+        results_frame.pack(fill="both", expand=True)
 
         columns = ("Type", "Title", "Price", "Available")
         self.results_tree = ttk.Treeview(results_frame, columns=columns, show="headings", height=15)
@@ -426,16 +439,6 @@ class SearchDialog:
         # Tooltip bindings
         self.results_tree.bind("<Motion>", lambda e: self._show_tooltip(e, self.results_tree))
         self.results_tree.bind("<Leave>", self._hide_tooltip)
-
-        # Action buttons
-        btn_frame = ttk.Frame(main_frame)
-        btn_frame.pack(fill="x")
-
-        self.ping_var = tk.BooleanVar()
-        ttk.Checkbutton(btn_frame, text="Enable Ping", variable=self.ping_var).pack(side=tk.LEFT, padx=5)
-
-        ttk.Button(btn_frame, text="Add Selected", command=self._add_selected).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="Close", command=self.dialog.destroy).pack(side=tk.RIGHT, padx=5)
 
     def _search(self):
         """Perform product search."""

@@ -1,0 +1,20 @@
+# FrontLines Monitor Suite - Dependencies
+
+# Discord
+discord.py>=2.0.0
+
+# Google Sheets
+google-api-python-client
+google-auth-oauthlib
+
+# HTTP Requests
+requests
+
+# Image processing (for icons and screenshots)
+Pillow
+
+# System tray support
+pystray
+
+# PyInstaller (for building installer only)
+pyinstaller
