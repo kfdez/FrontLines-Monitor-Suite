@@ -224,8 +224,20 @@ class DiscordBot:
                 return True
 
             sku = args[0]
-            name = " ".join(args[1:-1]) if len(args) > 2 else args[1]
-            url = args[-1] if len(args) > 2 else ""
+            url = ""
+            name_parts = args[1:]
+            if len(name_parts) > 1:
+                last_part = name_parts[-1].lower()
+                if (
+                    last_part.startswith(("http://", "https://", "www."))
+                    or "/" in last_part
+                    or ".com" in last_part
+                    or ".ca" in last_part
+                    or ".net" in last_part
+                ):
+                    url = name_parts.pop()
+
+            name = " ".join(name_parts)
 
             # Determine platform from URL
             platform = "unknown"

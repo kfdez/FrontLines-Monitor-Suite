@@ -373,12 +373,13 @@ class ProductsTab(ttk.Frame):
             if spreadsheet_id:
                 self.app.sheets.append_product(
                     spreadsheet_id,
-                    "A:Z",
                     sku,
+                    dialog.result.get('sku2', ''),
                     dialog.result['name'],
                     dialog.result.get('url', ''),
+                    dialog.result.get('platform', ''),
                     dialog.result.get('roleid', ''),
-                    dialog.result.get('platform', '')
+                    dialog.result.get('role', '')
                 )
                 self.app.log_message(f"✅ Added product: {sku}")
 
