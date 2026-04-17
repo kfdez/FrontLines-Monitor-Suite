@@ -349,7 +349,8 @@ class MainApplication:
             foreground=self.colors["text_secondary"],
             padding=(18, 10),
             font=("Bahnschrift SemiBold", 10),
-            borderwidth=0
+            borderwidth=0,
+            width=18
         )
         style.map(
             "TNotebook.Tab",
@@ -694,11 +695,11 @@ class MainApplication:
             bg=self.colors["panel_alt"],
             fg=self.colors["text_muted"],
             padx=16,
-            pady=(0, 14),
+            pady=0,
             justify=tk.LEFT,
             wraplength=180
         )
-        self.sidebar_subtitle.pack(fill=tk.X)
+        self.sidebar_subtitle.pack(fill=tk.X, pady=(0, 14))
 
         self.sidebar_section = tk.Label(
             self.sidebar_frame,
@@ -715,29 +716,9 @@ class MainApplication:
         self.nav_button_container = tk.Frame(self.sidebar_frame, bg=self.colors["panel"])
         self.nav_button_container.pack(fill=tk.X, padx=10, pady=(0, 14))
 
-        self.minimize_to_tray_var = tk.BooleanVar(value=False)
-        self.minimize_to_tray_checkbox = tk.Checkbutton(
-            self.sidebar_frame,
-            text="Minimize to tray",
-            variable=self.minimize_to_tray_var,
-            bg=self.colors["panel"],
-            fg=self.colors["text_secondary"],
-            selectcolor=self.colors["panel"],
-            activebackground=self.colors["panel"],
-            activeforeground=self.colors["text"],
-            highlightthickness=0,
-            bd=0,
-            padx=18,
-            pady=6,
-            anchor="w",
-            justify=tk.LEFT
-        )
-        self.minimize_to_tray_checkbox.pack(fill=tk.X, pady=(0, 10))
-        self._load_minimize_to_tray_setting()
-
         self.sidebar_footer = tk.Label(
             self.sidebar_frame,
-            text="Operator view",
+            text="FrontLines 3.0",
             font=("Segoe UI", 9),
             bg=self.colors["panel"],
             fg=self.colors["text_muted"],
@@ -838,15 +819,42 @@ class MainApplication:
 
         right_bar = tk.Frame(self.app_bar, bg=self.colors["bg"])
         right_bar.pack(side=tk.RIGHT, anchor="n")
-        tk.Label(
+        self.tray_toggle_card = tk.Frame(
             right_bar,
-            text="FrontLines 3.0",
-            font=("Bahnschrift SemiBold", 10),
-            bg=self.colors["panel_soft"],
-            fg=self.colors["text"],
-            padx=12,
-            pady=8
-        ).pack(anchor="e")
+            bg=self.colors["panel_alt"],
+            highlightthickness=1,
+            highlightbackground=self.colors["border"]
+        )
+        self.tray_toggle_card.pack(anchor="e", pady=(2, 0))
+        tk.Label(
+            self.tray_toggle_card,
+            text="WINDOW",
+            font=("Bahnschrift SemiBold", 8),
+            bg=self.colors["panel_alt"],
+            fg=self.colors["text_muted"],
+            padx=14,
+            pady=0,
+            anchor="w"
+        ).pack(fill=tk.X, pady=(10, 0))
+        self.minimize_to_tray_var = tk.BooleanVar(value=False)
+        self.minimize_to_tray_checkbox = tk.Checkbutton(
+            self.tray_toggle_card,
+            text="Minimize to tray",
+            variable=self.minimize_to_tray_var,
+            bg=self.colors["panel_alt"],
+            fg=self.colors["text_secondary"],
+            selectcolor=self.colors["panel_alt"],
+            activebackground=self.colors["panel_alt"],
+            activeforeground=self.colors["text"],
+            highlightthickness=0,
+            bd=0,
+            padx=14,
+            pady=10,
+            anchor="w",
+            justify=tk.LEFT
+        )
+        self.minimize_to_tray_checkbox.pack(fill=tk.X)
+        self._load_minimize_to_tray_setting()
 
         self.views_container = tk.Frame(content_container, bg=self.colors["bg"])
         self.views_container.pack(fill=tk.BOTH, expand=True)
@@ -869,8 +877,6 @@ class MainApplication:
             self.sidebar_title.config(text="FLMS", justify=tk.CENTER, anchor="center")
             self.sidebar_subtitle.pack_forget()
             self.sidebar_section.pack_forget()
-            self.sidebar_footer.pack_forget()
-            self.minimize_to_tray_checkbox.config(text="Tray", padx=10)
             self.collapse_btn.config(text="▶")
             self.sidebar_expanded = False
         else:
@@ -878,8 +884,6 @@ class MainApplication:
             self.sidebar_title.config(text="FrontLines\nMonitor Suite", justify=tk.LEFT, anchor="w")
             self.sidebar_subtitle.pack(fill=tk.X)
             self.sidebar_section.pack(fill=tk.X, before=self.nav_button_container)
-            self.sidebar_footer.pack(side=tk.BOTTOM, fill=tk.X)
-            self.minimize_to_tray_checkbox.config(text="Minimize to tray", padx=18)
             self.collapse_btn.config(text="◀")
             self.sidebar_expanded = True
         self._apply_nav_styles(self.current_view)

@@ -9,6 +9,10 @@ class HVMonitorTab(ttk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
+        self.colors = getattr(app, "colors", {
+            "panel_alt": "#182338",
+            "text": "#eef4ff",
+        })
         self._tooltip_window = None
         self._tooltip_timer = None
         self._tooltip_event = None
@@ -91,7 +95,16 @@ class HVMonitorTab(ttk.Frame):
         x = tree.winfo_rootx() + event.x + 15
         y = tree.winfo_rooty() + event.y + 10
         self._tooltip_window.wm_geometry(f"+{x}+{y}")
-        label = tk.Label(self._tooltip_window, text=value, background="#ffffe0", relief="solid", borderwidth=1, padx=5, pady=2)
+        label = tk.Label(
+            self._tooltip_window,
+            text=value,
+            background=self.colors["panel_alt"],
+            foreground=self.colors["text"],
+            relief="solid",
+            borderwidth=1,
+            padx=8,
+            pady=4
+        )
         label.pack()
 
         self._last_tooltip_item = item
@@ -114,8 +127,8 @@ class HVMonitorTab(ttk.Frame):
     def _create_config_ui(self):
         """Create the configuration tab UI."""
         # Shopify API Settings
-        api_frame = ttk.LabelFrame(self.config_frame, text="Shopify API", padding=10)
-        api_frame.pack(fill="x", padx=10, pady=5)
+        api_frame = ttk.LabelFrame(self.config_frame, text="Shopify API", padding=14)
+        api_frame.pack(fill="x", padx=14, pady=(14, 8))
 
         # Store GraphQL URL
         url_frame = ttk.Frame(api_frame)
@@ -132,8 +145,8 @@ class HVMonitorTab(ttk.Frame):
         ttk.Entry(token_frame, textvariable=self.token_var, width=50, show="*").pack(side=tk.LEFT, fill="x", expand=True)
 
         # Discord Settings
-        discord_frame = ttk.LabelFrame(self.config_frame, text="Discord Settings", padding=10)
-        discord_frame.pack(fill="x", padx=10, pady=5)
+        discord_frame = ttk.LabelFrame(self.config_frame, text="Discord Settings", padding=14)
+        discord_frame.pack(fill="x", padx=14, pady=8)
 
         # Webhook URL
         webhook_frame = ttk.Frame(discord_frame)
@@ -158,8 +171,8 @@ class HVMonitorTab(ttk.Frame):
         ).pack(anchor="w", pady=2)
 
         # Monitor Settings
-        monitor_frame = ttk.LabelFrame(self.config_frame, text="Monitor Settings", padding=10)
-        monitor_frame.pack(fill="x", padx=10, pady=5)
+        monitor_frame = ttk.LabelFrame(self.config_frame, text="Monitor Settings", padding=14)
+        monitor_frame.pack(fill="x", padx=14, pady=8)
 
         # Check interval
         interval_frame = ttk.Frame(monitor_frame)
@@ -178,8 +191,8 @@ class HVMonitorTab(ttk.Frame):
         ).pack(anchor="w", pady=5)
 
         # Save button
-        button_frame = ttk.Frame(self.config_frame)
-        button_frame.pack(fill="x", padx=10, pady=10)
+        button_frame = ttk.Frame(self.config_frame, padding=(14, 6, 14, 14))
+        button_frame.pack(fill="x")
 
         ttk.Button(
             button_frame,
@@ -190,8 +203,8 @@ class HVMonitorTab(ttk.Frame):
     def _create_products_ui(self):
         """Create the products tab UI."""
         # Products list
-        list_frame = ttk.LabelFrame(self.products_frame, text="Monitored Products", padding=10)
-        list_frame.pack(fill="both", expand=True, padx=10, pady=5)
+        list_frame = ttk.LabelFrame(self.products_frame, text="Monitored Products", padding=14)
+        list_frame.pack(fill="both", expand=True, padx=14, pady=(14, 8))
 
         # Treeview for products
         columns = ("ID", "Name", "Ping")
@@ -217,8 +230,8 @@ class HVMonitorTab(ttk.Frame):
         self.refresh_products()
 
         # Action buttons
-        btn_frame = ttk.Frame(self.products_frame)
-        btn_frame.pack(fill="x", padx=10, pady=5)
+        btn_frame = ttk.Frame(self.products_frame, padding=(14, 0, 14, 14))
+        btn_frame.pack(fill="x")
 
         ttk.Button(btn_frame, text="Add by ID", command=self._add_by_id).pack(side="left", padx=2)
         ttk.Button(btn_frame, text="Search Products", command=self._open_search).pack(side="left", padx=2)

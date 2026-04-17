@@ -10,6 +10,12 @@ class ProductsTab(ttk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
+        self.colors = getattr(app, "colors", {
+            "panel_alt": "#182338",
+            "border": "#2a3c5b",
+            "text": "#eef4ff",
+            "text_muted": "#6f83a5",
+        })
         self._tooltip_window = None
         self._tooltip_timer = None
         self._tooltip_event = None
@@ -97,7 +103,16 @@ class ProductsTab(ttk.Frame):
         x = tree.winfo_rootx() + event.x + 15
         y = tree.winfo_rooty() + event.y + 10
         self._tooltip_window.wm_geometry(f"+{x}+{y}")
-        label = tk.Label(self._tooltip_window, text=value, background="#ffffe0", relief="solid", borderwidth=1, padx=5, pady=2)
+        label = tk.Label(
+            self._tooltip_window,
+            text=value,
+            background=self.colors["panel_alt"],
+            foreground=self.colors["text"],
+            relief="solid",
+            borderwidth=1,
+            padx=8,
+            pady=4
+        )
         label.pack()
 
         self._last_tooltip_item = item
@@ -120,8 +135,8 @@ class ProductsTab(ttk.Frame):
     def _create_products_ui(self):
         """Create products sub-tab UI."""
         # Control frame
-        control_frame = ttk.Frame(self.products_frame)
-        control_frame.pack(fill=tk.X, padx=5, pady=5)
+        control_frame = ttk.Frame(self.products_frame, padding=(14, 14, 14, 6))
+        control_frame.pack(fill=tk.X)
 
         ttk.Label(control_frame, text="Spreadsheet ID:").pack(side=tk.LEFT)
         self.spreadsheet_id_var = tk.StringVar()
@@ -130,44 +145,44 @@ class ProductsTab(ttk.Frame):
             textvariable=self.spreadsheet_id_var,
             width=40
         )
-        self.spreadsheet_id_entry.pack(side=tk.LEFT, padx=5)
+        self.spreadsheet_id_entry.pack(side=tk.LEFT, padx=(8, 10))
 
         ttk.Button(
             control_frame,
             text="Load from Sheets",
             command=self.load_products
-        ).pack(side=tk.LEFT, padx=5)
+        ).pack(side=tk.LEFT, padx=6)
 
         ttk.Button(
             control_frame,
             text="Add Product",
             command=self.add_product
-        ).pack(side=tk.LEFT, padx=5)
+        ).pack(side=tk.LEFT, padx=6)
 
         ttk.Button(
             control_frame,
             text="Edit Product",
             command=self.edit_product
-        ).pack(side=tk.LEFT, padx=5)
+        ).pack(side=tk.LEFT, padx=6)
 
         ttk.Button(
             control_frame,
             text="Delete Product",
             command=self.delete_product
-        ).pack(side=tk.LEFT, padx=5)
+        ).pack(side=tk.LEFT, padx=6)
 
         # Filter
-        filter_frame = ttk.Frame(self.products_frame)
-        filter_frame.pack(fill=tk.X, padx=5, pady=2)
+        filter_frame = ttk.Frame(self.products_frame, padding=(14, 4, 14, 6))
+        filter_frame.pack(fill=tk.X)
         ttk.Label(filter_frame, text="Filter:").pack(side=tk.LEFT)
         self.filter_var = tk.StringVar()
         self.filter_var.trace_add('write', self.filter_products)
         ttk.Entry(filter_frame, textvariable=self.filter_var).pack(
-            side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+            side=tk.LEFT, fill=tk.X, expand=True, padx=(8, 0))
 
         # Treeview
-        tree_frame = ttk.Frame(self.products_frame)
-        tree_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        tree_frame = ttk.Frame(self.products_frame, padding=(14, 8, 14, 14))
+        tree_frame.pack(fill=tk.BOTH, expand=True)
 
         self.tree = ttk.Treeview(
             tree_frame,
@@ -202,8 +217,8 @@ class ProductsTab(ttk.Frame):
     def _create_pending_ui(self):
         """Create pending SKUs sub-tab UI."""
         # Control frame
-        control_frame = ttk.Frame(self.pending_frame)
-        control_frame.pack(fill=tk.X, padx=5, pady=5)
+        control_frame = ttk.Frame(self.pending_frame, padding=(14, 14, 14, 6))
+        control_frame.pack(fill=tk.X)
 
         ttk.Button(
             control_frame,
@@ -245,8 +260,8 @@ class ProductsTab(ttk.Frame):
         self.status_filter.bind('<<ComboboxSelected>>', lambda e: self.load_pending())
 
         # Treeview
-        tree_frame = ttk.Frame(self.pending_frame)
-        tree_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        tree_frame = ttk.Frame(self.pending_frame, padding=(14, 8, 14, 14))
+        tree_frame.pack(fill=tk.BOTH, expand=True)
 
         self.pending_tree = ttk.Treeview(
             tree_frame,

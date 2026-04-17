@@ -11,6 +11,10 @@ class EmailsTab(ttk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
+        self.colors = getattr(app, "colors", {
+            "panel_alt": "#182338",
+            "text": "#eef4ff",
+        })
         self._tooltip_window = None
         self._tooltip_timer = None
         self._tooltip_event = None
@@ -75,7 +79,16 @@ class EmailsTab(ttk.Frame):
         x = tree.winfo_rootx() + event.x + 15
         y = tree.winfo_rooty() + event.y + 10
         self._tooltip_window.wm_geometry(f"+{x}+{y}")
-        label = tk.Label(self._tooltip_window, text=value, background="#ffffe0", relief="solid", borderwidth=1, padx=5, pady=2)
+        label = tk.Label(
+            self._tooltip_window,
+            text=value,
+            background=self.colors["panel_alt"],
+            foreground=self.colors["text"],
+            relief="solid",
+            borderwidth=1,
+            padx=8,
+            pady=4
+        )
         label.pack()
 
         self._last_tooltip_item = item
@@ -98,8 +111,8 @@ class EmailsTab(ttk.Frame):
     def _create_ui(self):
         """Create the emails tab UI."""
         # Control frame
-        control_frame = ttk.Frame(self)
-        control_frame.pack(fill=tk.X, padx=5, pady=5)
+        control_frame = ttk.Frame(self, padding=(14, 14, 14, 6))
+        control_frame.pack(fill=tk.X)
 
         ttk.Button(
             control_frame,
@@ -144,17 +157,17 @@ class EmailsTab(ttk.Frame):
         ).pack(side=tk.LEFT, padx=5)
 
         # Filter
-        filter_frame = ttk.Frame(self)
-        filter_frame.pack(fill=tk.X, padx=5, pady=2)
+        filter_frame = ttk.Frame(self, padding=(14, 4, 14, 6))
+        filter_frame.pack(fill=tk.X)
         ttk.Label(filter_frame, text="Filter:").pack(side=tk.LEFT)
         self.filter_var = tk.StringVar()
         self.filter_var.trace_add('write', self.filter_emails)
         ttk.Entry(filter_frame, textvariable=self.filter_var).pack(
-            side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+            side=tk.LEFT, fill=tk.X, expand=True, padx=(8, 0))
 
         # Treeview
-        tree_frame = ttk.Frame(self)
-        tree_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        tree_frame = ttk.Frame(self, padding=(14, 8, 14, 14))
+        tree_frame.pack(fill=tk.BOTH, expand=True)
 
         self.tree = ttk.Treeview(
             tree_frame,
