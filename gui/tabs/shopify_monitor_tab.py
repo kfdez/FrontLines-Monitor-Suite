@@ -53,6 +53,16 @@ class ShopifyMonitorTab(ttk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
+        self.colors = getattr(app, "colors", {
+            "bg": "#0b1220",
+            "panel_alt": "#182338",
+            "border": "#2a3c5b",
+            "text": "#eef4ff",
+            "text_muted": "#6f83a5",
+            "input_bg": "#0f1727",
+            "accent_blue": "#46b8ff",
+            "button_fg": "#08111f",
+        })
 
         # Create notebook for sub-tabs
         self.notebook = ttk.Notebook(self)
@@ -225,7 +235,16 @@ class ShopifyMonitorTab(ttk.Frame):
         y = self.products_tree.winfo_rooty() + event.y + 10
         self._tooltip_window.wm_geometry(f"+{x}+{y}")
 
-        label = tk.Label(self._tooltip_window, text=value, background="#ffffe0", relief="solid", borderwidth=1, padx=5, pady=2)
+        label = tk.Label(
+            self._tooltip_window,
+            text=value,
+            background=self.colors["panel_alt"],
+            foreground=self.colors["text"],
+            relief="solid",
+            borderwidth=1,
+            padx=8,
+            pady=4
+        )
         label.pack()
 
         # Track this item so we can hide when moving to different item
@@ -376,7 +395,12 @@ class ShopifyMonitorTab(ttk.Frame):
     def _create_config_ui(self):
         """Create the configuration tab UI."""
         # Create a canvas with scrollbar for vertical scrolling
-        self.canvas = tk.Canvas(self.config_frame)
+        self.canvas = tk.Canvas(
+            self.config_frame,
+            bg=self.colors["bg"],
+            highlightthickness=0,
+            bd=0
+        )
         scrollbar = ttk.Scrollbar(self.config_frame, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = ttk.Frame(self.canvas)
 
@@ -386,7 +410,7 @@ class ShopifyMonitorTab(ttk.Frame):
         )
 
         # Create canvas window
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas_window = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
         self.canvas.pack(side="left", fill="both", expand=True)
@@ -521,7 +545,21 @@ class ShopifyMonitorTab(ttk.Frame):
 
         stores_scroll = ttk.Scrollbar(stores_frame)
         stores_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        self.stores_text = tk.Text(stores_frame, height=8, yscrollcommand=stores_scroll.set)
+        self.stores_text = tk.Text(
+            stores_frame,
+            height=8,
+            yscrollcommand=stores_scroll.set,
+            bg=self.colors["input_bg"],
+            fg=self.colors["text"],
+            insertbackground=self.colors["text"],
+            selectbackground=self.colors["accent_blue"],
+            selectforeground=self.colors["button_fg"],
+            relief=tk.FLAT,
+            bd=0,
+            highlightthickness=0,
+            padx=12,
+            pady=12
+        )
         self.stores_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         stores_scroll.config(command=self.stores_text.yview)
 
@@ -532,7 +570,21 @@ class ShopifyMonitorTab(ttk.Frame):
 
         keywords_scroll = ttk.Scrollbar(keywords_frame)
         keywords_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        self.keywords_text = tk.Text(keywords_frame, height=8, yscrollcommand=keywords_scroll.set)
+        self.keywords_text = tk.Text(
+            keywords_frame,
+            height=8,
+            yscrollcommand=keywords_scroll.set,
+            bg=self.colors["input_bg"],
+            fg=self.colors["text"],
+            insertbackground=self.colors["text"],
+            selectbackground=self.colors["accent_blue"],
+            selectforeground=self.colors["button_fg"],
+            relief=tk.FLAT,
+            bd=0,
+            highlightthickness=0,
+            padx=12,
+            pady=12
+        )
         self.keywords_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         keywords_scroll.config(command=self.keywords_text.yview)
 
@@ -552,7 +604,7 @@ class ShopifyMonitorTab(ttk.Frame):
             # Only update on configure events from the frame, not from canvas children
             if event.widget == self.config_frame:
                 width = event.width - 20  # Account for scrollbar
-                self.canvas.itemconfig(1, width=max(width, 1000))
+                self.canvas.itemconfig(self.canvas_window, width=max(width, 1000))
 
     def _log_message(self, message: str):
         """Add a message to the activity log."""

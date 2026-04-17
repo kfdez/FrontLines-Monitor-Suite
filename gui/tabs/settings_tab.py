@@ -10,13 +10,28 @@ class SettingsTab(ttk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
+        self.colors = getattr(app, "colors", {
+            "bg": "#0b1220",
+            "panel_alt": "#182338",
+            "border": "#2a3c5b",
+            "text": "#eef4ff",
+            "text_muted": "#6f83a5",
+            "input_bg": "#0f1727",
+            "accent_teal": "#35d3b6",
+            "warning": "#ffb84d",
+        })
         self._create_ui()
         self._load_settings()
 
     def _create_ui(self):
         """Create the settings tab UI."""
         # Canvas with scrollbar
-        self.canvas = tk.Canvas(self)
+        self.canvas = tk.Canvas(
+            self,
+            bg=self.colors["bg"],
+            highlightthickness=0,
+            bd=0
+        )
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = ttk.Frame(self.canvas)
 
@@ -25,7 +40,7 @@ class SettingsTab(ttk.Frame):
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
 
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas_window = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
         self.canvas.pack(side="left", fill="both", expand=True)
@@ -210,7 +225,7 @@ class SettingsTab(ttk.Frame):
         self.tasks_status_label = ttk.Label(
             tasks_frame,
             text="",
-            foreground="gray"
+            foreground=self.colors["text_muted"]
         )
         self.tasks_status_label.grid(row=3, column=0, columnspan=3, pady=5)
 
@@ -234,7 +249,7 @@ class SettingsTab(ttk.Frame):
         self.status_label = ttk.Label(
             btn_frame,
             text="",
-            foreground="green"
+            foreground=self.colors["accent_teal"]
         )
         self.status_label.pack(side=tk.LEFT, padx=20)
 
@@ -268,7 +283,7 @@ class SettingsTab(ttk.Frame):
         """Handle resize events to update canvas width."""
         if hasattr(self, 'canvas') and hasattr(self, 'scrollable_frame'):
             width = event.width - 20  # Account for scrollbar
-            self.canvas.itemconfig(1, width=max(width, 800))
+            self.canvas.itemconfig(self.canvas_window, width=max(width, 800))
 
     def _load_settings(self):
         """Load settings from database."""
@@ -329,9 +344,9 @@ class SettingsTab(ttk.Frame):
         detected_path = self.app.tasks_manager.get_stellar_export_path()
         if detected_path:
             self.tasks_file_path_var.set(detected_path)
-            self.tasks_status_label.config(text=f"Detected: {os.path.basename(detected_path)}", foreground="green")
+            self.tasks_status_label.config(text=f"Detected: {os.path.basename(detected_path)}", foreground=self.colors["accent_teal"])
         else:
-            self.tasks_status_label.config(text="No export file found in AppData", foreground="orange")
+            self.tasks_status_label.config(text="No export file found in AppData", foreground=self.colors["warning"])
 
     def _refresh_tasks_now(self):
         """Manually refresh tasks now."""
@@ -347,10 +362,10 @@ class SettingsTab(ttk.Frame):
             platform_str = ", ".join(platforms) if platforms else "none"
             self.tasks_status_label.config(
                 text=f"Platforms: {platform_str}",
-                foreground="green"
+                foreground=self.colors["accent_teal"]
             )
         else:
-            self.tasks_status_label.config(text="No tasks loaded", foreground="gray")
+            self.tasks_status_label.config(text="No tasks loaded", foreground=self.colors["text_muted"])
 
     def load_config(self):
         """Reload configuration from database."""

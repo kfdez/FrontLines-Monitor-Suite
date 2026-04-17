@@ -9,6 +9,14 @@ class ProxiesTab(ttk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
+        self.colors = getattr(app, "colors", {
+            "text": "#eef4ff",
+            "text_muted": "#6f83a5",
+            "input_bg": "#0f1727",
+            "accent_teal": "#35d3b6",
+            "accent_blue": "#46b8ff",
+            "button_fg": "#08111f",
+        })
         self._create_ui()
         self._load_proxies()
 
@@ -32,7 +40,17 @@ class ProxiesTab(ttk.Frame):
             text_frame,
             height=20,
             width=60,
-            font=("Consolas", 10)
+            font=("Consolas", 10),
+            bg=self.colors["input_bg"],
+            fg=self.colors["text"],
+            insertbackground=self.colors["text"],
+            selectbackground=self.colors["accent_blue"],
+            selectforeground=self.colors["button_fg"],
+            relief=tk.FLAT,
+            bd=0,
+            highlightthickness=0,
+            padx=14,
+            pady=14
         )
         self.proxies_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -48,7 +66,7 @@ class ProxiesTab(ttk.Frame):
         ttk.Button(btn_frame, text="Clear", command=self._clear_proxies).pack(side=tk.LEFT, padx=5)
 
         # Status
-        self.status_label = ttk.Label(btn_frame, text="")
+        self.status_label = ttk.Label(btn_frame, text="", foreground=self.colors["text_muted"])
         self.status_label.pack(side=tk.LEFT, padx=20)
 
     def _load_proxies(self):
@@ -74,9 +92,9 @@ class ProxiesTab(ttk.Frame):
         proxies = self.proxies_text.get("1.0", tk.END).strip()
         if proxies:
             count = len([p for p in proxies.split('\n') if p.strip()])
-            self.status_label.config(text=f"{count} proxy(ies) loaded")
+            self.status_label.config(text=f"{count} proxy(ies) loaded", foreground=self.colors["accent_teal"])
         else:
-            self.status_label.config(text="No proxies")
+            self.status_label.config(text="No proxies", foreground=self.colors["text_muted"])
 
     def get_proxies(self):
         """Get list of proxies from database.
