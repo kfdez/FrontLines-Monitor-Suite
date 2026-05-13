@@ -2,6 +2,8 @@
 import json
 import os
 import secrets
+import time
+from collections import OrderedDict
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -21,6 +23,9 @@ setup_logging()
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 manager = ServiceManager()
+HV_SEARCH_CACHE = OrderedDict()
+HV_SEARCH_CACHE_TTL = 1800
+HV_SEARCH_CACHE_MAX = 50
 
 app = FastAPI(title="FrontLines Monitor Suite")
 app.add_middleware(
@@ -76,6 +81,40 @@ def _flash(request: Request, message: str = None, error: str = None):
         request.session["message"] = message
     if error:
         request.session["error"] = error
+
+
+def _prune_hv_search_cache():
+    now = time.time()
+    expired_keys = [
+        key for key, payload in HV_SEARCH_CACHE.items()
+        if now - payload["created_at"] > HV_SEARCH_CACHE_TTL
+    ]
+    for key in expired_keys:
+        HV_SEARCH_CACHE.pop(key, None)
+    while len(HV_SEARCH_CACHE) > HV_SEARCH_CACHE_MAX:
+        HV_SEARCH_CACHE.popitem(last=False)
+
+
+def _store_hv_search_results(request: Request, results: list[dict]) -> str:
+    request.session.pop("hv_search_results", None)
+    cache_id = secrets.token_urlsafe(16)
+    HV_SEARCH_CACHE[cache_id] = {"created_at": time.time(), "results": results}
+    request.session["hv_search_id"] = cache_id
+    _prune_hv_search_cache()
+    return cache_id
+
+
+def _get_hv_search_results(request: Request) -> list[dict]:
+    request.session.pop("hv_search_results", None)
+    _prune_hv_search_cache()
+    cache_id = request.session.get("hv_search_id")
+    if not cache_id:
+        return []
+    payload = HV_SEARCH_CACHE.get(cache_id)
+    if not payload:
+        request.session.pop("hv_search_id", None)
+        return []
+    return payload["results"]
 
 
 @app.get("/login", response_class=HTMLResponse)
@@ -351,9 +390,7 @@ async def hv_page(request: Request, q: str = ""):
     redirect = _require_login(request)
     if redirect:
         return redirect
-    results = request.session.pop("hv_search_results", None)
-    if results:
-        results = json.loads(results)
+    results = _get_hv_search_results(request)
     return templates.TemplateResponse(
         request,
         "hv.html",
@@ -362,8 +399,7 @@ async def hv_page(request: Request, q: str = ""):
             settings=manager.get_hv_settings(),
             products=manager.get_hv_products(),
             q=q,
-            results=results or [],
-            results_json=json.dumps(results or []),
+            results=results,
             logs=manager.get_logs(40),
         ),
     )
@@ -416,11 +452,11 @@ async def hv_search(request: Request, keyword: str = Form(...), csrf: str = Form
     search_term = keyword.strip()
     try:
         results = manager.search_hv_products(search_term)
-        request.session["hv_search_results"] = json.dumps(results)
+        _store_hv_search_results(request, results)
         if not results:
             _flash(request, "No HV products found for that search.")
     except Exception as exc:
-        request.session["hv_search_results"] = json.dumps([])
+        _store_hv_search_results(request, [])
         _flash(request, error=f"HV search failed: {exc}")
     return RedirectResponse(_url(request, f"/hv?{urlencode({'q': search_term})}"), status_code=303)
 
@@ -429,7 +465,6 @@ async def hv_search(request: Request, keyword: str = Form(...), csrf: str = Form
 async def add_hv_search(
     request: Request,
     csrf: str = Form(...),
-    results_json: str = Form(default="[]"),
     selected: list[str] = Form(default=[]),
     ping: str = Form(default=""),
 ):
@@ -437,7 +472,9 @@ async def add_hv_search(
     if redirect:
         return redirect
     _verify_csrf(request, csrf)
-    manager.add_hv_search_results(selected, results_json, bool(ping))
+    results = _get_hv_search_results(request)
+    manager.add_hv_search_results(selected, json.dumps(results), bool(ping))
+    request.session.pop("hv_search_id", None)
     return RedirectResponse(_url(request, "/hv"), status_code=303)
 
 
