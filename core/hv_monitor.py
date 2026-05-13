@@ -34,7 +34,7 @@ def encode_proxy(proxy: str) -> str:
 class HVMonitor:
     """HV Monitor for tracking specific Shopify product/variant IDs."""
 
-    def __init__(self, db, log_callback=None, app=None):
+    def __init__(self, db, log_callback=None, app=None, data_dir: str = None):
         """Initialize the HV Monitor.
 
         Args:
@@ -65,7 +65,9 @@ class HVMonitor:
         self.products: List[Tuple[str, bool]] = []
 
         # Data directory - use exe directory if bundled
-        if getattr(sys, 'frozen', False):
+        if data_dir:
+            self.data_dir = data_dir
+        elif getattr(sys, 'frozen', False):
             self.data_dir = os.path.join(os.path.dirname(sys.executable), "hv_monitor_data")
         else:
             self.data_dir = "hv_monitor_data"
@@ -644,9 +646,9 @@ class HVMonitor:
                 {"name": "Product ID", "value": f"`{product['id']}`", "inline": False}
             ]
 
-        # Determine content (with optional role mention)
+        # Global ping is an allow switch; product-level ping decides whether this item mentions the role.
         content = ""
-        if ping_override or self.ping_enabled:
+        if self.ping_enabled and ping_override:
             content = f"<@&{self.role_id}>" if self.role_id else ""
 
         # Send webhook

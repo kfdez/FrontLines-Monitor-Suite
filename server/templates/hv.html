@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}HV - FrontLines{% endblock %}
+{% block content %}
+<section class="hero">
+  <div><p class="eyebrow">Hobbiesville</p><h1>Product monitor</h1></div>
+  <form method="post" action="/service/hv/{{ 'stop' if status.hv.running else 'start' }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <button>{{ 'Stop' if status.hv.running else 'Start' }}</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Monitored products</h2>
+  <form method="post" action="/hv/products/toggle-ping">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Title</th><th>ID</th><th>Type</th><th>Price</th><th>Ping</th></tr></thead>
+        <tbody>
+          {% for row in products %}
+          <tr>
+            <td><input type="checkbox" name="selected" value="{{ row.key }}"></td>
+            <td>{{ row.title }}</td>
+            <td>{{ row.id }}</td>
+            <td>{{ row.type }}</td>
+            <td>{{ row.price }}</td>
+            <td>{{ 'Yes' if row.ping else 'No' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6">No HV products configured.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button class="compact" formaction="/hv/products/toggle-ping">Toggle ping</button>
+      <button class="compact" formaction="/hv/products/reset-stock">Reset stock</button>
+      <button class="compact danger" formaction="/hv/products/remove">Remove</button>
+    </div>
+  </form>
+</section>
+
+<section class="two-col">
+  <div class="panel">
+    <h2>Add by ID</h2>
+    <form method="post" action="/hv/add" class="stack">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <label>Product or variant GID <input name="product_id" required></label>
+      <label class="check"><input type="checkbox" name="ping"> Ping this item</label>
+      <button class="compact">Add product</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Search</h2>
+    <form method="post" action="/hv/search" class="filters">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <input name="keyword" value="{{ q }}" placeholder="Search Shopify products">
+      <button class="compact">Search</button>
+    </form>
+    {% if results %}
+    <form method="post" action="/hv/search/add">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <input type="hidden" name="results_json" value="{{ results_json|e }}">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>Title</th><th>Type</th><th>Price</th></tr></thead>
+          <tbody>
+          {% for row in results %}
+          <tr><td><input type="checkbox" name="selected" value="{{ row.key }}"></td><td>{{ row.title }}</td><td>{{ row.type }}</td><td>{{ row.price }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <label class="check"><input type="checkbox" name="ping"> Ping added items</label>
+      <button class="compact">Add selected</button>
+    </form>
+    {% endif %}
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Configuration</h2>
+  <form method="post" class="grid-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    {% for key in ["store_url", "token", "webhook_url", "role_id", "check_interval"] %}
+    <label>{{ key }}<input name="{{ key }}" value="{{ settings[key] }}"></label>
+    {% endfor %}
+    <label class="check"><input type="checkbox" name="ping_enabled" {% if settings.ping_enabled %}checked{% endif %}> Global ping allow switch</label>
+    <label class="check"><input type="checkbox" name="auto_start" {% if settings.auto_start %}checked{% endif %}> Auto start</label>
+    <div class="compact-footer"><button class="compact" type="submit">Save HV</button></div>
+  </form>
+</section>
+{% endblock %}

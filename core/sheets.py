@@ -22,6 +22,7 @@ class SheetsManager:
         if credentials_path is None:
             # Try multiple locations for credentials
             possible_paths = [
+                os.environ.get("GOOGLE_CREDENTIALS_PATH", ""),
                 "credentials.json",
                 os.path.join(os.getcwd(), "credentials.json"),
                 os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "credentials.json"),
@@ -32,7 +33,7 @@ class SheetsManager:
 
             credentials_path = None
             for path in possible_paths:
-                if os.path.exists(path):
+                if path and os.path.exists(path):
                     credentials_path = path
                     break
 
@@ -93,6 +94,8 @@ class SheetsManager:
                     header_map[h] = 'role'
                 elif h in ['platform', 'sitestore', 'store']:
                     header_map[h] = 'platform'
+                elif h in ['sendtowebsocket', 'websocket', 'sendtows', 'wstrigger']:
+                    header_map[h] = 'send_to_websocket'
                 # Skip: monitor, checkout, stellarinput, lastchecked, track, limit, qty
             products = []
 

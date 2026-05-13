@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - FrontLines{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">VPS Web Console</p>
+    <h1>Monitor control center</h1>
+  </div>
+  <div class="meta">
+    <div>DB: {{ status.db_path }}</div>
+    <div>Data: {{ status.data_dir }}</div>
+  </div>
+</section>
+
+<section class="cards">
+  {% for key, label in [("bot", "Discord Bot"), ("hv", "HV Monitor"), ("shopify", "Shopify Monitor")] %}
+  <article class="card">
+    <h2>{{ label }}</h2>
+    <p class="state {{ 'on' if status[key].running else 'off' }}">{{ 'Running' if status[key].running else 'Stopped' }}</p>
+    <form method="post" action="/service/{{ key }}/{{ 'stop' if status[key].running else 'start' }}">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <button type="submit">{{ 'Stop' if status[key].running else 'Start' }}</button>
+    </form>
+    <pre>{{ status[key] }}</pre>
+  </article>
+  {% endfor %}
+</section>
+
+<section class="panel">
+  <h2>Recent logs</h2>
+  <div class="logs">
+    {% for row in logs %}
+    <div><span>{{ row.time }}</span> {{ row.message }}</div>
+    {% else %}
+    <div>No logs yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

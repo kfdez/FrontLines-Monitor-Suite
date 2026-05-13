@@ -213,7 +213,7 @@ class ProductTracker:
 class ShopifyMonitor:
     """Shopify Monitor for tracking keyword-matched products from multiple stores."""
 
-    def __init__(self, db, log_callback=None, app=None):
+    def __init__(self, db, log_callback=None, app=None, data_dir: str = None):
         """Initialize the Shopify Monitor."""
         self.db = db
         self.log_callback = log_callback
@@ -259,7 +259,9 @@ class ShopifyMonitor:
         self._running = False
 
         # Data file paths - use exe directory if bundled
-        if getattr(sys, 'frozen', False):
+        if data_dir:
+            self.data_dir = data_dir
+        elif getattr(sys, 'frozen', False):
             self.data_dir = os.path.join(os.path.dirname(sys.executable), "shopify_monitor_data")
         else:
             self.data_dir = "shopify_monitor_data"

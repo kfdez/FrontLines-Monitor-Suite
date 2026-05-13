@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Settings - FrontLines{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Core settings</h1>
+  <form method="post" class="grid-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    {% for key in ["bot_token", "source_channel_id", "target_channel_id", "checkouts_channel_id", "checkouts_target_channel_id", "admin_channel_id", "footer_icon_url", "duplicate_timeout", "ws_trigger_url", "ws_trigger_token", "google_sheets_id"] %}
+    <label>{{ key }}<input name="{{ key }}" value="{{ settings.get(key, '') }}"></label>
+    {% endfor %}
+    <label class="check"><input type="checkbox" name="enable_ping" {% if settings.enable_ping == "true" %}checked{% endif %}> Enable forwarded role pings</label>
+    <label class="check"><input type="checkbox" name="debug_logging" {% if settings.debug_logging == "true" %}checked{% endif %}> Debug logging</label>
+    <label class="wide">Proxies<textarea name="proxies" rows="8">{{ settings.proxies }}</textarea></label>
+    <div class="compact-footer"><button class="compact" type="submit">Save settings</button></div>
+  </form>
+</section>
+{% endblock %}

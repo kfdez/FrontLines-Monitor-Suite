@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Shopify - FrontLines{% endblock %}
+{% block content %}
+<section class="hero">
+  <div><p class="eyebrow">Shopify</p><h1>Keyword monitor</h1></div>
+  <form method="post" action="/service/shopify/{{ 'stop' if status.shopify.running else 'start' }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <button>{{ 'Stop' if status.shopify.running else 'Start' }}</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Tracked variants</h2>
+  <form method="get" class="filters">
+    <input name="q" placeholder="Search store, product, keyword..." value="{{ q }}">
+    <select name="stock">
+      <option value="all" {% if stock == "all" %}selected{% endif %}>All stock states</option>
+      <option value="in" {% if stock == "in" %}selected{% endif %}>In stock</option>
+      <option value="out" {% if stock == "out" %}selected{% endif %}>Out of stock</option>
+    </select>
+    <button class="compact">Filter</button>
+  </form>
+  <form method="post" action="/shopify/variants/reset">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Store</th><th>Product</th><th>Variant</th><th>Price</th><th>Stock</th><th>Keywords</th><th>Last seen</th></tr></thead>
+        <tbody>
+          {% for row in variants %}
+          <tr>
+            <td><input type="checkbox" name="selected" value="{{ row.key }}"></td>
+            <td>{{ row.store }}</td>
+            <td>{{ row.title }}</td>
+            <td>{{ row.variant_id }}</td>
+            <td>{{ row.price }}</td>
+            <td>{{ 'In' if row.available else 'Out' }}</td>
+            <td>{{ row.keywords }}</td>
+            <td>{{ row.last_seen }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8">No tracked variants yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="actions"><button class="compact">Reset selected stock status</button></div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Configuration</h2>
+  <form method="post" class="grid-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    {% for key in ["main_webhook", "singles_webhook", "ping_role_id", "max_pages", "check_interval", "request_timeout", "max_workers", "max_retries", "webhook_delay"] %}
+    <label>{{ key }}<input name="{{ key }}" value="{{ settings[key] }}"></label>
+    {% endfor %}
+    {% for key, label in [("ignore_singles", "Ignore singles"), ("ping_enabled", "Role ping enabled"), ("detailed_logging", "Detailed logging"), ("auto_start", "Auto start"), ("data_collection_mode", "Data collection mode")] %}
+    <label class="check"><input type="checkbox" name="{{ key }}" {% if settings[key] %}checked{% endif %}> {{ label }}</label>
+    {% endfor %}
+    <label class="wide">Stores<textarea name="stores" rows="8">{{ settings.stores }}</textarea></label>
+    <label class="wide">Keywords<textarea name="keywords" rows="8">{{ settings.keywords }}</textarea></label>
+    <div class="compact-footer"><button class="compact" type="submit">Save Shopify</button></div>
+  </form>
+  <div class="actions">
+    <form method="post" action="/shopify/tracker/reload"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact">Reload tracker</button></form>
+    <form method="post" action="/shopify/tracker/clear"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact danger">Clear tracker</button></form>
+  </div>
+</section>
+{% endblock %}

@@ -4,11 +4,14 @@ import logging.handlers
 import os
 import sys
 import threading
+from core.runtime_paths import get_data_dir
 
 
 def get_log_path() -> str:
     """Return the appropriate error.log path for installed vs dev environments."""
-    if getattr(sys, 'frozen', False):
+    if os.environ.get("FRONTLINES_DATA_DIR"):
+        base = str(get_data_dir())
+    elif getattr(sys, 'frozen', False):
         # Running as PyInstaller exe — log alongside the executable
         base = os.path.dirname(sys.executable)
     else:
@@ -30,6 +33,11 @@ def setup_logging() -> str:
     Returns the path to the log file.
     """
     log_path = get_log_path()
+
+    for existing in logging.getLogger().handlers:
+        if isinstance(existing, logging.handlers.RotatingFileHandler):
+            if getattr(existing, "baseFilename", None) == os.path.abspath(log_path):
+                return log_path
 
     # Rotating handler: max 5 MB per file, keep 3 backups
     handler = logging.handlers.RotatingFileHandler(

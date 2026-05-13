@@ -16,5 +16,12 @@ Pillow
 # System tray support
 pystray
 
+# Web admin
+fastapi
+uvicorn
+jinja2
+python-multipart
+itsdangerous
+
 # PyInstaller (for building installer only)
 pyinstaller

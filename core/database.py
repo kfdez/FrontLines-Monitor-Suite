@@ -3,14 +3,25 @@ import sqlite3
 import os
 from typing import Optional, List, Dict, Any
 from datetime import datetime
+from core.runtime_paths import get_db_path
+
+
+class ClosingConnection(sqlite3.Connection):
+    """SQLite connection that closes after context-manager use."""
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        result = super().__exit__(exc_type, exc_value, traceback)
+        self.close()
+        return result
 
 
 class Database:
     def __init__(self, db_path: str = None):
         import sys
         if db_path is None:
-            # Use the directory where the exe is located
-            if getattr(sys, 'frozen', False):
+            if os.environ.get("FRONTLINES_DATA_DIR"):
+                db_path = get_db_path()
+            elif getattr(sys, 'frozen', False):
                 # Running as bundled exe
                 db_path = os.path.join(os.path.dirname(sys.executable), "skutto.db")
             else:
@@ -19,7 +30,7 @@ class Database:
         self._init_db()
 
     def _get_connection(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, factory=ClosingConnection)
         conn.row_factory = sqlite3.Row
         return conn
 
@@ -55,52 +66,52 @@ class Database:
                 )
             """)
 
-        # Add sku2 column if it doesn't exist (for existing databases)
-        cursor.execute("PRAGMA table_info(pending_skus)")
-        columns = [row[1] for row in cursor.fetchall()]
-        if 'sku2' not in columns:
-            cursor.execute("ALTER TABLE pending_skus ADD COLUMN sku2 TEXT DEFAULT ''")
-        # Add role column if it doesn't exist
-        if 'role' not in columns:
-            cursor.execute("ALTER TABLE pending_skus ADD COLUMN role TEXT DEFAULT ''")
+            # Add sku2 column if it doesn't exist (for existing databases)
+            cursor.execute("PRAGMA table_info(pending_skus)")
+            columns = [row[1] for row in cursor.fetchall()]
+            if 'sku2' not in columns:
+                cursor.execute("ALTER TABLE pending_skus ADD COLUMN sku2 TEXT DEFAULT ''")
+            # Add role column if it doesn't exist
+            if 'role' not in columns:
+                cursor.execute("ALTER TABLE pending_skus ADD COLUMN role TEXT DEFAULT ''")
 
-        # App config table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS config (
-                key TEXT PRIMARY KEY,
-                value TEXT
-            )
-        """)
+            # App config table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS config (
+                    key TEXT PRIMARY KEY,
+                    value TEXT
+                )
+            """)
 
-        # Platform to Site mapping table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS platform_sites (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                platform TEXT UNIQUE NOT NULL,
-                site_url TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
+            # Platform to Site mapping table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS platform_sites (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    platform TEXT UNIQUE NOT NULL,
+                    site_url TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
 
-        # Insert default platform mappings if empty
-        cursor.execute("SELECT COUNT(*) FROM platform_sites")
-        if cursor.fetchone()[0] == 0:
-            defaults = [
-                ("walmart", "https://www.walmart.com"),
-                ("gamestop", "https://www.gamestop.com"),
-                ("amazon", "https://www.amazon.com"),
-                ("costco", "https://www.costco.com"),
-                ("bestbuy", "https://www.bestbuy.com"),
-                ("popmart", "https://www.popmart.com"),
-                ("queueit", "https://queue-it.net"),
-                ("indigo", "https://www.indigo.ca"),
-            ]
-            cursor.executemany(
-                "INSERT INTO platform_sites (platform, site_url) VALUES (?, ?)",
-                defaults
-            )
+            # Insert default platform mappings if empty
+            cursor.execute("SELECT COUNT(*) FROM platform_sites")
+            if cursor.fetchone()[0] == 0:
+                defaults = [
+                    ("walmart", "https://www.walmart.com"),
+                    ("gamestop", "https://www.gamestop.com"),
+                    ("amazon", "https://www.amazon.com"),
+                    ("costco", "https://www.costco.com"),
+                    ("bestbuy", "https://www.bestbuy.com"),
+                    ("popmart", "https://www.popmart.com"),
+                    ("queueit", "https://queue-it.net"),
+                    ("indigo", "https://www.indigo.ca"),
+                ]
+                cursor.executemany(
+                    "INSERT INTO platform_sites (platform, site_url) VALUES (?, ?)",
+                    defaults
+                )
 
-        conn.commit()
+            conn.commit()
 
     # ============ EMAIL OPERATIONS ============
 

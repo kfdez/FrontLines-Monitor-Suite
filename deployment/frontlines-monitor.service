@@ -1,0 +1,17 @@
+[Unit]
+Description=FrontLines Monitor Suite web admin
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/frontlines-monitor
+EnvironmentFile=/etc/frontlines-monitor.env
+ExecStart=/opt/frontlines-monitor/.venv/bin/python web_main.py
+Restart=on-failure
+RestartSec=5
+User=frontlines
+Group=frontlines
+
+[Install]
+WantedBy=multi-user.target
