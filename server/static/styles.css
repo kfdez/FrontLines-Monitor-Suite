@@ -75,6 +75,24 @@ nav a {
   transition: color .12s, background .12s;
 }
 nav a:hover { color: var(--ink); background: var(--surface-2); text-decoration: none; }
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.tabs a {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 11px;
+  border-radius: var(--radius);
+  text-decoration: none;
+}
+.tabs a:hover { background: var(--surface-2); color: var(--ink); text-decoration: none; }
+.tabs a.active { background: var(--accent); color: #fff; }
 
 /* Page layout */
 .page { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }

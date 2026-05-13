@@ -1,16 +1,23 @@
 """Runtime service manager shared by the web UI."""
 import base64
+import asyncio
 import json
 import logging
+import re
 import threading
+import time
 from collections import deque
 from datetime import datetime
 from typing import Any
+
+import discord
+import requests
 
 from core.bot import DiscordBot
 from core.database import Database
 from core.hv_monitor import HVMonitor
 from core.runtime_paths import get_data_dir, get_data_path, get_db_path
+from core.sheets import SheetsManager
 from core.shopify_monitor import ShopifyMonitor
 
 
@@ -33,6 +40,10 @@ class ServiceManager:
         self.logs = deque(maxlen=500)
         self.lock = threading.RLock()
         self._bot_thread = None
+        self.sheets = None
+        self.sheets_error = ""
+        self.sku_data = {}
+        self.recent_forwards = {}
         self.bot = DiscordBot(self.db.get_config("bot_token", ""), self.db)
         self.hv_monitor = HVMonitor(
             self.db,
@@ -72,6 +83,12 @@ class ServiceManager:
         self.bot.checkouts_target_channel_id = self._int_or_none(self.db.get_config("checkouts_target_channel_id", ""))
         self.bot.admin_channel_id = self._int_or_none(self.db.get_config("admin_channel_id", ""))
         self.bot.enable_ping = self._bool(self.db.get_config("enable_ping", "false"))
+        self.duplicate_timeout = self._form_int({"duplicate_timeout": self.db.get_config("duplicate_timeout", "60")}, "duplicate_timeout", 60)
+        self.debug_logging = self._bool(self.db.get_config("debug_logging", "false"))
+        self.ws_trigger_url = self.db.get_config("ws_trigger_url", "")
+        self.ws_trigger_token = self.db.get_config("ws_trigger_token", "")
+        self.bot.refresh_data()
+        self.bot.set_sku_data(self.sku_data)
         self.hv_monitor.load_config()
         self.hv_monitor.load_products()
         self.hv_monitor.load_metadata()
@@ -95,6 +112,7 @@ class ServiceManager:
             if action == "start":
                 if not self.bot.is_running():
                     self.reload_config()
+                    self._prepare_skutto_bot()
                     self._bot_thread = self.bot.start()
                     self.add_log("Discord bot start requested")
             elif action == "stop":
@@ -108,6 +126,363 @@ class ServiceManager:
             getattr(self.shopify_monitor, action)()
         else:
             raise ValueError("Unknown service")
+
+    def _prepare_skutto_bot(self):
+        self.bot.refresh_data()
+        if not self.sku_data:
+            try:
+                self.load_skutto_products_from_sheets()
+            except Exception as exc:
+                self.add_log(f"SKUtto product load skipped: {exc}")
+        self.bot.set_sku_data(self.sku_data)
+        self.bot.set_on_ready(self._on_skutto_ready)
+        self.bot.set_on_message(self._handle_skutto_message)
+        self.bot.set_command_callback(self.add_log)
+        self.bot.set_on_email_changed(self._on_email_changed)
+
+    async def _on_skutto_ready(self, bot):
+        self.add_log(f"SKUtto bot connected as {bot.user}")
+        if self.bot.admin_channel_id:
+            channel = bot.get_channel(self.bot.admin_channel_id)
+            if channel:
+                await channel.send("SKUtto is now online and ready.")
+
+    async def _on_email_changed(self):
+        self.bot.refresh_data()
+        self.add_log("Email lookup refreshed")
+
+    async def _handle_skutto_message(self, message, bot):
+        if message.author.bot and bot.bot and message.author.id == bot.bot.user.id:
+            return
+
+        channel_id = int(message.channel.id)
+        if self.bot.checkouts_channel_id and channel_id == self.bot.checkouts_channel_id:
+            await self._handle_checkout(message, bot)
+            return
+
+        if not self.bot.source_channel_id or channel_id != self.bot.source_channel_id:
+            return
+
+        if not self.bot.target_channel_id:
+            return
+
+        target_channel = bot.bot.get_channel(self.bot.target_channel_id)
+        if not target_channel:
+            self.add_log("SKUtto target channel not found")
+            return
+
+        if message.embeds:
+            for embed in message.embeds:
+                processed = self._process_skutto_embed(embed)
+                title = processed.get("title", "No title")
+                matched_sku = processed.get("matched_sku", "")
+                if matched_sku:
+                    now = time.time()
+                    if now - self.recent_forwards.get(matched_sku, 0) < self.duplicate_timeout:
+                        self.add_log(f"Skipping duplicate SKU: {matched_sku}")
+                        continue
+
+                new_embed = discord.Embed.from_dict(processed)
+                role_id = processed.get("role_id", "").strip()
+                if self.bot.enable_ping and role_id.isdigit():
+                    await target_channel.send(content=f"<@&{role_id}> - {title}")
+                await target_channel.send(embed=new_embed)
+
+                if processed.get("ws_enabled"):
+                    self._publish_ws_trigger(processed)
+                if matched_sku:
+                    self.recent_forwards[matched_sku] = time.time()
+            self.add_log(f"Forwarded {len(message.embeds)} SKUtto embed(s)")
+        elif message.content:
+            await target_channel.send(message.content)
+            self.add_log("Forwarded SKUtto text message")
+
+    def _process_skutto_embed(self, embed):
+        embed_dict = embed.to_dict()
+        sku_value = None
+        for field in embed_dict.get("fields", []):
+            if field.get("name", "").strip().lower() in {"sku", "title/sku"}:
+                sku_value = field.get("value", "").strip()
+                break
+        if not sku_value:
+            for field in embed_dict.get("fields", []):
+                if field.get("name", "").strip().lower() in {"title", "product"}:
+                    sku_value = field.get("value", "").strip()
+                    break
+
+        product = self._find_skutto_product(sku_value)
+        if not product:
+            return embed_dict
+
+        fields = [
+            field for field in embed_dict.get("fields", [])
+            if field.get("name", "").strip().lower() not in {"proxy", "offer id"}
+        ]
+        platform = product.get("platform", "unknown")
+        embed_dict["fields"] = fields
+        embed_dict["title"] = f"[{platform.capitalize()} Restock] - {product.get('name', '')}"
+        if product.get("url"):
+            embed_dict["url"] = product["url"]
+        footer_icon = self.db.get_config("footer_icon_url", "")
+        footer = {"text": f"FrontLines - SKUtto - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"}
+        if footer_icon:
+            footer["icon_url"] = footer_icon
+        embed_dict["footer"] = footer
+        embed_dict["role_id"] = product.get("roleid", "")
+        embed_dict["matched_sku"] = sku_value
+        embed_dict["ws_enabled"] = str(product.get("send_to_websocket", "")).strip().upper() in {"TRUE", "1", "YES"}
+        embed_dict["ws_platform"] = platform.lower()
+        return embed_dict
+
+    def _find_skutto_product(self, value: str):
+        if not value:
+            return None
+        needle = value.upper()
+        for product in self.sku_data.values():
+            for key in ("sku", "sku2", "name"):
+                if str(product.get(key, "")).upper() == needle:
+                    return product
+        return None
+
+    async def _handle_checkout(self, message, bot):
+        emails_found = set()
+
+        def extract_emails(text):
+            if not text:
+                return set()
+            cleaned = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+            cleaned = re.sub(r"mailto:", "", cleaned)
+            return set(re.findall(r"[\w\.-]+@[\w\.-]+\.\w+", cleaned))
+
+        for embed in message.embeds:
+            embed_dict = embed.to_dict()
+            for field in embed_dict.get("fields", []):
+                emails_found.update(extract_emails(field.get("value", "")))
+            emails_found.update(extract_emails(embed.description))
+            emails_found.update(extract_emails(embed.title))
+        emails_found.update(extract_emails(message.content))
+
+        for index, email in enumerate(emails_found):
+            if index:
+                await asyncio.sleep(1)
+            discord_id = self.bot.email_lookup.get(email.lower())
+            if not discord_id:
+                self.add_log(f"Checkout email not mapped: {email}")
+                continue
+            try:
+                user = await bot.bot.fetch_user(discord_id)
+                for embed in message.embeds:
+                    await user.send("Successful Checkout!", embed=embed)
+                if not message.embeds:
+                    await user.send("Successful Checkout!")
+                self.add_log(f"Checkout DM sent to {email}")
+            except Exception as exc:
+                self.add_log(f"Failed checkout DM for {email}: {exc}")
+
+        if self.bot.checkouts_target_channel_id and message.embeds:
+            target_channel = bot.bot.get_channel(self.bot.checkouts_target_channel_id)
+            if target_channel:
+                for embed in message.embeds:
+                    await target_channel.send(embed=discord.Embed.from_dict(self._process_checkout_embed(embed.to_dict())))
+
+    @staticmethod
+    def _process_checkout_embed(embed_dict: dict) -> dict:
+        strip_set = {"order email", "order id", "order link", "account", "email", "purchase id", "offer id", "proxy"}
+        fields = embed_dict.get("fields", [])
+        is_amazon = any(
+            field.get("name", "").strip().lower() == "site" and "amazon" in field.get("value", "").strip().lower()
+            for field in fields
+        )
+        if is_amazon:
+            strip_set.remove("email")
+        embed_dict["fields"] = [
+            field for field in fields
+            if field.get("name", "").strip().lower() not in strip_set
+        ]
+        return embed_dict
+
+    def _publish_ws_trigger(self, processed: dict):
+        if not self.ws_trigger_url or not self.ws_trigger_token:
+            self.add_log("WebSocket trigger skipped: URL or token not configured")
+            return
+        payload = {
+            "platform": processed.get("ws_platform", "costco"),
+            "sku": processed.get("matched_sku"),
+            "link": processed.get("url"),
+        }
+        headers = {"Authorization": f"Bearer {self.ws_trigger_token}"}
+        try:
+            response = requests.post(self.ws_trigger_url, json=payload, headers=headers, timeout=10)
+            response.raise_for_status()
+            self.add_log(f"WebSocket trigger sent for {payload.get('sku')}")
+        except Exception as exc:
+            self.add_log(f"WebSocket trigger failed: {exc}")
+
+    def _get_sheets(self):
+        if self.sheets:
+            return self.sheets
+        try:
+            self.sheets = SheetsManager()
+            self.sheets_error = ""
+            return self.sheets
+        except Exception as exc:
+            self.sheets_error = str(exc)
+            raise
+
+    def load_skutto_products_from_sheets(self) -> list[dict[str, Any]]:
+        spreadsheet_id = self.db.get_config("google_sheets_id", "") or self.db.get_config("spreadsheet_id", "")
+        if not spreadsheet_id:
+            raise ValueError("Google Sheets ID is not configured")
+        products = self._get_sheets().get_products(spreadsheet_id)
+        self.sku_data = {product["sku"]: product for product in products if product.get("sku")}
+        self.bot.set_sku_data(self.sku_data)
+        self.add_log(f"Loaded {len(products)} SKUtto products from Google Sheets")
+        return products
+
+    def get_skutto_products(self, search: str = "") -> list[dict[str, Any]]:
+        search = search.lower().strip()
+        rows = []
+        for product in self.sku_data.values():
+            haystack = " ".join(str(product.get(key, "")) for key in ("sku", "sku2", "name", "url", "platform", "roleid", "role")).lower()
+            if search and search not in haystack:
+                continue
+            rows.append(product)
+        return sorted(rows, key=lambda row: row.get("sku", ""))
+
+    def upsert_skutto_product(self, form):
+        sku = form.get("sku", "").strip().upper()
+        if not sku:
+            raise ValueError("SKU is required")
+        product = {
+            "sku": sku,
+            "sku2": form.get("sku2", "").strip(),
+            "name": form.get("name", "").strip(),
+            "url": form.get("url", "").strip(),
+            "platform": form.get("platform", "").strip(),
+            "roleid": form.get("roleid", "").strip(),
+            "role": form.get("role", "").strip(),
+        }
+        old_sku = form.get("old_sku", "").strip().upper()
+        current = self.sku_data.get(old_sku or sku, {})
+        row_index = current.get("_row")
+        spreadsheet_id = self.db.get_config("google_sheets_id", "")
+        if spreadsheet_id:
+            if row_index:
+                self._get_sheets().update_product(
+                    spreadsheet_id,
+                    int(row_index),
+                    product["sku"],
+                    product["sku2"],
+                    product["name"],
+                    product["url"],
+                    product["platform"],
+                    product["roleid"],
+                    product["role"],
+                )
+            else:
+                self._get_sheets().append_product(spreadsheet_id, product["sku"], product["sku2"], product["name"], product["url"], product["platform"], product["roleid"], product["role"])
+        if old_sku and old_sku != sku:
+            self.sku_data.pop(old_sku, None)
+        product["_row"] = row_index
+        self.sku_data[sku] = product
+        self.bot.set_sku_data(self.sku_data)
+
+    def get_pending_skus(self, status_filter: str = "pending", search: str = "") -> list[dict[str, Any]]:
+        rows = self.db.get_all_pending_skus()
+        if status_filter and status_filter != "all":
+            rows = [row for row in rows if row.get("status") == status_filter]
+        search = search.lower().strip()
+        if search:
+            rows = [
+                row for row in rows
+                if search in " ".join(str(row.get(key, "")) for key in ("sku", "sku2", "name", "url", "platform", "role_id", "role", "submitted_by")).lower()
+            ]
+        return rows
+
+    def update_pending_sku(self, sku_id: int, form):
+        self.db.update_pending_sku(
+            sku_id,
+            platform=form.get("platform", "").strip(),
+            role_id=form.get("role_id", "").strip(),
+            sku2=form.get("sku2", "").strip(),
+            role=form.get("role", "").strip(),
+        )
+
+    def approve_pending_sku(self, sku_id: int):
+        sku_data = self.db.get_sku_by_id(sku_id)
+        if not sku_data:
+            raise ValueError("Pending SKU not found")
+        if not sku_data.get("platform") or not sku_data.get("role_id"):
+            raise ValueError("Platform and Role ID are required before approval")
+        self.db.approve_sku(sku_id, 0)
+        spreadsheet_id = self.db.get_config("google_sheets_id", "")
+        if spreadsheet_id:
+            self._get_sheets().append_product(
+                spreadsheet_id,
+                sku_data["sku"],
+                sku_data.get("sku2", ""),
+                sku_data["name"],
+                sku_data.get("url", ""),
+                sku_data.get("platform", ""),
+                sku_data.get("role_id", ""),
+                sku_data.get("role", ""),
+            )
+        self.sku_data[sku_data["sku"].upper()] = {
+            "sku": sku_data["sku"].upper(),
+            "sku2": sku_data.get("sku2", ""),
+            "name": sku_data["name"],
+            "url": sku_data.get("url", ""),
+            "platform": sku_data.get("platform", ""),
+            "roleid": sku_data.get("role_id", ""),
+            "role": sku_data.get("role", ""),
+        }
+        self.bot.set_sku_data(self.sku_data)
+
+    def reject_pending_sku(self, sku_id: int):
+        self.db.reject_sku(sku_id, 0)
+
+    def get_emails(self, search: str = "") -> list[dict[str, Any]]:
+        rows = self.db.get_all_emails()
+        search = search.lower().strip()
+        if search:
+            rows = [row for row in rows if search in row["email"].lower() or search in str(row["discord_id"])]
+        return rows
+
+    def upsert_email(self, form):
+        old_email = form.get("old_email", "").strip().lower()
+        old_discord_id = self._int_or_none(form.get("old_discord_id", ""))
+        email = form.get("email", "").strip().lower()
+        discord_id = self._int_or_none(form.get("discord_id", ""))
+        if not email or discord_id is None:
+            raise ValueError("Email and Discord ID are required")
+        if old_email and old_discord_id is not None:
+            self.db.remove_email(old_email, old_discord_id)
+        if not self.db.add_email(email, discord_id):
+            if old_email and old_discord_id is not None:
+                self.db.add_email(old_email, old_discord_id)
+            raise ValueError("Email already exists")
+        self.bot.refresh_data()
+
+    def delete_email(self, email: str, discord_id: int):
+        self.db.remove_email(email, discord_id)
+        self.bot.refresh_data()
+
+    def get_platforms(self) -> list[dict[str, Any]]:
+        return self.db.get_all_platform_sites()
+
+    def upsert_platform(self, form):
+        platform_id = form.get("platform_id", "").strip()
+        platform = form.get("platform", "").strip()
+        site_url = form.get("site_url", "").strip()
+        if not platform or not site_url:
+            raise ValueError("Platform and site URL are required")
+        if platform_id:
+            self.db.update_platform_site(int(platform_id), platform, site_url)
+        else:
+            self.db.add_platform_site(platform, site_url)
+
+    def delete_platform(self, platform_id: int):
+        self.db.delete_platform_site(platform_id)
 
     def get_basic_settings(self) -> dict[str, str]:
         keys = [

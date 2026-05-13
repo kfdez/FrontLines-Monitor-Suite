@@ -13,7 +13,7 @@
 </div>
 
 <section class="cards">
-  {% for key, label in [("bot", "Discord Bot"), ("hv", "HV Monitor"), ("shopify", "Shopify Monitor")] %}
+  {% for key, label in [("bot", "SKUtto Bot"), ("hv", "HV Monitor"), ("shopify", "Shopify Monitor")] %}
   <article class="card {{ 'status-running' if status[key].running else 'status-stopped' }}">
     <h2>{{ label }}</h2>
     <div class="card-status-row">

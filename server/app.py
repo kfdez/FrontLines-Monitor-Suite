@@ -146,6 +146,130 @@ async def save_settings(request: Request, csrf: str = Form(...)):
     return RedirectResponse(_url(request, "/settings"), status_code=303)
 
 
+@app.get("/skutto", response_class=HTMLResponse)
+async def skutto_page(request: Request, tab: str = "products", q: str = "", status_filter: str = "pending"):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    return templates.TemplateResponse(
+        request,
+        "skutto.html",
+        _context(
+            request,
+            tab=tab,
+            q=q,
+            status_filter=status_filter,
+            products=manager.get_skutto_products(q),
+            pending_skus=manager.get_pending_skus(status_filter, q),
+            emails=manager.get_emails(q),
+            platforms=manager.get_platforms(),
+            settings=manager.get_basic_settings(),
+            sheets_error=manager.sheets_error,
+            logs=manager.get_logs(40),
+        ),
+    )
+
+
+@app.post("/skutto/products/reload")
+async def reload_skutto_products(request: Request, csrf: str = Form(...)):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    _verify_csrf(request, csrf)
+    try:
+        manager.load_skutto_products_from_sheets()
+        _flash(request, "SKUtto products reloaded from Google Sheets.")
+    except Exception as exc:
+        _flash(request, error=str(exc))
+    return RedirectResponse(_url(request, "/skutto?tab=products"), status_code=303)
+
+
+@app.post("/skutto/products/save")
+async def save_skutto_product(request: Request, csrf: str = Form(...)):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    _verify_csrf(request, csrf)
+    try:
+        manager.upsert_skutto_product(await request.form())
+        _flash(request, "SKUtto product saved.")
+    except Exception as exc:
+        _flash(request, error=str(exc))
+    return RedirectResponse(_url(request, "/skutto?tab=products"), status_code=303)
+
+
+@app.post("/skutto/pending/{action}")
+async def skutto_pending_action(request: Request, action: str, sku_id: int = Form(...), csrf: str = Form(...)):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    _verify_csrf(request, csrf)
+    try:
+        form = await request.form()
+        if action == "update":
+            manager.update_pending_sku(sku_id, form)
+            _flash(request, "Pending SKU updated.")
+        elif action == "approve":
+            manager.approve_pending_sku(sku_id)
+            _flash(request, "Pending SKU approved.")
+        elif action == "reject":
+            manager.reject_pending_sku(sku_id)
+            _flash(request, "Pending SKU rejected.")
+        else:
+            raise HTTPException(status_code=404)
+    except Exception as exc:
+        _flash(request, error=str(exc))
+    return RedirectResponse(_url(request, "/skutto?tab=pending"), status_code=303)
+
+
+@app.post("/skutto/emails/save")
+async def save_email(request: Request, csrf: str = Form(...)):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    _verify_csrf(request, csrf)
+    try:
+        manager.upsert_email(await request.form())
+        _flash(request, "Email mapping saved.")
+    except Exception as exc:
+        _flash(request, error=str(exc))
+    return RedirectResponse(_url(request, "/skutto?tab=emails"), status_code=303)
+
+
+@app.post("/skutto/emails/delete")
+async def delete_email(request: Request, email: str = Form(...), discord_id: int = Form(...), csrf: str = Form(...)):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    _verify_csrf(request, csrf)
+    manager.delete_email(email, discord_id)
+    return RedirectResponse(_url(request, "/skutto?tab=emails"), status_code=303)
+
+
+@app.post("/skutto/platforms/save")
+async def save_platform(request: Request, csrf: str = Form(...)):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    _verify_csrf(request, csrf)
+    try:
+        manager.upsert_platform(await request.form())
+        _flash(request, "Platform mapping saved.")
+    except Exception as exc:
+        _flash(request, error=str(exc))
+    return RedirectResponse(_url(request, "/skutto?tab=platforms"), status_code=303)
+
+
+@app.post("/skutto/platforms/delete")
+async def delete_platform(request: Request, platform_id: int = Form(...), csrf: str = Form(...)):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    _verify_csrf(request, csrf)
+    manager.delete_platform(platform_id)
+    return RedirectResponse(_url(request, "/skutto?tab=platforms"), status_code=303)
+
+
 @app.get("/shopify", response_class=HTMLResponse)
 async def shopify_page(request: Request, q: str = "", stock: str = "all"):
     redirect = _require_login(request)
