@@ -2,7 +2,7 @@
 {% block title %}Shopify - FrontLines{% endblock %}
 {% block content %}
 <section class="hero">
-  <div><p class="eyebrow">Shopify</p><h1>Keyword monitor</h1></div>
+  <div><p class="eyebrow">Shopify</p><h1>Keyword Monitor</h1></div>
   <form method="post" action="{{ base_path }}/service/shopify/{{ 'stop' if status.shopify.running else 'start' }}">
     <input type="hidden" name="csrf" value="{{ csrf }}">
     <button>{{ 'Stop' if status.shopify.running else 'Start' }}</button>
@@ -12,7 +12,7 @@
 <section class="panel">
   <h2>Tracked variants</h2>
   <form method="get" class="filters">
-    <input name="q" placeholder="Search store, product, keyword..." value="{{ q }}">
+    <input name="q" placeholder="Search store, product, or keyword..." value="{{ q }}">
     <select name="stock">
       <option value="all" {% if stock == "all" %}selected{% endif %}>All stock states</option>
       <option value="in" {% if stock == "in" %}selected{% endif %}>In stock</option>
@@ -22,9 +22,9 @@
   </form>
   <form method="post" action="{{ base_path }}/shopify/variants/reset">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    <div class="table-wrap">
+    <div class="table-wrap table-scroll tracked-variants">
       <table>
-        <thead><tr><th></th><th>Store</th><th>Product</th><th>Variant</th><th>Price</th><th>Stock</th><th>Keywords</th><th>Last seen</th></tr></thead>
+        <thead><tr><th></th><th>Store</th><th>Product</th><th>Variant ID</th><th>Price</th><th>Stock Status</th><th>Matched Keywords</th><th>Last Seen</th></tr></thead>
         <tbody>
           {% for row in variants %}
           <tr>
@@ -33,7 +33,7 @@
             <td>{{ row.title }}</td>
             <td>{{ row.variant_id }}</td>
             <td>{{ row.price }}</td>
-            <td>{{ 'In' if row.available else 'Out' }}</td>
+            <td><span class="pill {{ 'ok' if row.available else 'muted' }}">{{ 'In Stock' if row.available else 'Out of Stock' }}</span></td>
             <td>{{ row.keywords }}</td>
             <td>{{ row.last_seen }}</td>
           </tr>
@@ -48,17 +48,27 @@
 </section>
 
 <section class="panel">
-  <h2>Configuration</h2>
+  <h2>Shopify Configuration</h2>
   <form method="post" class="grid-form">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    {% for key in ["main_webhook", "singles_webhook", "ping_role_id", "max_pages", "check_interval", "request_timeout", "max_workers", "max_retries", "webhook_delay"] %}
-    <label>{{ key }}<input name="{{ key }}" value="{{ settings[key] }}"></label>
+    {% for key, label in [
+      ("main_webhook", "Main Webhook URL"),
+      ("singles_webhook", "Singles Webhook URL"),
+      ("ping_role_id", "Discord Role ID"),
+      ("max_pages", "Max Pages Per Store"),
+      ("check_interval", "Check Interval (Seconds)"),
+      ("request_timeout", "Request Timeout (Seconds)"),
+      ("max_workers", "Max Worker Threads"),
+      ("max_retries", "Max Retries"),
+      ("webhook_delay", "Webhook Delay (Seconds)")
+    ] %}
+    <label>{{ label }}<input name="{{ key }}" value="{{ settings[key] }}"></label>
     {% endfor %}
-    {% for key, label in [("ignore_singles", "Ignore singles"), ("ping_enabled", "Role ping enabled"), ("detailed_logging", "Detailed logging"), ("auto_start", "Auto start"), ("data_collection_mode", "Data collection mode")] %}
+    {% for key, label in [("ignore_singles", "Ignore Singles"), ("ping_enabled", "Enable Role Ping"), ("detailed_logging", "Detailed Logging"), ("auto_start", "Auto Start"), ("data_collection_mode", "Data Collection Mode")] %}
     <label class="check"><input type="checkbox" name="{{ key }}" {% if settings[key] %}checked{% endif %}> {{ label }}</label>
     {% endfor %}
-    <label class="wide">Stores<textarea name="stores" rows="8">{{ settings.stores }}</textarea></label>
-    <label class="wide">Keywords<textarea name="keywords" rows="8">{{ settings.keywords }}</textarea></label>
+    <label class="wide">Stores <span class="hint">One Shopify domain per line, for example example.myshopify.com</span><textarea name="stores" rows="8">{{ settings.stores }}</textarea></label>
+    <label class="wide">Keywords <span class="hint">One keyword per line. Matches title, tags, or product type.</span><textarea name="keywords" rows="8">{{ settings.keywords }}</textarea></label>
     <div class="compact-footer"><button class="compact" type="submit">Save Shopify</button></div>
   </form>
   <div class="actions">

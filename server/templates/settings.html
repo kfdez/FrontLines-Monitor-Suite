@@ -2,16 +2,28 @@
 {% block title %}Settings - FrontLines{% endblock %}
 {% block content %}
 <section class="panel">
-  <h1>Core settings</h1>
+  <h1>Core Settings</h1>
   <form method="post" class="grid-form">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    {% for key in ["bot_token", "source_channel_id", "target_channel_id", "checkouts_channel_id", "checkouts_target_channel_id", "admin_channel_id", "footer_icon_url", "duplicate_timeout", "ws_trigger_url", "ws_trigger_token", "google_sheets_id"] %}
-    <label>{{ key }}<input name="{{ key }}" value="{{ settings.get(key, '') }}"></label>
+    {% for key, label in [
+      ("bot_token", "Discord Bot Token"),
+      ("source_channel_id", "Source Channel ID"),
+      ("target_channel_id", "Target Channel ID"),
+      ("checkouts_channel_id", "Checkouts Source Channel ID"),
+      ("checkouts_target_channel_id", "Checkouts Target Channel ID"),
+      ("admin_channel_id", "Admin Channel ID"),
+      ("footer_icon_url", "Footer Icon URL"),
+      ("duplicate_timeout", "Duplicate Timeout (Seconds)"),
+      ("ws_trigger_url", "WebSocket Trigger URL"),
+      ("ws_trigger_token", "WebSocket Trigger Token"),
+      ("google_sheets_id", "Google Sheets ID")
+    ] %}
+    <label>{{ label }}<input name="{{ key }}" value="{{ settings.get(key, '') }}"></label>
     {% endfor %}
-    <label class="check"><input type="checkbox" name="enable_ping" {% if settings.enable_ping == "true" %}checked{% endif %}> Enable forwarded role pings</label>
-    <label class="check"><input type="checkbox" name="debug_logging" {% if settings.debug_logging == "true" %}checked{% endif %}> Debug logging</label>
-    <label class="wide">Proxies<textarea name="proxies" rows="8">{{ settings.proxies }}</textarea></label>
-    <div class="compact-footer"><button class="compact" type="submit">Save settings</button></div>
+    <label class="check"><input type="checkbox" name="enable_ping" {% if settings.enable_ping == "true" %}checked{% endif %}> Enable Forwarded Role Pings</label>
+    <label class="check"><input type="checkbox" name="debug_logging" {% if settings.debug_logging == "true" %}checked{% endif %}> Debug Logging</label>
+    <label class="wide">Proxies <span class="hint">One proxy per line using host:port:username:password.</span><textarea name="proxies" rows="8">{{ settings.proxies }}</textarea></label>
+    <div class="compact-footer"><button class="compact" type="submit">Save Settings</button></div>
   </form>
 </section>
 {% endblock %}
