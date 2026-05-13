@@ -3,6 +3,7 @@ import json
 import os
 import secrets
 from pathlib import Path
+from urllib.parse import urlencode
 
 from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -412,9 +413,16 @@ async def hv_search(request: Request, keyword: str = Form(...), csrf: str = Form
     if redirect:
         return redirect
     _verify_csrf(request, csrf)
-    results = manager.search_hv_products(keyword.strip())
-    request.session["hv_search_results"] = json.dumps(results)
-    return RedirectResponse(_url(request, f"/hv?q={keyword}"), status_code=303)
+    search_term = keyword.strip()
+    try:
+        results = manager.search_hv_products(search_term)
+        request.session["hv_search_results"] = json.dumps(results)
+        if not results:
+            _flash(request, "No HV products found for that search.")
+    except Exception as exc:
+        request.session["hv_search_results"] = json.dumps([])
+        _flash(request, error=f"HV search failed: {exc}")
+    return RedirectResponse(_url(request, f"/hv?{urlencode({'q': search_term})}"), status_code=303)
 
 
 @app.post("/hv/search/add")

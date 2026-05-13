@@ -329,12 +329,13 @@ class HVMonitor:
 
     # ============ GRAPHQL API ============
 
-    def _graphql_request(self, query: str, retries: int = 3) -> Optional[Dict]:
+    def _graphql_request(self, query: str, retries: int = 3, timeout: int = 30) -> Optional[Dict]:
         """Make a GraphQL request to Shopify.
 
         Args:
             query: GraphQL query string
             retries: Number of retries on failure
+            timeout: Request timeout in seconds
 
         Returns:
             Response JSON dict, or None on error
@@ -355,7 +356,7 @@ class HVMonitor:
                         "X-Shopify-Storefront-Access-Token": self.token
                     },
                     proxies={"http": proxy, "https": proxy} if proxy else None,
-                    timeout=30
+                    timeout=timeout
                 )
                 response.raise_for_status()
                 return response.json()
@@ -376,9 +377,14 @@ class HVMonitor:
         Returns:
             List of product dicts
         """
+        keyword = keyword.strip()
+        if not keyword:
+            return []
+
+        query_text = json.dumps(keyword)
         query = f"""
         {{
-          products(first: {limit}, query: "{keyword}") {{
+          products(first: {limit}, query: {query_text}) {{
             edges {{
               node {{
                 id
@@ -404,7 +410,7 @@ class HVMonitor:
         }}
         """
 
-        data = self._graphql_request(query)
+        data = self._graphql_request(query, retries=1, timeout=12)
         if not data:
             return []
 

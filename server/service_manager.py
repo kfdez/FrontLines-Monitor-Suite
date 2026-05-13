@@ -821,7 +821,13 @@ class ServiceManager:
 
     def search_hv_products(self, keyword: str) -> list[dict[str, Any]]:
         results = []
-        for product in self.hv_monitor.search_products(keyword):
+        try:
+            products = self.hv_monitor.search_products(keyword)
+        except Exception as exc:
+            self.add_log(f"HV search failed: {exc}")
+            return []
+
+        for product in products:
             image_edges = product.get("images", {}).get("edges", [])
             image = image_edges[0]["node"].get("src") if image_edges else ""
             results.append({
