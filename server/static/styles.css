@@ -331,6 +331,7 @@ label {
   scrollbar-color: var(--border-strong) transparent;
 }
 .tracked-variants { background: var(--surface); }
+.hv-products { background: var(--surface); }
 table {
   width: 100%;
   border-collapse: collapse;
