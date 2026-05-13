@@ -230,9 +230,10 @@ class ServiceManager:
         self.bot.set_on_email_changed(self._on_email_changed)
 
     async def _on_skutto_ready(self, bot):
-        self.add_log(f"SKUtto bot connected as {bot.user}")
+        client = getattr(bot, "bot", bot)
+        self.add_log(f"SKUtto bot connected as {getattr(client, 'user', 'unknown user')}")
         if self.bot.admin_channel_id:
-            channel = bot.get_channel(self.bot.admin_channel_id)
+            channel = client.get_channel(self.bot.admin_channel_id)
             if channel:
                 await channel.send("SKUtto is now online and ready.")
 
