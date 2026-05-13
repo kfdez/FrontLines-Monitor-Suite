@@ -79,7 +79,7 @@ def _flash(request: Request, message: str = None, error: str = None):
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", _context(request))
+    return templates.TemplateResponse(request, "login.html", _context(request))
 
 
 @app.post("/login")
@@ -88,6 +88,7 @@ async def login(request: Request, username: str = Form(...), password: str = For
     ok, reason = authenticate(username, password)
     if not ok:
         return templates.TemplateResponse(
+            request,
             "login.html",
             _context(request, error=reason or "Invalid credentials."),
             status_code=401,
@@ -108,7 +109,7 @@ async def dashboard(request: Request):
     redirect = _require_login(request)
     if redirect:
         return redirect
-    return templates.TemplateResponse("dashboard.html", _context(request, logs=manager.get_logs()))
+    return templates.TemplateResponse(request, "dashboard.html", _context(request, logs=manager.get_logs()))
 
 
 @app.post("/service/{service}/{action}")
@@ -130,7 +131,7 @@ async def settings_page(request: Request):
     redirect = _require_login(request)
     if redirect:
         return redirect
-    return templates.TemplateResponse("settings.html", _context(request, settings=manager.get_basic_settings()))
+    return templates.TemplateResponse(request, "settings.html", _context(request, settings=manager.get_basic_settings()))
 
 
 @app.post("/settings")
@@ -152,6 +153,7 @@ async def shopify_page(request: Request, q: str = "", stock: str = "all"):
         return redirect
     variants = manager.get_shopify_variants(q, stock)
     return templates.TemplateResponse(
+        request,
         "shopify.html",
         _context(
             request,
@@ -209,6 +211,7 @@ async def hv_page(request: Request, q: str = ""):
     if results:
         results = json.loads(results)
     return templates.TemplateResponse(
+        request,
         "hv.html",
         _context(
             request,
