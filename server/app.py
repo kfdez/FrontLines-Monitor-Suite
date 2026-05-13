@@ -26,13 +26,17 @@ manager = ServiceManager()
 HV_SEARCH_CACHE = OrderedDict()
 HV_SEARCH_CACHE_TTL = 1800
 HV_SEARCH_CACHE_MAX = 50
+ROOT_PATH = os.environ.get("FRONTLINES_ROOT_PATH", "").rstrip("/")
+SESSION_COOKIE_PATH = ROOT_PATH or "/"
 
 app = FastAPI(title="FrontLines Monitor Suite")
 app.add_middleware(
     SessionMiddleware,
+    session_cookie=os.environ.get("FRONTLINES_SESSION_COOKIE", "frontlines_session"),
     secret_key=os.environ.get("FRONTLINES_SESSION_SECRET", secrets.token_urlsafe(32)),
     same_site="lax",
     https_only=os.environ.get("FRONTLINES_HTTPS_ONLY", "false").lower() == "true",
+    path=SESSION_COOKIE_PATH,
 )
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
