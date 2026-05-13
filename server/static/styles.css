@@ -164,6 +164,29 @@ nav a:hover { color: var(--ink); background: var(--surface-2); text-decoration: 
   max-height: 72px;
   overflow-y: auto;
 }
+.metric-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 2px;
+}
+.metric-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.metric-list div:last-child { border-bottom: none; }
+.metric-list span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.metric-list strong {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
 
 /* Panel */
 .panel {

@@ -23,7 +23,19 @@
         <button class="compact {{ 'danger' if status[key].running else '' }}" type="submit">{{ 'Stop' if status[key].running else 'Start' }}</button>
       </form>
     </div>
-    <pre>{{ status[key] }}</pre>
+    <div class="metric-list">
+      {% if key == "bot" %}
+      <div><span>Token</span><strong>{{ 'Configured' if status.bot.token_configured else 'Missing' }}</strong></div>
+      {% elif key == "hv" %}
+      <div><span>Products</span><strong>{{ status.hv.products }}</strong></div>
+      <div><span>Tracked Variants</span><strong>{{ status.hv.tracked_variants }}</strong></div>
+      <div><span>Check Interval</span><strong>{{ status.hv.check_interval }}s</strong></div>
+      {% elif key == "shopify" %}
+      <div><span>Stores</span><strong>{{ status.shopify.stores }}</strong></div>
+      <div><span>Keywords</span><strong>{{ status.shopify.keywords }}</strong></div>
+      <div><span>Tracked Variants</span><strong>{{ status.shopify.tracked.variants if status.shopify.tracked else 0 }}</strong></div>
+      {% endif %}
+    </div>
   </article>
   {% endfor %}
 </section>
