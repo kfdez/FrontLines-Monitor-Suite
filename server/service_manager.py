@@ -24,6 +24,54 @@ from core.sheets import SheetsManager
 from core.shopify_monitor import ShopifyMonitor
 
 
+SKUTTO_RESTOCK_STRIP_FIELDS = {
+    "account",
+    "address",
+    "billing",
+    "card",
+    "card number",
+    "checkout",
+    "checkout url",
+    "cookie",
+    "cookies",
+    "cvv",
+    "email",
+    "expiration",
+    "expiry",
+    "mode",
+    "monitor",
+    "offer id",
+    "offerid",
+    "order email",
+    "order id",
+    "order link",
+    "password",
+    "payment",
+    "phone",
+    "profile",
+    "profile email",
+    "proxy",
+    "purchase id",
+    "session",
+    "shipping",
+    "task",
+    "task group",
+    "task id",
+    "user agent",
+}
+
+SKUTTO_CHECKOUT_STRIP_FIELDS = {
+    "account",
+    "email",
+    "offer id",
+    "order email",
+    "order id",
+    "order link",
+    "proxy",
+    "purchase id",
+}
+
+
 class RuntimeLogHandler(logging.Handler):
     """Push stdlib log records into the web recent-log buffer."""
 
@@ -242,25 +290,23 @@ class ServiceManager:
         embed_dict = embed.to_dict()
         sku_value = None
         for field in embed_dict.get("fields", []):
-            if field.get("name", "").strip().lower() in {"sku", "title/sku"}:
+            if self._normalize_embed_field_name(field.get("name", "")) in {"sku", "title/sku"}:
                 sku_value = field.get("value", "").strip()
                 break
         if not sku_value:
             for field in embed_dict.get("fields", []):
-                if field.get("name", "").strip().lower() in {"title", "product"}:
+                if self._normalize_embed_field_name(field.get("name", "")) in {"title", "product"}:
                     sku_value = field.get("value", "").strip()
                     break
 
+        removed_fields = self._strip_skutto_embed_fields(embed_dict, SKUTTO_RESTOCK_STRIP_FIELDS)
         product = self._find_skutto_product(sku_value)
         if not product:
+            if removed_fields and self.debug_logging:
+                self.add_log(f"SKUtto stripped fields from unmatched embed: {', '.join(removed_fields)}")
             return embed_dict
 
-        fields = [
-            field for field in embed_dict.get("fields", [])
-            if field.get("name", "").strip().lower() not in {"proxy", "offer id"}
-        ]
         platform = product.get("platform", "unknown")
-        embed_dict["fields"] = fields
         embed_dict["title"] = f"[{platform.capitalize()} Restock] - {product.get('name', '')}"
         if product.get("url"):
             embed_dict["url"] = product["url"]
@@ -273,6 +319,8 @@ class ServiceManager:
         embed_dict["matched_sku"] = sku_value
         embed_dict["ws_enabled"] = str(product.get("send_to_websocket", "")).strip().upper() in {"TRUE", "1", "YES"}
         embed_dict["ws_platform"] = platform.lower()
+        if removed_fields and self.debug_logging:
+            self.add_log(f"SKUtto stripped fields for {sku_value}: {', '.join(removed_fields)}")
         return embed_dict
 
     def _find_skutto_product(self, value: str):
@@ -326,21 +374,46 @@ class ServiceManager:
                 for embed in message.embeds:
                     await target_channel.send(embed=discord.Embed.from_dict(self._process_checkout_embed(embed.to_dict())))
 
-    @staticmethod
-    def _process_checkout_embed(embed_dict: dict) -> dict:
-        strip_set = {"order email", "order id", "order link", "account", "email", "purchase id", "offer id", "proxy"}
+    @classmethod
+    def _process_checkout_embed(cls, embed_dict: dict) -> dict:
+        strip_set = set(SKUTTO_CHECKOUT_STRIP_FIELDS)
         fields = embed_dict.get("fields", [])
         is_amazon = any(
-            field.get("name", "").strip().lower() == "site" and "amazon" in field.get("value", "").strip().lower()
+            cls._normalize_embed_field_name(field.get("name", "")) == "site"
+            and "amazon" in str(field.get("value", "")).strip().lower()
             for field in fields
         )
         if is_amazon:
             strip_set.remove("email")
-        embed_dict["fields"] = [
-            field for field in fields
-            if field.get("name", "").strip().lower() not in strip_set
-        ]
+        cls._strip_skutto_embed_fields(embed_dict, strip_set)
         return embed_dict
+
+    @staticmethod
+    def _normalize_embed_field_name(name: Any) -> str:
+        cleaned = str(name or "").replace("||", "").strip().lower()
+        return re.sub(r"\s+", " ", cleaned)
+
+    @classmethod
+    def _strip_skutto_embed_fields(cls, embed_dict: dict, strip_set: set[str]) -> list[str]:
+        removed = []
+        cleaned_fields = []
+        for field in embed_dict.get("fields", []):
+            field_name = cls._normalize_embed_field_name(field.get("name", ""))
+            compact_name = field_name.replace(" ", "")
+            if field_name in strip_set or compact_name in strip_set:
+                removed.append(str(field.get("name", "")).replace("||", "").strip())
+                continue
+
+            cleaned = dict(field)
+            if "name" in cleaned:
+                cleaned["name"] = str(cleaned["name"]).replace("||", "").strip()
+            if "value" in cleaned:
+                cleaned["value"] = str(cleaned["value"]).replace("||", "").strip()
+            if cleaned.get("name") and cleaned.get("value"):
+                cleaned_fields.append(cleaned)
+
+        embed_dict["fields"] = cleaned_fields
+        return removed
 
     def _publish_ws_trigger(self, processed: dict):
         if not self.ws_trigger_url or not self.ws_trigger_token:
