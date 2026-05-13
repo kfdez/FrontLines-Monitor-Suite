@@ -165,6 +165,15 @@
     <label>Discord ID <input name="discord_id" required></label>
     <div class="compact-footer"><button class="compact">Save Email Mapping</button></div>
   </form>
+  <h3 style="margin-top:18px">Bulk Import Email Mappings</h3>
+  <form method="post" action="{{ base_path }}/skutto/emails/bulk" class="stack">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>Email Mappings
+      <span class="hint">Paste one mapping per line as email,discord_id. A header row is allowed.</span>
+      <textarea name="mappings" rows="10" placeholder="email,discord_id&#10;user@example.com,123456789012345678"></textarea>
+    </label>
+    <div class="compact-footer"><button class="compact">Import Email Mappings</button></div>
+  </form>
 
   {% elif tab == 'platforms' %}
   <h2>Platform Mappings</h2>

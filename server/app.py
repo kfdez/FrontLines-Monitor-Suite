@@ -238,6 +238,23 @@ async def save_email(request: Request, csrf: str = Form(...)):
     return RedirectResponse(_url(request, "/skutto?tab=emails"), status_code=303)
 
 
+@app.post("/skutto/emails/bulk")
+async def bulk_email_import(request: Request, mappings: str = Form(...), csrf: str = Form(...)):
+    redirect = _require_login(request)
+    if redirect:
+        return redirect
+    _verify_csrf(request, csrf)
+    try:
+        result = manager.bulk_import_emails(mappings)
+        message = f"Bulk import complete: {result['added']} added, {result['skipped']} skipped."
+        if result["errors"]:
+            message += f" {len(result['errors'])} row error(s): " + "; ".join(result["errors"][:5])
+        _flash(request, message)
+    except Exception as exc:
+        _flash(request, error=str(exc))
+    return RedirectResponse(_url(request, "/skutto?tab=emails"), status_code=303)
+
+
 @app.post("/skutto/emails/delete")
 async def delete_email(request: Request, email: str = Form(...), discord_id: int = Form(...), csrf: str = Form(...)):
     redirect = _require_login(request)

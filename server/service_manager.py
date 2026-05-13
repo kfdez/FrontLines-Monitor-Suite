@@ -1,6 +1,7 @@
 """Runtime service manager shared by the web UI."""
 import base64
 import asyncio
+import csv
 import json
 import logging
 import re
@@ -8,6 +9,7 @@ import threading
 import time
 from collections import deque
 from datetime import datetime
+from io import StringIO
 from pathlib import Path
 from typing import Any
 
@@ -508,6 +510,47 @@ class ServiceManager:
     def delete_email(self, email: str, discord_id: int):
         self.db.remove_email(email, discord_id)
         self.bot.refresh_data()
+
+    def bulk_import_emails(self, raw_mappings: str) -> dict[str, Any]:
+        text = str(raw_mappings or "").strip()
+        if not text:
+            raise ValueError("No email mappings were provided")
+
+        added = 0
+        skipped = 0
+        errors = []
+        reader = csv.reader(StringIO(text))
+        for line_number, row in enumerate(reader, start=1):
+            if not row or not any(cell.strip() for cell in row):
+                continue
+
+            cells = [cell.strip() for cell in row]
+            if line_number == 1 and cells[0].lower() in {"email", "emails"}:
+                continue
+
+            if len(cells) < 2:
+                errors.append(f"Line {line_number}: expected email,discord_id")
+                continue
+
+            email = cells[0].lower()
+            discord_raw = cells[1]
+            if not email:
+                errors.append(f"Line {line_number}: email is missing")
+                continue
+            try:
+                discord_id = int(discord_raw)
+            except ValueError:
+                errors.append(f"Line {line_number}: Discord ID must be numeric")
+                continue
+
+            if self.db.add_email(email, discord_id):
+                added += 1
+            else:
+                skipped += 1
+
+        self.bot.refresh_data()
+        self.add_log(f"Bulk email import complete: {added} added, {skipped} skipped, {len(errors)} errors")
+        return {"added": added, "skipped": skipped, "errors": errors}
 
     def get_platforms(self) -> list[dict[str, Any]]:
         return self.db.get_all_platform_sites()
