@@ -8,6 +8,7 @@ import threading
 import time
 from collections import deque
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 import discord
@@ -43,6 +44,8 @@ class ServiceManager:
         self.sheets = None
         self.sheets_error = ""
         self.sku_data = {}
+        self.skutto_data_dir = Path(get_data_path("skutto_data"))
+        self.skutto_products_cache = self.skutto_data_dir / "products_cache.json"
         self.recent_forwards = {}
         self.bot = DiscordBot(self.db.get_config("bot_token", ""), self.db)
         self.hv_monitor = HVMonitor(
@@ -57,7 +60,9 @@ class ServiceManager:
             app=self,
             data_dir=get_data_path("shopify_monitor_data"),
         )
+        self.load_skutto_products_cache()
         self.reload_config()
+        self.refresh_skutto_products_async()
         handler = RuntimeLogHandler(self)
         handler.setFormatter(logging.Formatter("%(levelname)s %(name)s: %(message)s"))
         logging.getLogger().addHandler(handler)
@@ -97,6 +102,40 @@ class ServiceManager:
         if self.shopify_monitor.tracker:
             self.shopify_monitor.tracker.load()
         self.add_log("Configuration reloaded")
+
+    def load_skutto_products_cache(self) -> list[dict[str, Any]]:
+        if not self.skutto_products_cache.exists():
+            return []
+        try:
+            with self.skutto_products_cache.open("r", encoding="utf-8") as handle:
+                products = json.load(handle)
+            if not isinstance(products, list):
+                raise ValueError("cache root is not a list")
+            self.sku_data = {product["sku"]: product for product in products if product.get("sku")}
+            self.bot.set_sku_data(self.sku_data)
+            self.add_log(f"Loaded {len(self.sku_data)} cached SKUtto products")
+            return products
+        except Exception as exc:
+            self.sheets_error = f"Failed to load SKUtto product cache: {exc}"
+            self.add_log(self.sheets_error)
+            return []
+
+    def save_skutto_products_cache(self):
+        self.skutto_data_dir.mkdir(parents=True, exist_ok=True)
+        products = sorted(self.sku_data.values(), key=lambda row: row.get("sku", ""))
+        with self.skutto_products_cache.open("w", encoding="utf-8") as handle:
+            json.dump(products, handle, indent=2)
+
+    def refresh_skutto_products_async(self):
+        def refresh():
+            try:
+                self.load_skutto_products_from_sheets()
+            except Exception as exc:
+                self.sheets_error = str(exc)
+                self.add_log(f"SKUtto auto-refresh skipped: {exc}")
+
+        thread = threading.Thread(target=refresh, name="skutto-product-refresh", daemon=True)
+        thread.start()
 
     def status(self) -> dict[str, Any]:
         return {
@@ -336,6 +375,7 @@ class ServiceManager:
         products = self._get_sheets().get_products(spreadsheet_id)
         self.sku_data = {product["sku"]: product for product in products if product.get("sku")}
         self.bot.set_sku_data(self.sku_data)
+        self.save_skutto_products_cache()
         self.add_log(f"Loaded {len(products)} SKUtto products from Google Sheets")
         return products
 
@@ -386,6 +426,7 @@ class ServiceManager:
         product["_row"] = row_index
         self.sku_data[sku] = product
         self.bot.set_sku_data(self.sku_data)
+        self.save_skutto_products_cache()
 
     def get_pending_skus(self, status_filter: str = "pending", search: str = "") -> list[dict[str, Any]]:
         rows = self.db.get_all_pending_skus()
@@ -437,6 +478,7 @@ class ServiceManager:
             "role": sku_data.get("role", ""),
         }
         self.bot.set_sku_data(self.sku_data)
+        self.save_skutto_products_cache()
 
     def reject_pending_sku(self, sku_id: int):
         self.db.reject_sku(sku_id, 0)

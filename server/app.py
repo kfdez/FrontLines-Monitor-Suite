@@ -165,6 +165,8 @@ async def skutto_page(request: Request, tab: str = "products", q: str = "", stat
             platforms=manager.get_platforms(),
             settings=manager.get_basic_settings(),
             sheets_error=manager.sheets_error,
+            products_cache_path=str(manager.skutto_products_cache),
+            products_cache_count=len(manager.sku_data),
             logs=manager.get_logs(40),
         ),
     )

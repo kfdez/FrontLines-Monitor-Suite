@@ -33,6 +33,7 @@
       <input type="hidden" name="csrf" value="{{ csrf }}">
       <button class="compact ghost">Reload from Google Sheets</button>
     </form>
+    <span class="hint">{{ products_cache_count }} cached products - {{ products_cache_path }}</span>
     {% if sheets_error %}<span class="hint">Sheets status: {{ sheets_error }}</span>{% endif %}
   </div>
   <div class="table-wrap table-scroll">
