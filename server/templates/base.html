@@ -8,14 +8,14 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/">FrontLines</a>
+    <a class="brand" href="{{ base_path }}/">FrontLines</a>
     {% if request.session.get("authenticated") %}
     <nav>
-      <a href="/">Dashboard</a>
-      <a href="/hv">HV</a>
-      <a href="/shopify">Shopify</a>
-      <a href="/settings">Settings</a>
-      <form method="post" action="/logout">
+      <a href="{{ base_path }}/">Dashboard</a>
+      <a href="{{ base_path }}/hv">HV</a>
+      <a href="{{ base_path }}/shopify">Shopify</a>
+      <a href="{{ base_path }}/settings">Settings</a>
+      <form method="post" action="{{ base_path }}/logout">
         <input type="hidden" name="csrf" value="{{ csrf }}">
         <button class="link-button" type="submit">Logout</button>
       </form>

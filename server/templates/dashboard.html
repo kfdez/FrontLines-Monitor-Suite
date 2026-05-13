@@ -17,7 +17,7 @@
   <article class="card">
     <h2>{{ label }}</h2>
     <p class="state {{ 'on' if status[key].running else 'off' }}">{{ 'Running' if status[key].running else 'Stopped' }}</p>
-    <form method="post" action="/service/{{ key }}/{{ 'stop' if status[key].running else 'start' }}">
+    <form method="post" action="{{ base_path }}/service/{{ key }}/{{ 'stop' if status[key].running else 'start' }}">
       <input type="hidden" name="csrf" value="{{ csrf }}">
       <button type="submit">{{ 'Stop' if status[key].running else 'Start' }}</button>
     </form>

@@ -31,6 +31,13 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 
+def _url(request: Request, path: str) -> str:
+    root_path = request.scope.get("root_path", "").rstrip("/")
+    if path == "/":
+        return f"{root_path}/" if root_path else "/"
+    return f"{root_path}{path}"
+
+
 def _csrf(request: Request) -> str:
     token = request.session.get("csrf")
     if not token:
@@ -46,7 +53,7 @@ def _verify_csrf(request: Request, token: str):
 
 def _require_login(request: Request):
     if not request.session.get("authenticated"):
-        return RedirectResponse("/login", status_code=303)
+        return RedirectResponse(_url(request, "/login"), status_code=303)
     return None
 
 
@@ -57,6 +64,7 @@ def _context(request: Request, **kwargs):
         "status": manager.status(),
         "message": request.session.pop("message", None),
         "error": request.session.pop("error", None),
+        "base_path": request.scope.get("root_path", "").rstrip("/"),
     }
     context.update(kwargs)
     return context
@@ -85,14 +93,14 @@ async def login(request: Request, username: str = Form(...), password: str = For
             status_code=401,
         )
     request.session["authenticated"] = True
-    return RedirectResponse("/", status_code=303)
+    return RedirectResponse(_url(request, "/"), status_code=303)
 
 
 @app.post("/logout")
 async def logout(request: Request, csrf: str = Form(...)):
     _verify_csrf(request, csrf)
     request.session.clear()
-    return RedirectResponse("/login", status_code=303)
+    return RedirectResponse(_url(request, "/login"), status_code=303)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -114,7 +122,7 @@ async def service_control(request: Request, service: str, action: str, csrf: str
         _flash(request, f"{service} {action} requested.")
     except Exception as exc:
         _flash(request, error=str(exc))
-    return RedirectResponse(request.headers.get("referer", "/"), status_code=303)
+    return RedirectResponse(request.headers.get("referer", _url(request, "/")), status_code=303)
 
 
 @app.get("/settings", response_class=HTMLResponse)
@@ -134,7 +142,7 @@ async def save_settings(request: Request, csrf: str = Form(...)):
     form = await request.form()
     manager.update_basic_settings(form)
     _flash(request, "Settings saved.")
-    return RedirectResponse("/settings", status_code=303)
+    return RedirectResponse(_url(request, "/settings"), status_code=303)
 
 
 @app.get("/shopify", response_class=HTMLResponse)
@@ -164,7 +172,7 @@ async def save_shopify(request: Request, csrf: str = Form(...)):
     _verify_csrf(request, csrf)
     manager.update_shopify_settings(await request.form())
     _flash(request, "Shopify settings saved.")
-    return RedirectResponse("/shopify", status_code=303)
+    return RedirectResponse(_url(request, "/shopify"), status_code=303)
 
 
 @app.post("/shopify/tracker/{action}")
@@ -179,7 +187,7 @@ async def shopify_tracker(request: Request, action: str, csrf: str = Form(...)):
         manager.reload_shopify_tracker()
     else:
         raise HTTPException(status_code=404)
-    return RedirectResponse("/shopify", status_code=303)
+    return RedirectResponse(_url(request, "/shopify"), status_code=303)
 
 
 @app.post("/shopify/variants/reset")
@@ -189,7 +197,7 @@ async def reset_shopify_variants(request: Request, csrf: str = Form(...), select
         return redirect
     _verify_csrf(request, csrf)
     manager.reset_shopify_variants(selected)
-    return RedirectResponse("/shopify", status_code=303)
+    return RedirectResponse(_url(request, "/shopify"), status_code=303)
 
 
 @app.get("/hv", response_class=HTMLResponse)
@@ -222,7 +230,7 @@ async def save_hv(request: Request, csrf: str = Form(...)):
     _verify_csrf(request, csrf)
     manager.update_hv_settings(await request.form())
     _flash(request, "HV settings saved.")
-    return RedirectResponse("/hv", status_code=303)
+    return RedirectResponse(_url(request, "/hv"), status_code=303)
 
 
 @app.post("/hv/add")
@@ -232,7 +240,7 @@ async def add_hv(request: Request, product_id: str = Form(...), ping: str = Form
         return redirect
     _verify_csrf(request, csrf)
     manager.add_hv_product_by_id(product_id, bool(ping))
-    return RedirectResponse("/hv", status_code=303)
+    return RedirectResponse(_url(request, "/hv"), status_code=303)
 
 
 @app.post("/hv/products/{action}")
@@ -249,7 +257,7 @@ async def hv_products(request: Request, action: str, csrf: str = Form(...), sele
         manager.reset_hv_stock(selected)
     else:
         raise HTTPException(status_code=404)
-    return RedirectResponse("/hv", status_code=303)
+    return RedirectResponse(_url(request, "/hv"), status_code=303)
 
 
 @app.post("/hv/search")
@@ -260,7 +268,7 @@ async def hv_search(request: Request, keyword: str = Form(...), csrf: str = Form
     _verify_csrf(request, csrf)
     results = manager.search_hv_products(keyword.strip())
     request.session["hv_search_results"] = json.dumps(results)
-    return RedirectResponse(f"/hv?q={keyword}", status_code=303)
+    return RedirectResponse(_url(request, f"/hv?q={keyword}"), status_code=303)
 
 
 @app.post("/hv/search/add")
@@ -276,7 +284,7 @@ async def add_hv_search(
         return redirect
     _verify_csrf(request, csrf)
     manager.add_hv_search_results(selected, results_json, bool(ping))
-    return RedirectResponse("/hv", status_code=303)
+    return RedirectResponse(_url(request, "/hv"), status_code=303)
 
 
 @app.get("/api/status")

@@ -3,7 +3,7 @@
 {% block content %}
 <section class="hero">
   <div><p class="eyebrow">Shopify</p><h1>Keyword monitor</h1></div>
-  <form method="post" action="/service/shopify/{{ 'stop' if status.shopify.running else 'start' }}">
+  <form method="post" action="{{ base_path }}/service/shopify/{{ 'stop' if status.shopify.running else 'start' }}">
     <input type="hidden" name="csrf" value="{{ csrf }}">
     <button>{{ 'Stop' if status.shopify.running else 'Start' }}</button>
   </form>
@@ -20,7 +20,7 @@
     </select>
     <button class="compact">Filter</button>
   </form>
-  <form method="post" action="/shopify/variants/reset">
+  <form method="post" action="{{ base_path }}/shopify/variants/reset">
     <input type="hidden" name="csrf" value="{{ csrf }}">
     <div class="table-wrap">
       <table>
@@ -62,8 +62,8 @@
     <div class="compact-footer"><button class="compact" type="submit">Save Shopify</button></div>
   </form>
   <div class="actions">
-    <form method="post" action="/shopify/tracker/reload"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact">Reload tracker</button></form>
-    <form method="post" action="/shopify/tracker/clear"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact danger">Clear tracker</button></form>
+    <form method="post" action="{{ base_path }}/shopify/tracker/reload"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact">Reload tracker</button></form>
+    <form method="post" action="{{ base_path }}/shopify/tracker/clear"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact danger">Clear tracker</button></form>
   </div>
 </section>
 {% endblock %}
