@@ -5,7 +5,7 @@
   <div><p class="eyebrow">Hobbiesville</p><h1>Product Monitor</h1></div>
   <form method="post" action="{{ base_path }}/service/hv/{{ 'stop' if status.hv.running else 'start' }}">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    <button>{{ 'Stop' if status.hv.running else 'Start' }}</button>
+    <button class="{{ 'danger' if status.hv.running else '' }}">{{ 'Stop' if status.hv.running else 'Start' }}</button>
   </form>
 </section>
 
@@ -27,14 +27,14 @@
             <td><span class="pill {{ 'ok' if row.ping else 'muted' }}">{{ 'Enabled' if row.ping else 'Disabled' }}</span></td>
           </tr>
           {% else %}
-          <tr><td colspan="6">No HV products configured.</td></tr>
+          <tr><td colspan="6" style="color:var(--muted);text-align:center;padding:20px">No HV products configured.</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
     <div class="actions">
-      <button class="compact" formaction="{{ base_path }}/hv/products/toggle-ping">Toggle ping</button>
-      <button class="compact" formaction="{{ base_path }}/hv/products/reset-stock">Reset stock</button>
+      <button class="compact ghost" formaction="{{ base_path }}/hv/products/toggle-ping">Toggle ping</button>
+      <button class="compact ghost" formaction="{{ base_path }}/hv/products/reset-stock">Reset stock</button>
       <button class="compact danger" formaction="{{ base_path }}/hv/products/remove">Remove</button>
     </div>
   </form>
@@ -45,9 +45,11 @@
     <h2>Add by ID</h2>
     <form method="post" action="{{ base_path }}/hv/add" class="stack">
       <input type="hidden" name="csrf" value="{{ csrf }}">
-      <label>Product or Variant GID <input name="product_id" required></label>
+      <label>Product or Variant GID
+        <input name="product_id" required placeholder="gid://shopify/Product/...">
+      </label>
       <label class="check"><input type="checkbox" name="ping"> Enable Role Ping for This Item</label>
-      <button class="compact">Add Product</button>
+      <div><button class="compact">Add Product</button></div>
     </form>
   </div>
   <div class="panel">
@@ -61,18 +63,25 @@
     <form method="post" action="{{ base_path }}/hv/search/add">
       <input type="hidden" name="csrf" value="{{ csrf }}">
       <input type="hidden" name="results_json" value="{{ results_json|e }}">
-      <div class="table-wrap">
+      <div class="table-wrap" style="margin-top:10px">
         <table>
           <thead><tr><th></th><th>Product Title</th><th>Type</th><th>Price</th></tr></thead>
           <tbody>
           {% for row in results %}
-          <tr><td><input type="checkbox" name="selected" value="{{ row.key }}"></td><td>{{ row.title }}</td><td>{{ row.type }}</td><td>{{ row.price }}</td></tr>
+          <tr>
+            <td><input type="checkbox" name="selected" value="{{ row.key }}"></td>
+            <td>{{ row.title }}</td>
+            <td>{{ row.type }}</td>
+            <td>{{ row.price }}</td>
+          </tr>
           {% endfor %}
           </tbody>
         </table>
       </div>
-      <label class="check"><input type="checkbox" name="ping"> Enable Role Ping for Added Items</label>
-      <button class="compact">Add Selected</button>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
+        <label class="check"><input type="checkbox" name="ping"> Enable Role Ping for Added Items</label>
+        <button class="compact">Add Selected</button>
+      </div>
     </form>
     {% endif %}
   </div>
@@ -82,17 +91,34 @@
   <h2>HV Configuration</h2>
   <form method="post" class="grid-form">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    {% for key, label in [
-      ("store_url", "Storefront GraphQL URL"),
-      ("token", "Storefront Access Token"),
-      ("webhook_url", "Discord Webhook URL"),
-      ("role_id", "Discord Role ID"),
-      ("check_interval", "Check Interval (Seconds)")
-    ] %}
-    <label>{{ label }}<input name="{{ key }}" value="{{ settings[key] }}"></label>
-    {% endfor %}
-    <label class="check"><input type="checkbox" name="ping_enabled" {% if settings.ping_enabled %}checked{% endif %}> Global Role Ping Allow Switch</label>
-    <label class="check"><input type="checkbox" name="auto_start" {% if settings.auto_start %}checked{% endif %}> Auto Start</label>
+
+    <div class="form-section">
+      <h3>Store Connection</h3>
+      <div class="inner-grid">
+        <label>Storefront GraphQL URL<input name="store_url" value="{{ settings.store_url }}"></label>
+        <label>Storefront Access Token<input name="token" value="{{ settings.token }}"></label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Discord Notifications</h3>
+      <div class="inner-grid">
+        <label>Webhook URL<input name="webhook_url" value="{{ settings.webhook_url }}"></label>
+        <label>Role ID<input name="role_id" value="{{ settings.role_id }}"></label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Polling &amp; Options</h3>
+      <div class="inner-grid">
+        <label>Check Interval (Seconds)<input name="check_interval" value="{{ settings.check_interval }}"></label>
+      </div>
+      <div class="checkbox-group" style="margin-top:10px">
+        <label class="check"><input type="checkbox" name="ping_enabled" {% if settings.ping_enabled %}checked{% endif %}> Global Role Ping Allow Switch</label>
+        <label class="check"><input type="checkbox" name="auto_start" {% if settings.auto_start %}checked{% endif %}> Auto Start</label>
+      </div>
+    </div>
+
     <div class="compact-footer"><button class="compact" type="submit">Save HV</button></div>
   </form>
 </section>

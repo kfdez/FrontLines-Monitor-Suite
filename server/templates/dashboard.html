@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - FrontLines{% endblock %}
 {% block content %}
-<section class="hero">
+<div class="page-header">
   <div>
     <p class="eyebrow">VPS Web Console</p>
     <h1>Monitor control center</h1>
@@ -10,17 +10,19 @@
     <div>DB: {{ status.db_path }}</div>
     <div>Data: {{ status.data_dir }}</div>
   </div>
-</section>
+</div>
 
 <section class="cards">
   {% for key, label in [("bot", "Discord Bot"), ("hv", "HV Monitor"), ("shopify", "Shopify Monitor")] %}
-  <article class="card">
+  <article class="card {{ 'status-running' if status[key].running else 'status-stopped' }}">
     <h2>{{ label }}</h2>
-    <p class="state {{ 'on' if status[key].running else 'off' }}">{{ 'Running' if status[key].running else 'Stopped' }}</p>
-    <form method="post" action="{{ base_path }}/service/{{ key }}/{{ 'stop' if status[key].running else 'start' }}">
-      <input type="hidden" name="csrf" value="{{ csrf }}">
-      <button type="submit">{{ 'Stop' if status[key].running else 'Start' }}</button>
-    </form>
+    <div class="card-status-row">
+      <span class="pill {{ 'ok' if status[key].running else 'muted' }}">{{ 'Running' if status[key].running else 'Stopped' }}</span>
+      <form method="post" action="{{ base_path }}/service/{{ key }}/{{ 'stop' if status[key].running else 'start' }}">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <button class="compact {{ 'danger' if status[key].running else '' }}" type="submit">{{ 'Stop' if status[key].running else 'Start' }}</button>
+      </form>
+    </div>
     <pre>{{ status[key] }}</pre>
   </article>
   {% endfor %}
@@ -30,9 +32,9 @@
   <h2>Recent logs</h2>
   <div class="logs">
     {% for row in logs %}
-    <div><span>{{ row.time }}</span> {{ row.message }}</div>
+    <div><span>{{ row.time }}</span>{{ row.message }}</div>
     {% else %}
-    <div>No logs yet.</div>
+    <div style="color:#475569">No logs yet.</div>
     {% endfor %}
   </div>
 </section>

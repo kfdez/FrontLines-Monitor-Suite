@@ -2,27 +2,57 @@
 {% block title %}Settings - FrontLines{% endblock %}
 {% block content %}
 <section class="panel">
-  <h1>Core Settings</h1>
+  <h1 style="font-size:18px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)">Core Settings</h1>
   <form method="post" class="grid-form">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    {% for key, label in [
-      ("bot_token", "Discord Bot Token"),
-      ("source_channel_id", "Source Channel ID"),
-      ("target_channel_id", "Target Channel ID"),
-      ("checkouts_channel_id", "Checkouts Source Channel ID"),
-      ("checkouts_target_channel_id", "Checkouts Target Channel ID"),
-      ("admin_channel_id", "Admin Channel ID"),
-      ("footer_icon_url", "Footer Icon URL"),
-      ("duplicate_timeout", "Duplicate Timeout (Seconds)"),
-      ("ws_trigger_url", "WebSocket Trigger URL"),
-      ("ws_trigger_token", "WebSocket Trigger Token"),
-      ("google_sheets_id", "Google Sheets ID")
-    ] %}
-    <label>{{ label }}<input name="{{ key }}" value="{{ settings.get(key, '') }}"></label>
-    {% endfor %}
-    <label class="check"><input type="checkbox" name="enable_ping" {% if settings.enable_ping == "true" %}checked{% endif %}> Enable Forwarded Role Pings</label>
-    <label class="check"><input type="checkbox" name="debug_logging" {% if settings.debug_logging == "true" %}checked{% endif %}> Debug Logging</label>
-    <label class="wide">Proxies <span class="hint">One proxy per line using host:port:username:password.</span><textarea name="proxies" rows="8">{{ settings.proxies }}</textarea></label>
+
+    <div class="form-section">
+      <h3>Discord Bot</h3>
+      <div class="inner-grid">
+        <label class="wide">Discord Bot Token<input name="bot_token" value="{{ settings.get('bot_token', '') }}"></label>
+        <label>Source Channel ID<input name="source_channel_id" value="{{ settings.get('source_channel_id', '') }}"></label>
+        <label>Target Channel ID<input name="target_channel_id" value="{{ settings.get('target_channel_id', '') }}"></label>
+        <label>Admin Channel ID<input name="admin_channel_id" value="{{ settings.get('admin_channel_id', '') }}"></label>
+        <label>Footer Icon URL<input name="footer_icon_url" value="{{ settings.get('footer_icon_url', '') }}"></label>
+        <label>Duplicate Timeout (Seconds)<input name="duplicate_timeout" value="{{ settings.get('duplicate_timeout', '') }}"></label>
+      </div>
+      <div class="checkbox-group" style="margin-top:10px">
+        <label class="check"><input type="checkbox" name="enable_ping" {% if settings.enable_ping == "true" %}checked{% endif %}> Enable Forwarded Role Pings</label>
+        <label class="check"><input type="checkbox" name="debug_logging" {% if settings.debug_logging == "true" %}checked{% endif %}> Debug Logging</label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Checkouts</h3>
+      <div class="inner-grid">
+        <label>Checkouts Source Channel ID<input name="checkouts_channel_id" value="{{ settings.get('checkouts_channel_id', '') }}"></label>
+        <label>Checkouts Target Channel ID<input name="checkouts_target_channel_id" value="{{ settings.get('checkouts_target_channel_id', '') }}"></label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>WebSocket Trigger</h3>
+      <div class="inner-grid">
+        <label>Trigger URL<input name="ws_trigger_url" value="{{ settings.get('ws_trigger_url', '') }}"></label>
+        <label>Trigger Token<input name="ws_trigger_token" value="{{ settings.get('ws_trigger_token', '') }}"></label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Google Sheets</h3>
+      <div class="inner-grid">
+        <label>Spreadsheet ID<input name="google_sheets_id" value="{{ settings.get('google_sheets_id', '') }}"></label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Proxies</h3>
+      <label class="wide">
+        <span class="hint" style="font-size:12px;color:var(--muted)">One proxy per line - format: host:port:username:password</span>
+        <textarea name="proxies" rows="8">{{ settings.proxies }}</textarea>
+      </label>
+    </div>
+
     <div class="compact-footer"><button class="compact" type="submit">Save Settings</button></div>
   </form>
 </section>

@@ -5,7 +5,7 @@
   <div><p class="eyebrow">Shopify</p><h1>Keyword Monitor</h1></div>
   <form method="post" action="{{ base_path }}/service/shopify/{{ 'stop' if status.shopify.running else 'start' }}">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    <button>{{ 'Stop' if status.shopify.running else 'Start' }}</button>
+    <button class="{{ 'danger' if status.shopify.running else '' }}">{{ 'Stop' if status.shopify.running else 'Start' }}</button>
   </form>
 </section>
 
@@ -24,7 +24,7 @@
     <input type="hidden" name="csrf" value="{{ csrf }}">
     <div class="table-wrap table-scroll tracked-variants">
       <table>
-        <thead><tr><th></th><th>Store</th><th>Product</th><th>Variant ID</th><th>Price</th><th>Stock Status</th><th>Matched Keywords</th><th>Last Seen</th></tr></thead>
+        <thead><tr><th></th><th>Store</th><th>Product</th><th>Variant ID</th><th>Price</th><th>Stock</th><th>Keywords</th><th>Last Seen</th></tr></thead>
         <tbody>
           {% for row in variants %}
           <tr>
@@ -38,12 +38,12 @@
             <td>{{ row.last_seen }}</td>
           </tr>
           {% else %}
-          <tr><td colspan="8">No tracked variants yet.</td></tr>
+          <tr><td colspan="8" style="color:var(--muted);text-align:center;padding:20px">No tracked variants yet.</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    <div class="actions"><button class="compact">Reset selected stock status</button></div>
+    <div class="actions"><button class="compact ghost">Reset selected stock status</button></div>
   </form>
 </section>
 
@@ -51,28 +51,57 @@
   <h2>Shopify Configuration</h2>
   <form method="post" class="grid-form">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    {% for key, label in [
-      ("main_webhook", "Main Webhook URL"),
-      ("singles_webhook", "Singles Webhook URL"),
-      ("ping_role_id", "Discord Role ID"),
-      ("max_pages", "Max Pages Per Store"),
-      ("check_interval", "Check Interval (Seconds)"),
-      ("request_timeout", "Request Timeout (Seconds)"),
-      ("max_workers", "Max Worker Threads"),
-      ("max_retries", "Max Retries"),
-      ("webhook_delay", "Webhook Delay (Seconds)")
-    ] %}
-    <label>{{ label }}<input name="{{ key }}" value="{{ settings[key] }}"></label>
-    {% endfor %}
-    {% for key, label in [("ignore_singles", "Ignore Singles"), ("ping_enabled", "Enable Role Ping"), ("detailed_logging", "Detailed Logging"), ("auto_start", "Auto Start"), ("data_collection_mode", "Data Collection Mode")] %}
-    <label class="check"><input type="checkbox" name="{{ key }}" {% if settings[key] %}checked{% endif %}> {{ label }}</label>
-    {% endfor %}
-    <label class="wide">Stores <span class="hint">One Shopify domain per line, for example example.myshopify.com</span><textarea name="stores" rows="8">{{ settings.stores }}</textarea></label>
-    <label class="wide">Keywords <span class="hint">One keyword per line. Matches title, tags, or product type.</span><textarea name="keywords" rows="8">{{ settings.keywords }}</textarea></label>
+
+    <div class="form-section">
+      <h3>Webhooks &amp; Notifications</h3>
+      <div class="inner-grid">
+        <label>Main Webhook URL<input name="main_webhook" value="{{ settings.main_webhook }}"></label>
+        <label>Singles Webhook URL<input name="singles_webhook" value="{{ settings.singles_webhook }}"></label>
+        <label>Discord Role ID<input name="ping_role_id" value="{{ settings.ping_role_id }}"></label>
+        <label>Webhook Delay (Seconds)<input name="webhook_delay" value="{{ settings.webhook_delay }}"></label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Behavior</h3>
+      <div class="checkbox-group">
+        <label class="check"><input type="checkbox" name="ignore_singles" {% if settings.ignore_singles %}checked{% endif %}> Ignore Singles</label>
+        <label class="check"><input type="checkbox" name="ping_enabled" {% if settings.ping_enabled %}checked{% endif %}> Enable Role Ping</label>
+        <label class="check"><input type="checkbox" name="detailed_logging" {% if settings.detailed_logging %}checked{% endif %}> Detailed Logging</label>
+        <label class="check"><input type="checkbox" name="auto_start" {% if settings.auto_start %}checked{% endif %}> Auto Start</label>
+        <label class="check"><input type="checkbox" name="data_collection_mode" {% if settings.data_collection_mode %}checked{% endif %}> Data Collection Mode</label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Polling &amp; Limits</h3>
+      <div class="inner-grid">
+        <label>Check Interval (Seconds)<input name="check_interval" value="{{ settings.check_interval }}"></label>
+        <label>Max Pages Per Store<input name="max_pages" value="{{ settings.max_pages }}"></label>
+        <label>Max Worker Threads<input name="max_workers" value="{{ settings.max_workers }}"></label>
+        <label>Request Timeout (Seconds)<input name="request_timeout" value="{{ settings.request_timeout }}"></label>
+        <label>Max Retries<input name="max_retries" value="{{ settings.max_retries }}"></label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Stores &amp; Keywords</h3>
+      <div class="inner-grid">
+        <label class="wide">Stores
+          <span class="hint">One Shopify domain per line - e.g. example.myshopify.com</span>
+          <textarea name="stores" rows="8">{{ settings.stores }}</textarea>
+        </label>
+        <label class="wide">Keywords
+          <span class="hint">One keyword per line. Matches title, tags, or product type.</span>
+          <textarea name="keywords" rows="8">{{ settings.keywords }}</textarea>
+        </label>
+      </div>
+    </div>
+
     <div class="compact-footer"><button class="compact" type="submit">Save Shopify</button></div>
   </form>
-  <div class="actions">
-    <form method="post" action="{{ base_path }}/shopify/tracker/reload"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact">Reload tracker</button></form>
+  <div class="actions" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+    <form method="post" action="{{ base_path }}/shopify/tracker/reload"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact ghost">Reload tracker</button></form>
     <form method="post" action="{{ base_path }}/shopify/tracker/clear"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="compact danger">Clear tracker</button></form>
   </div>
 </section>
