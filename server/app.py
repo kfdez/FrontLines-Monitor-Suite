@@ -420,3 +420,11 @@ async def api_status(request: Request):
     if redirect:
         raise HTTPException(status_code=401)
     return manager.status()
+
+
+@app.get("/api/logs")
+async def api_logs(request: Request, limit: int = 80):
+    redirect = _require_login(request)
+    if redirect:
+        raise HTTPException(status_code=401)
+    return {"logs": manager.get_logs(max(1, min(limit, 200)))}

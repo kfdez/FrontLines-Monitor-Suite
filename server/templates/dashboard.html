@@ -42,7 +42,7 @@
 
 <section class="panel">
   <h2>Recent logs</h2>
-  <div class="logs">
+  <div class="logs" id="dashboard-logs" data-logs-url="{{ base_path }}/api/logs?limit=80">
     {% for row in logs %}
     <div><span>{{ row.time }}</span>{{ row.message }}</div>
     {% else %}
@@ -50,4 +50,41 @@
     {% endfor %}
   </div>
 </section>
+<script>
+(() => {
+  const container = document.getElementById("dashboard-logs");
+  if (!container) return;
+
+  const renderLogs = (rows) => {
+    if (!rows.length) {
+      container.innerHTML = '<div style="color:#475569">No logs yet.</div>';
+      return;
+    }
+    container.replaceChildren(...rows.map((row) => {
+      const line = document.createElement("div");
+      const time = document.createElement("span");
+      time.textContent = row.time;
+      line.appendChild(time);
+      line.append(document.createTextNode(row.message));
+      return line;
+    }));
+  };
+
+  const refreshLogs = async () => {
+    try {
+      const response = await fetch(container.dataset.logsUrl, {
+        headers: { "Accept": "application/json" },
+        credentials: "same-origin",
+      });
+      if (!response.ok) return;
+      const data = await response.json();
+      renderLogs(data.logs || []);
+    } catch (_error) {
+      // Keep the current log view if a refresh fails.
+    }
+  };
+
+  setInterval(refreshLogs, 5000);
+})();
+</script>
 {% endblock %}
