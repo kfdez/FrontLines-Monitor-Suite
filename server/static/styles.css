@@ -86,9 +86,15 @@ label { display: grid; gap: 6px; font-weight: 700; }
 .filters, .actions { display: flex; gap: 10px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
 .filters input { max-width: 460px; }
 .filters select { max-width: 220px; }
-.table-wrap { width: 100%; overflow: auto; border: 1px solid var(--line); border-radius: 16px; }
-.table-scroll { max-height: 58vh; overflow: auto; }
-.tracked-variants { min-height: 260px; }
+.table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; }
+.table-scroll {
+  height: min(520px, 58vh);
+  min-height: 320px;
+  overflow-x: auto;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+.tracked-variants { background: #fff; }
 table { width: 100%; border-collapse: collapse; font-size: 14px; background: white; }
 th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 th { background: #f6ead4; position: sticky; top: 0; z-index: 1; }
