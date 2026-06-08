@@ -22,6 +22,11 @@ from core.hv_monitor import HVMonitor
 from core.runtime_paths import get_data_dir, get_data_path, get_db_path
 from core.sheets import SheetsManager
 from core.shopify_monitor import ShopifyMonitor
+from modules.skutto.unlock_events import (
+    find_all_role,
+    is_pokemoncenter_module_unlocked,
+    reserve_unlock_event,
+)
 
 
 SKUTTO_RESTOCK_STRIP_FIELDS = {
@@ -306,6 +311,7 @@ class ServiceManager:
 
         channel_id = int(message.channel.id)
         if self.bot.checkouts_channel_id and channel_id == self.bot.checkouts_channel_id:
+            await self._forward_module_unlock(message, bot)
             await self._handle_checkout(message, bot)
             return
 
@@ -345,6 +351,36 @@ class ServiceManager:
         elif message.content:
             await target_channel.send(message.content)
             self.add_log("Forwarded SKUtto text message")
+
+    async def _forward_module_unlock(self, message, bot):
+        """Forward PokemonCenter module unlock alerts to the monitor channel."""
+        if not message.embeds:
+            return
+        if not is_pokemoncenter_module_unlocked(message.content, message.embeds):
+            return
+        if not reserve_unlock_event(self.recent_forwards):
+            self.add_log("Skipping duplicate PokemonCenter module unlock")
+            return
+        if not self.bot.target_channel_id:
+            self.add_log("PokemonCenter module unlock target channel is not configured")
+            return
+
+        target_channel = bot.bot.get_channel(self.bot.target_channel_id)
+        if not target_channel:
+            self.add_log("PokemonCenter module unlock target channel not found")
+            return
+
+        role = find_all_role(target_channel)
+        mention = role.mention if role else ""
+        if not role:
+            self.add_log("Role named 'all' not found in the monitor channel guild")
+
+        for index, embed in enumerate(message.embeds):
+            await target_channel.send(
+                content=mention if index == 0 and mention else None,
+                embed=discord.Embed.from_dict(embed.to_dict()),
+            )
+        self.add_log("Forwarded PokemonCenter module unlock to monitor channel")
 
     def _process_skutto_embed(self, embed):
         embed_dict = embed.to_dict()

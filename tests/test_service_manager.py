@@ -1,5 +1,10 @@
-from unittest.mock import Mock
+import asyncio
+from unittest.mock import AsyncMock, Mock
 
+from modules.skutto.unlock_events import (
+    is_pokemoncenter_module_unlocked,
+    reserve_unlock_event,
+)
 from server.service_manager import ServiceManager
 
 
@@ -98,3 +103,62 @@ def test_stop_services_stops_running_modules_and_bot_thread():
     manager.hv_monitor.stop.assert_called_once()
     manager.shopify_monitor.stop.assert_called_once()
     manager.bot.stop_sync.assert_called_once()
+
+
+class _Embed:
+    def __init__(self, data):
+        self.data = data
+
+    def to_dict(self):
+        return self.data
+
+
+def test_detects_flexible_pokemoncenter_module_unlock_embed():
+    embed = _Embed({
+        "title": "Module Unlocked",
+        "description": "Tasks for this module will resume.",
+        "fields": [
+            {"name": "Site", "value": "Pokemon Center"},
+            {"name": "Region", "value": "CA"},
+        ],
+    })
+
+    assert is_pokemoncenter_module_unlocked("", [embed])
+
+
+def test_unlock_event_reservation_deduplicates_simultaneous_messages():
+    recent = {}
+
+    assert reserve_unlock_event(recent, now=1000)
+    assert not reserve_unlock_event(recent, now=1000)
+    assert reserve_unlock_event(recent, now=1060)
+
+
+def test_forward_module_unlock_mentions_all_role_and_forwards_embed():
+    manager = object.__new__(ServiceManager)
+    manager.recent_forwards = {}
+    manager.add_log = Mock()
+    manager.bot = Mock()
+    manager.bot.target_channel_id = 22
+
+    role = Mock()
+    role.name = "All"
+    role.mention = "<@&123>"
+    target_channel = Mock()
+    target_channel.guild.roles = [role]
+    target_channel.send = AsyncMock()
+
+    bot = Mock()
+    bot.bot.get_channel.return_value = target_channel
+    embed = _Embed({
+        "title": "Module Unlocked",
+        "description": "The PokemonCenter CA module has been unlocked.",
+        "fields": [{"name": "Site", "value": "PokemonCenter"}],
+    })
+    message = Mock(content="", embeds=[embed])
+
+    asyncio.run(manager._forward_module_unlock(message, bot))
+    asyncio.run(manager._forward_module_unlock(message, bot))
+
+    target_channel.send.assert_awaited_once()
+    assert target_channel.send.await_args.kwargs["content"] == "<@&123>"
