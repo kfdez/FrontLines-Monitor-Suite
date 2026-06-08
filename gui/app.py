@@ -25,8 +25,8 @@ from gui.tabs.hv_monitor_tab import HVMonitorTab
 from gui.tabs.shopify_monitor_tab import ShopifyMonitorTab
 from gui.tabs.proxies_tab import ProxiesTab
 from modules.skutto.unlock_events import (
-    find_all_role,
     is_pokemoncenter_module_unlocked,
+    POKEMONCENTER_ROLE_MENTION,
     reserve_unlock_event,
 )
 
@@ -1166,14 +1166,9 @@ class MainApplication:
             self.log_message("PokemonCenter module unlock target channel not found")
             return
 
-        role = find_all_role(target_channel)
-        mention = role.mention if role else ""
-        if not role:
-            self.log_message("Role named 'all' not found in the monitor channel guild")
-
         for index, embed in enumerate(message.embeds):
             await target_channel.send(
-                content=mention if index == 0 and mention else None,
+                content=POKEMONCENTER_ROLE_MENTION if index == 0 else None,
                 embed=discord.Embed.from_dict(embed.to_dict()),
             )
         self.log_message("Forwarded PokemonCenter module unlock to monitor channel")

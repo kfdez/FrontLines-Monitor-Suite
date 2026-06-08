@@ -5,6 +5,7 @@ from typing import Any, Iterable
 
 
 POKEMONCENTER_UNLOCK_EVENT_KEY = "event:pokemoncenter:module-unlocked"
+POKEMONCENTER_ROLE_MENTION = "<@&1385619239309672488>"
 UNLOCK_DUPLICATE_TIMEOUT = 60
 
 
@@ -37,12 +38,3 @@ def reserve_unlock_event(recent_events: dict[str, float], now: float | None = No
         return False
     recent_events[POKEMONCENTER_UNLOCK_EVENT_KEY] = current
     return True
-
-
-def find_all_role(channel: Any) -> Any:
-    """Return the role named 'all' from the destination channel's guild."""
-    guild = getattr(channel, "guild", None)
-    for role in getattr(guild, "roles", []):
-        if str(getattr(role, "name", "")).strip().lstrip("@").lower() == "all":
-            return role
-    return None

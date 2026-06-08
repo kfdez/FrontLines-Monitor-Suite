@@ -134,18 +134,14 @@ def test_unlock_event_reservation_deduplicates_simultaneous_messages():
     assert reserve_unlock_event(recent, now=1060)
 
 
-def test_forward_module_unlock_mentions_all_role_and_forwards_embed():
+def test_forward_module_unlock_mentions_pokemon_role_and_forwards_embed():
     manager = object.__new__(ServiceManager)
     manager.recent_forwards = {}
     manager.add_log = Mock()
     manager.bot = Mock()
     manager.bot.target_channel_id = 22
 
-    role = Mock()
-    role.name = "All"
-    role.mention = "<@&123>"
     target_channel = Mock()
-    target_channel.guild.roles = [role]
     target_channel.send = AsyncMock()
 
     bot = Mock()
@@ -161,4 +157,4 @@ def test_forward_module_unlock_mentions_all_role_and_forwards_embed():
     asyncio.run(manager._forward_module_unlock(message, bot))
 
     target_channel.send.assert_awaited_once()
-    assert target_channel.send.await_args.kwargs["content"] == "<@&123>"
+    assert target_channel.send.await_args.kwargs["content"] == "<@&1385619239309672488>"

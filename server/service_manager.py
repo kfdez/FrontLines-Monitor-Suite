@@ -23,8 +23,8 @@ from core.runtime_paths import get_data_dir, get_data_path, get_db_path
 from core.sheets import SheetsManager
 from core.shopify_monitor import ShopifyMonitor
 from modules.skutto.unlock_events import (
-    find_all_role,
     is_pokemoncenter_module_unlocked,
+    POKEMONCENTER_ROLE_MENTION,
     reserve_unlock_event,
 )
 
@@ -370,14 +370,9 @@ class ServiceManager:
             self.add_log("PokemonCenter module unlock target channel not found")
             return
 
-        role = find_all_role(target_channel)
-        mention = role.mention if role else ""
-        if not role:
-            self.add_log("Role named 'all' not found in the monitor channel guild")
-
         for index, embed in enumerate(message.embeds):
             await target_channel.send(
-                content=mention if index == 0 and mention else None,
+                content=POKEMONCENTER_ROLE_MENTION if index == 0 else None,
                 embed=discord.Embed.from_dict(embed.to_dict()),
             )
         self.add_log("Forwarded PokemonCenter module unlock to monitor channel")
