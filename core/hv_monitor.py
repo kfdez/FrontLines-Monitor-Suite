@@ -78,6 +78,7 @@ class HVMonitor:
 
         # Stock status: product_id -> available (bool)
         self.stock_status: Dict[str, bool] = {}
+        self._pending_stock_resets: set[str] = set()
 
         # Monitoring state
         self._stop_flag = threading.Event()
@@ -317,10 +318,8 @@ class HVMonitor:
         Args:
             product_id: Product ID to reset
         """
-        # Clear all stock status - since we can't easily map products to their variants
-        # This ensures the product will trigger an alert on next check
-        self.stock_status.clear()
-        self.log(f"Stock status reset for all products")
+        self._pending_stock_resets.add(product_id)
+        self.log(f"Stock status reset queued for {product_id}")
 
     def reload_data(self):
         """Reload products and metadata from files."""
@@ -545,6 +544,8 @@ class HVMonitor:
         if not node:
             return
 
+        force_reset = product_id in self._pending_stock_resets
+
         # Update metadata if missing
         if product_id not in self.metadata or not self.metadata[product_id].get('title'):
             if node.get("variants"):
@@ -576,7 +577,7 @@ class HVMonitor:
                 current_status[var_id] = available
 
                 # Check if back in stock (or first time seeing it in stock)
-                prev_status = self.stock_status.get(var_id)
+                prev_status = None if force_reset else self.stock_status.get(var_id)
                 if available and prev_status is not True:
                     self.log(f"Back in stock: {product['title']} - {variant['title']}")
                     self._send_notification(product, variant, ping_override)
@@ -591,10 +592,13 @@ class HVMonitor:
             current_status[var_id] = available
 
             # Check if back in stock (or first time seeing it in stock)
-            prev_status = self.stock_status.get(var_id)
+            prev_status = None if force_reset else self.stock_status.get(var_id)
             if available and prev_status is not True:
                 self.log(f"Back in stock: {product['title']} - {variant['title']}")
                 self._send_notification(product, variant, ping_override)
+
+        if force_reset:
+            self._pending_stock_resets.discard(product_id)
 
     # ============ DISCORD NOTIFICATIONS ============
 
