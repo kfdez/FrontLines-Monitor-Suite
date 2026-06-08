@@ -14,6 +14,7 @@ if BASE_DIR not in sys.path:
 from core.database import Database
 from core.sheets import SheetsManager
 from core.bot import DiscordBot
+from core.ws_publisher import publish_trigger
 from core.hv_monitor import HVMonitor
 from core.shopify_monitor import ShopifyMonitor
 from core.tasks import TasksManager
@@ -237,6 +238,10 @@ class MainApplication:
 
         # Debug logging toggle
         self.debug_logging = self.db.get_config("debug_logging", "false").lower() == "true"
+
+        # WebSocket trigger config
+        self.ws_trigger_url = self.db.get_config("ws_trigger_url", "")
+        self.ws_trigger_token = self.db.get_config("ws_trigger_token", "")
 
     @property
     def proxies(self) -> list:
@@ -1011,6 +1016,11 @@ class MainApplication:
             # Store matched SKU for duplicate checking
             embed_dict["matched_sku"] = sku_value
 
+            # WebSocket trigger metadata
+            ws_raw = product.get("send_to_websocket", "")
+            embed_dict["ws_enabled"] = str(ws_raw).strip().upper() in ("TRUE", "1", "YES")
+            embed_dict["ws_platform"] = platform.lower()
+
             # Keep the original timestamp from the embed (don't delete it)
 
         return embed_dict
@@ -1199,6 +1209,38 @@ class MainApplication:
                                 self.log_message(f"📣 Pinging role: {role_id}")
                                 await target_channel.send(content=mention)
                             await target_channel.send(embed=new_embed)
+
+                            # Fire WebSocket trigger (non-blocking, fire-and-forget)
+                            _matched_sku = processed.get("matched_sku")
+                            _ws_enabled = processed.get("ws_enabled", False)
+                            if _ws_enabled:
+                                if self.ws_trigger_url and self.ws_trigger_token:
+                                    import asyncio
+                                    from functools import partial as _partial
+                                    _fn = _partial(
+                                        publish_trigger,
+                                        self.ws_trigger_url,
+                                        self.ws_trigger_token,
+                                        processed.get("ws_platform", "costco"),
+                                        _matched_sku or None,
+                                        processed.get("url") or None,
+                                    )
+                                    asyncio.get_running_loop().run_in_executor(None, _fn)
+                                    self.log_message(
+                                        f"🌐 WS trigger queued — sku={_matched_sku} "
+                                        f"platform={processed.get('ws_platform')}"
+                                    )
+                                else:
+                                    self.log_message(
+                                        f"⚠️ WS trigger skipped — URL or Token not set in Settings "
+                                        f"(sku={_matched_sku})"
+                                    )
+                            elif _matched_sku:
+                                # Product matched but Send To Websocket column is not TRUE
+                                self.log_message(
+                                    f"ℹ️ WS trigger skipped — '{_matched_sku}' matched but "
+                                    f"Send To Websocket = FALSE (check column I, then reload Sheets)"
+                                )
 
                             # Record forward time for duplicate check
                             if matched_sku:

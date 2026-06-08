@@ -7,6 +7,7 @@ when items come back in stock.
 
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -597,6 +598,15 @@ class HVMonitor:
 
     # ============ DISCORD NOTIFICATIONS ============
 
+    @staticmethod
+    def _normalize_role_id(role_id: str) -> str:
+        """Return a Discord role ID from a raw ID or role mention."""
+        value = str(role_id or "").strip()
+        mention_match = re.fullmatch(r"<@&(\d+)>", value)
+        if mention_match:
+            return mention_match.group(1)
+        return value if value.isdigit() else ""
+
     def _send_notification(
         self,
         product: Dict,
@@ -653,15 +663,18 @@ class HVMonitor:
             ]
 
         # Global ping is an allow switch; product-level ping decides whether this item mentions the role.
-        content = ""
-        if self.ping_enabled and ping_override:
-            content = f"<@&{self.role_id}>" if self.role_id else ""
+        role_id = self._normalize_role_id(self.role_id)
+        should_ping = self.ping_enabled and ping_override
 
         # Send webhook
         try:
             payload = {"embeds": [embed]}
-            if content:
-                payload["content"] = content
+            if should_ping and role_id:
+                payload["content"] = f"<@&{role_id}>"
+                payload["allowed_mentions"] = {
+                    "parse": [],
+                    "roles": [role_id]
+                }
 
             response = requests.post(
                 self.webhook_url,

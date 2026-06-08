@@ -140,6 +140,21 @@ class SettingsTab(ttk.Frame):
         ttk.Label(config_frame, text="(0 to disable)", font=("Segoe UI", 8)).grid(
             row=9, column=1, sticky='e', padx=60)
 
+        # WebSocket Trigger Section
+        ws_frame = ttk.LabelFrame(self.scrollable_frame, text="WebSocket Trigger", padding=10)
+        ws_frame.pack(fill=tk.X, padx=10, pady=10)
+        ws_frame.columnconfigure(1, weight=1)
+
+        ttk.Label(ws_frame, text="Trigger URL:").grid(row=0, column=0, sticky='w', pady=5)
+        self.ws_trigger_url_var = tk.StringVar()
+        ttk.Entry(ws_frame, textvariable=self.ws_trigger_url_var, width=50).grid(
+            row=0, column=1, pady=5, padx=5, sticky='ew')
+
+        ttk.Label(ws_frame, text="Trigger Token:").grid(row=1, column=0, sticky='w', pady=5)
+        self.ws_trigger_token_var = tk.StringVar()
+        ttk.Entry(ws_frame, textvariable=self.ws_trigger_token_var, width=50, show="*").grid(
+            row=1, column=1, pady=5, padx=5, sticky='ew')
+
         # Application Settings Section
         app_frame = ttk.LabelFrame(self.scrollable_frame, text="Application Settings", padding=10)
         app_frame.pack(fill=tk.X, padx=10, pady=10)
@@ -278,6 +293,8 @@ class SettingsTab(ttk.Frame):
         self.checkouts_channel_var.set(self.app.db.get_config("checkouts_channel_id", ""))
         self.checkouts_target_channel_var.set(self.app.db.get_config("checkouts_target_channel_id", ""))
         self.admin_channel_var.set(self.app.db.get_config("admin_channel_id", ""))
+        self.ws_trigger_url_var.set(self.app.db.get_config("ws_trigger_url", ""))
+        self.ws_trigger_token_var.set(self.app.db.get_config("ws_trigger_token", ""))
         self.enable_ping_var.set(self.app.db.get_config("enable_ping", "false").lower() == "true")
         self.debug_logging_var.set(self.app.db.get_config("debug_logging", "false").lower() == "true")
         self.footer_icon_var.set(self.app.db.get_config("footer_icon_url", ""))
@@ -305,6 +322,13 @@ class SettingsTab(ttk.Frame):
         # Save Tasks settings
         self.app.db.set_config("tasks_file_path", self.tasks_file_path_var.get().strip())
         self.app.db.set_config("tasks_auto_refresh_interval", str(self.tasks_refresh_var.get()))
+
+        # Save WebSocket trigger settings
+        self.app.db.set_config("ws_trigger_url", self.ws_trigger_url_var.get().strip())
+        self.app.db.set_config("ws_trigger_token", self.ws_trigger_token_var.get().strip())
+        # Update live values on app
+        self.app.ws_trigger_url = self.ws_trigger_url_var.get().strip()
+        self.app.ws_trigger_token = self.ws_trigger_token_var.get().strip()
 
         # Update bot config
         self.app.bot.token = self.token_var.get().strip()
