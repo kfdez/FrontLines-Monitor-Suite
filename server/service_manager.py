@@ -138,6 +138,7 @@ class ServiceManager:
         self.bot.checkouts_target_channel_id = self._int_or_none(self.db.get_config("checkouts_target_channel_id", ""))
         self.bot.admin_channel_id = self._int_or_none(self.db.get_config("admin_channel_id", ""))
         self.bot.enable_ping = self._bool(self.db.get_config("enable_ping", "false"))
+        self.auto_start = self._bool(self.db.get_config("auto_start", "false"))
         self.duplicate_timeout = self._form_int({"duplicate_timeout": self.db.get_config("duplicate_timeout", "60")}, "duplicate_timeout", 60)
         self.debug_logging = self._bool(self.db.get_config("debug_logging", "false"))
         self.ws_trigger_url = self.db.get_config("ws_trigger_url", "")
@@ -152,6 +153,64 @@ class ServiceManager:
         if self.shopify_monitor.tracker:
             self.shopify_monitor.tracker.load()
         self.add_log("Configuration reloaded")
+
+    def start_auto_services(self):
+        """Start each service whose auto-start setting is enabled."""
+        self.reload_config()
+
+        if self.auto_start:
+            missing = []
+            if not self.bot.token:
+                missing.append("bot token")
+            if not self.bot.source_channel_id:
+                missing.append("source channel")
+            if not self.bot.target_channel_id:
+                missing.append("target channel")
+            if missing:
+                self.add_log(f"SKUtto auto-start skipped: missing {', '.join(missing)}")
+            else:
+                self._start_auto_service("SKUtto", lambda: self.control_service("bot", "start"))
+
+        if self.hv_monitor.auto_start:
+            missing = []
+            if not self.hv_monitor.store_url:
+                missing.append("store URL")
+            if not self.hv_monitor.token:
+                missing.append("storefront token")
+            if missing:
+                self.add_log(f"HV auto-start skipped: missing {', '.join(missing)}")
+            else:
+                self._start_auto_service("HV", self.hv_monitor.start)
+
+        if self.shopify_monitor.auto_start:
+            self._start_auto_service("Shopify", self.shopify_monitor.start)
+
+    def _start_auto_service(self, name: str, start):
+        try:
+            start()
+            self.add_log(f"{name} auto-start requested")
+        except Exception as exc:
+            self.add_log(f"{name} auto-start failed: {exc}")
+
+    def stop_services(self):
+        """Stop running services during web process shutdown."""
+        for name, stop, running in [
+            ("HV", self.hv_monitor.stop, self.hv_monitor.is_running),
+            ("Shopify", self.shopify_monitor.stop, self.shopify_monitor.is_running),
+        ]:
+            try:
+                if running():
+                    stop()
+                    self.add_log(f"{name} stopped during shutdown")
+            except Exception as exc:
+                self.add_log(f"{name} shutdown failed: {exc}")
+
+        try:
+            if self.bot.is_running() or (self._bot_thread and self._bot_thread.is_alive()):
+                self.bot.stop_sync()
+                self.add_log("SKUtto stopped during shutdown")
+        except Exception as exc:
+            self.add_log(f"SKUtto shutdown failed: {exc}")
 
     def load_skutto_products_cache(self) -> list[dict[str, Any]]:
         if not self.skutto_products_cache.exists():
@@ -648,7 +707,7 @@ class ServiceManager:
             "bot_token", "source_channel_id", "target_channel_id",
             "checkouts_channel_id", "checkouts_target_channel_id", "admin_channel_id",
             "enable_ping", "debug_logging", "footer_icon_url", "duplicate_timeout",
-            "ws_trigger_url", "ws_trigger_token", "google_sheets_id", "proxies",
+            "auto_start", "ws_trigger_url", "ws_trigger_token", "google_sheets_id", "proxies",
         ]
         return {key: self.db.get_config(key, "") for key in keys}
 
@@ -662,6 +721,7 @@ class ServiceManager:
             self.db.set_config(key, form.get(key, "").strip())
         self.db.set_config("enable_ping", "true" if form.get("enable_ping") else "false")
         self.db.set_config("debug_logging", "true" if form.get("debug_logging") else "false")
+        self.db.set_config("auto_start", "true" if form.get("auto_start") else "false")
         self.reload_config()
 
     def get_shopify_settings(self) -> dict[str, Any]:

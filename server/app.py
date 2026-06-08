@@ -4,6 +4,7 @@ import os
 import secrets
 import time
 from collections import OrderedDict
+from contextlib import asynccontextmanager
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -29,7 +30,16 @@ HV_SEARCH_CACHE_MAX = 50
 ROOT_PATH = os.environ.get("FRONTLINES_ROOT_PATH", "").rstrip("/")
 SESSION_COOKIE_PATH = ROOT_PATH or "/"
 
-app = FastAPI(title="FrontLines Monitor Suite")
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    manager.start_auto_services()
+    try:
+        yield
+    finally:
+        manager.stop_services()
+
+
+app = FastAPI(title="FrontLines Monitor Suite", lifespan=lifespan)
 app.add_middleware(
     SessionMiddleware,
     session_cookie=os.environ.get("FRONTLINES_SESSION_COOKIE", "frontlines_session"),

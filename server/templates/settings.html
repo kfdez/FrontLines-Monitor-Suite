@@ -17,6 +17,7 @@
         <label>Duplicate Timeout (Seconds)<input name="duplicate_timeout" value="{{ settings.get('duplicate_timeout', '') }}"></label>
       </div>
       <div class="checkbox-group" style="margin-top:10px">
+        <label class="check"><input type="checkbox" name="auto_start" {% if settings.auto_start == "true" %}checked{% endif %}> Auto Start Discord Bot</label>
         <label class="check"><input type="checkbox" name="enable_ping" {% if settings.enable_ping == "true" %}checked{% endif %}> Enable Forwarded Role Pings</label>
         <label class="check"><input type="checkbox" name="debug_logging" {% if settings.debug_logging == "true" %}checked{% endif %}> Debug Logging</label>
       </div>
