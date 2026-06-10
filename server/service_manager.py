@@ -23,9 +23,10 @@ from core.runtime_paths import get_data_dir, get_data_path, get_db_path
 from core.sheets import SheetsManager
 from core.shopify_monitor import ShopifyMonitor
 from modules.skutto.unlock_events import (
-    is_pokemoncenter_module_unlocked,
+    get_pokemoncenter_module_status,
     POKEMONCENTER_ROLE_MENTION,
-    reserve_unlock_event,
+    POKEMONCENTER_STORE_URL,
+    reserve_module_status_event,
 )
 
 
@@ -311,7 +312,8 @@ class ServiceManager:
 
         channel_id = int(message.channel.id)
         if self.bot.checkouts_channel_id and channel_id == self.bot.checkouts_channel_id:
-            await self._forward_module_unlock(message, bot)
+            if await self._forward_module_status(message, bot):
+                return
             await self._handle_checkout(message, bot)
             return
 
@@ -352,30 +354,35 @@ class ServiceManager:
             await target_channel.send(message.content)
             self.add_log("Forwarded SKUtto text message")
 
-    async def _forward_module_unlock(self, message, bot):
-        """Forward PokemonCenter module unlock alerts to the monitor channel."""
+    async def _forward_module_status(self, message, bot) -> bool:
+        """Forward module status alerts and report whether the message was handled."""
         if not message.embeds:
-            return
-        if not is_pokemoncenter_module_unlocked(message.content, message.embeds):
-            return
-        if not reserve_unlock_event(self.recent_forwards):
-            self.add_log("Skipping duplicate PokemonCenter module unlock")
-            return
+            return False
+        status = get_pokemoncenter_module_status(message.content, message.embeds)
+        if not status:
+            return False
+        if not reserve_module_status_event(self.recent_forwards, status):
+            self.add_log(f"Skipping duplicate PokemonCenter module {status}")
+            return True
         if not self.bot.target_channel_id:
-            self.add_log("PokemonCenter module unlock target channel is not configured")
-            return
+            self.add_log("PokemonCenter module status target channel is not configured")
+            return True
 
         target_channel = bot.bot.get_channel(self.bot.target_channel_id)
         if not target_channel:
-            self.add_log("PokemonCenter module unlock target channel not found")
-            return
+            self.add_log("PokemonCenter module status target channel not found")
+            return True
 
+        content = None
+        if status == "unlocked":
+            content = f"{POKEMONCENTER_ROLE_MENTION}\n{POKEMONCENTER_STORE_URL}"
         for index, embed in enumerate(message.embeds):
             await target_channel.send(
-                content=POKEMONCENTER_ROLE_MENTION if index == 0 else None,
+                content=content if index == 0 else None,
                 embed=discord.Embed.from_dict(embed.to_dict()),
             )
-        self.add_log("Forwarded PokemonCenter module unlock to monitor channel")
+        self.add_log(f"Forwarded PokemonCenter module {status} to monitor channel")
+        return True
 
     def _process_skutto_embed(self, embed):
         embed_dict = embed.to_dict()

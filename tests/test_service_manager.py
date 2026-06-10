@@ -2,8 +2,8 @@ import asyncio
 from unittest.mock import AsyncMock, Mock
 
 from modules.skutto.unlock_events import (
-    is_pokemoncenter_module_unlocked,
-    reserve_unlock_event,
+    get_pokemoncenter_module_status,
+    reserve_module_status_event,
 )
 from server.service_manager import ServiceManager
 
@@ -123,18 +123,28 @@ def test_detects_flexible_pokemoncenter_module_unlock_embed():
         ],
     })
 
-    assert is_pokemoncenter_module_unlocked("", [embed])
+    assert get_pokemoncenter_module_status("", [embed]) == "unlocked"
 
 
-def test_unlock_event_reservation_deduplicates_simultaneous_messages():
+def test_detects_pokemoncenter_module_locked_embed():
+    embed = _Embed({
+        "title": "Module Locked",
+        "description": "The PokemonCenter CA module has been locked.",
+    })
+
+    assert get_pokemoncenter_module_status("", [embed]) == "locked"
+
+
+def test_module_status_reservation_deduplicates_each_status():
     recent = {}
 
-    assert reserve_unlock_event(recent, now=1000)
-    assert not reserve_unlock_event(recent, now=1000)
-    assert reserve_unlock_event(recent, now=1060)
+    assert reserve_module_status_event(recent, "unlocked", now=1000)
+    assert not reserve_module_status_event(recent, "unlocked", now=1000)
+    assert reserve_module_status_event(recent, "locked", now=1000)
+    assert reserve_module_status_event(recent, "unlocked", now=1060)
 
 
-def test_forward_module_unlock_mentions_pokemon_role_and_forwards_embed():
+def _module_status_manager():
     manager = object.__new__(ServiceManager)
     manager.recent_forwards = {}
     manager.add_log = Mock()
@@ -146,6 +156,11 @@ def test_forward_module_unlock_mentions_pokemon_role_and_forwards_embed():
 
     bot = Mock()
     bot.bot.get_channel.return_value = target_channel
+    return manager, bot, target_channel
+
+
+def test_forward_module_unlock_mentions_role_adds_link_and_forwards_embed():
+    manager, bot, target_channel = _module_status_manager()
     embed = _Embed({
         "title": "Module Unlocked",
         "description": "The PokemonCenter CA module has been unlocked.",
@@ -153,8 +168,42 @@ def test_forward_module_unlock_mentions_pokemon_role_and_forwards_embed():
     })
     message = Mock(content="", embeds=[embed])
 
-    asyncio.run(manager._forward_module_unlock(message, bot))
-    asyncio.run(manager._forward_module_unlock(message, bot))
+    assert asyncio.run(manager._forward_module_status(message, bot))
+    assert asyncio.run(manager._forward_module_status(message, bot))
 
     target_channel.send.assert_awaited_once()
-    assert target_channel.send.await_args.kwargs["content"] == "<@&1385619239309672488>"
+    assert target_channel.send.await_args.kwargs["content"] == (
+        "<@&1385619239309672488>\nhttps://www.pokemoncenter.com/en-ca/"
+    )
+
+
+def test_forward_module_locked_has_no_mention_or_link():
+    manager, bot, target_channel = _module_status_manager()
+    embed = _Embed({
+        "title": "Module Locked",
+        "description": "The PokemonCenter CA module has been locked.",
+    })
+    message = Mock(content="", embeds=[embed])
+
+    assert asyncio.run(manager._forward_module_status(message, bot))
+
+    target_channel.send.assert_awaited_once()
+    assert target_channel.send.await_args.kwargs["content"] is None
+
+
+def test_module_status_message_skips_checkout_processing():
+    manager = object.__new__(ServiceManager)
+    manager.bot = Mock()
+    manager.bot.checkouts_channel_id = 11
+    manager._forward_module_status = AsyncMock(return_value=True)
+    manager._handle_checkout = AsyncMock()
+
+    bot = Mock()
+    bot.bot.user.id = 99
+    message = Mock()
+    message.author.bot = False
+    message.channel.id = 11
+
+    asyncio.run(manager._handle_skutto_message(message, bot))
+
+    manager._handle_checkout.assert_not_awaited()

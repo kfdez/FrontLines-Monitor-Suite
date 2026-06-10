@@ -25,9 +25,10 @@ from gui.tabs.hv_monitor_tab import HVMonitorTab
 from gui.tabs.shopify_monitor_tab import ShopifyMonitorTab
 from gui.tabs.proxies_tab import ProxiesTab
 from modules.skutto.unlock_events import (
-    is_pokemoncenter_module_unlocked,
+    get_pokemoncenter_module_status,
     POKEMONCENTER_ROLE_MENTION,
-    reserve_unlock_event,
+    POKEMONCENTER_STORE_URL,
+    reserve_module_status_event,
 )
 
 
@@ -1148,30 +1149,35 @@ class MainApplication:
                     f"⚠️ Checkouts target channel {self.bot.checkouts_target_channel_id} not found"
                 )
 
-    async def _forward_module_unlock(self, message, bot):
-        """Forward PokemonCenter module unlock alerts to the monitor channel."""
+    async def _forward_module_status(self, message, bot) -> bool:
+        """Forward module status alerts and report whether the message was handled."""
         if not message.embeds:
-            return
-        if not is_pokemoncenter_module_unlocked(message.content, message.embeds):
-            return
-        if not reserve_unlock_event(self.recent_forwards):
-            self.log_message("Skipping duplicate PokemonCenter module unlock")
-            return
+            return False
+        status = get_pokemoncenter_module_status(message.content, message.embeds)
+        if not status:
+            return False
+        if not reserve_module_status_event(self.recent_forwards, status):
+            self.log_message(f"Skipping duplicate PokemonCenter module {status}")
+            return True
         if not self.bot.target_channel_id:
-            self.log_message("PokemonCenter module unlock target channel is not configured")
-            return
+            self.log_message("PokemonCenter module status target channel is not configured")
+            return True
 
         target_channel = bot.bot.get_channel(self.bot.target_channel_id)
         if not target_channel:
-            self.log_message("PokemonCenter module unlock target channel not found")
-            return
+            self.log_message("PokemonCenter module status target channel not found")
+            return True
 
+        content = None
+        if status == "unlocked":
+            content = f"{POKEMONCENTER_ROLE_MENTION}\n{POKEMONCENTER_STORE_URL}"
         for index, embed in enumerate(message.embeds):
             await target_channel.send(
-                content=POKEMONCENTER_ROLE_MENTION if index == 0 else None,
+                content=content if index == 0 else None,
                 embed=discord.Embed.from_dict(embed.to_dict()),
             )
-        self.log_message("Forwarded PokemonCenter module unlock to monitor channel")
+        self.log_message(f"Forwarded PokemonCenter module {status} to monitor channel")
+        return True
 
     async def _handle_message(self, message, bot):
         """Handle messages from source channel - forward to target and log."""
@@ -1190,7 +1196,8 @@ class MainApplication:
         # Check if message is from the checkouts channel
         if self.bot.checkouts_channel_id and msg_channel_id == self.bot.checkouts_channel_id:
             # Handle checkout notification
-            await self._forward_module_unlock(message, bot)
+            if await self._forward_module_status(message, bot):
+                return
             await self._handle_checkout(message, bot)
             return
 

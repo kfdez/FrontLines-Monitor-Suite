@@ -1,12 +1,12 @@
-"""Detection helpers for module-unlocked checkout messages."""
+"""Detection helpers for PokemonCenter module status messages."""
 import re
 import time
 from typing import Any, Iterable
 
 
-POKEMONCENTER_UNLOCK_EVENT_KEY = "event:pokemoncenter:module-unlocked"
 POKEMONCENTER_ROLE_MENTION = "<@&1385619239309672488>"
-UNLOCK_DUPLICATE_TIMEOUT = 60
+POKEMONCENTER_STORE_URL = "https://www.pokemoncenter.com/en-ca/"
+MODULE_STATUS_DUPLICATE_TIMEOUT = 60
 
 
 def _embed_text(embed: Any) -> str:
@@ -23,18 +23,29 @@ def _embed_text(embed: Any) -> str:
     return "\n".join(str(part) for part in parts if part)
 
 
-def is_pokemoncenter_module_unlocked(content: str, embeds: Iterable[Any]) -> bool:
-    """Match flexible PokemonCenter module-unlocked messages."""
+def get_pokemoncenter_module_status(content: str, embeds: Iterable[Any]) -> str | None:
+    """Return locked/unlocked for flexible PokemonCenter module status messages."""
     text = "\n".join([content or "", *(_embed_text(embed) for embed in embeds)])
     normalized = re.sub(r"[^a-z0-9]+", "", text.lower())
-    return all(keyword in normalized for keyword in ("pokemoncenter", "module", "unlock"))
+    if "pokemoncenter" not in normalized or "module" not in normalized:
+        return None
+    if "unlock" in normalized:
+        return "unlocked"
+    if "locked" in normalized:
+        return "locked"
+    return None
 
 
-def reserve_unlock_event(recent_events: dict[str, float], now: float | None = None) -> bool:
+def reserve_module_status_event(
+    recent_events: dict[str, float],
+    status: str,
+    now: float | None = None,
+) -> bool:
     """Reserve the event before the caller performs any await."""
     current = time.monotonic() if now is None else now
-    last_seen = recent_events.get(POKEMONCENTER_UNLOCK_EVENT_KEY, 0)
-    if current - last_seen < UNLOCK_DUPLICATE_TIMEOUT:
+    event_key = f"event:pokemoncenter:module-{status}"
+    last_seen = recent_events.get(event_key, 0)
+    if current - last_seen < MODULE_STATUS_DUPLICATE_TIMEOUT:
         return False
-    recent_events[POKEMONCENTER_UNLOCK_EVENT_KEY] = current
+    recent_events[event_key] = current
     return True
